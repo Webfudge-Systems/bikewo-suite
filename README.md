@@ -49,7 +49,7 @@ bikewo-suite/
 
 ## Getting started
 
-Prerequisites: Node.js **>= 20** and npm **>= 9**.
+Prerequisites: Node.js **20.x** and npm **>= 9** (Vercel frontends are pinned to 20.x).
 
 ```bash
 npm install

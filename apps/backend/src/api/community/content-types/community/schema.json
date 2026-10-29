@@ -1,0 +1,39 @@
+{
+    "kind": "collectionType",
+    "collectionName": "communities",
+    "info": {
+        "singularName": "community",
+        "pluralName": "communities",
+        "displayName": "Community",
+        "description": "Client communities and groups"
+    },
+    "options": {
+        "draftAndPublish": false
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "name": {
+            "type": "string",
+            "required": true,
+            "unique": true
+        },
+        "description": {
+            "type": "text"
+        },
+        "icon": {
+            "type": "string"
+        },
+        "color": {
+            "type": "string"
+        },
+        "memberships": {
+            "type": "relation",
+            "relation": "oneToMany",
+            "target": "api::community-membership.community-membership",
+            "mappedBy": "community"
+        }
+    }
+}
+
+
+

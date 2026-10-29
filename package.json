@@ -1,0 +1,43 @@
+{
+  "name": "bikewo-suite",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --filter=!backend",
+    "dev:all": "turbo run dev",
+    "dev:crm": "turbo run dev --filter=@bikewo/crm",
+    "dev:pm": "turbo run dev --filter=@bikewo/pm",
+    "dev:accounts": "turbo run dev --filter=@bikewo/accounts",
+    "dev:client-portal": "turbo run dev --filter=@bikewo/client-portal",
+    "dev:backend": "turbo run dev --filter=backend",
+    "reset:db": "npm run reset:db -w backend",
+    "build": "turbo run build",
+    "build:crm": "turbo run build --filter=@bikewo/crm",
+    "build:pm": "turbo run build --filter=@bikewo/pm",
+    "build:accounts": "turbo run build --filter=@bikewo/accounts",
+    "start": "turbo run start",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md,js,jsx,json}\"",
+    "clean": "turbo run clean",
+    "strip-console": "node scripts/strip-console.js",
+    "build:linkedin-extension": "npm run build -w @bikewo/linkedin-extension"
+  },
+  "devDependencies": {
+    "prettier": "^3.1.1",
+    "serwist": "^9.5.11",
+    "turbo": "^1.11.2"
+  },
+  "dependencies": {
+    "@serwist/next": "^9.5.11",
+    "ajv": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "packageManager": "npm@10.2.5"
+}

@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BikeWo CRM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="../shared/brand-tokens.css" />
+    <link rel="stylesheet" href="sidebar.css" />
+  </head>
+  <body>
+    <div class="bikewo-sidebar-container">
+      <!-- Header -->
+      <div class="bikewo-sidebar-header">
+        <div class="bikewo-sidebar-title">
+          <div
+            class="bikewo-logo"
+            id="bikewo-logo-btn"
+            style="cursor: pointer"
+          >
+            <!-- <svg
+              class="bikewo-logo-icon"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 2L2 7L12 12L22 7L12 2Z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M2 17L12 22L22 17"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M2 12L12 17L22 12"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg> -->
+            <span class="bikewo-logo-text">BikeWo</span>
+          </div>
+        </div>
+        <div class="bikewo-header-actions">
+          <button
+            class="bikewo-header-icon-btn"
+            id="bikewo-refresh-btn"
+            aria-label="Refresh data"
+            title="Refresh data"
+          >
+            <i class="fas fa-sync-alt"></i>
+          </button>
+          <button
+            class="bikewo-header-btn-cta"
+            id="bikewo-crm-btn"
+            aria-label="Open CRM in new tab"
+            title="Open CRM in new tab"
+          >
+            <i class="fas fa-external-link-alt"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="bikewo-sidebar-content">
+        <!-- Login Form (shown when not authenticated) -->
+        <div class="bikewo-login-form" id="bikewo-login-form">
+          <div class="bikewo-login-card">
+            <div class="bikewo-login-header">
+              <h2>Welcome Back</h2>
+              <p>Sign in to import LinkedIn data to your CRM</p>
+            </div>
+            <form id="bikewo-auth-form" class="bikewo-form">
+              <div class="bikewo-form-group">
+                <label for="bikewo-login-email">Email Address</label>
+                <input
+                  type="email"
+                  id="bikewo-login-email"
+                  placeholder="Enter your email"
+                  required
+                  autocomplete="email"
+                />
+              </div>
+              <div class="bikewo-form-group">
+                <label for="bikewo-login-password">Password</label>
+                <input
+                  type="password"
+                  id="bikewo-login-password"
+                  placeholder="Enter your password"
+                  required
+                  autocomplete="current-password"
+                />
+              </div>
+              <div class="bikewo-form-actions">
+                <button
+                  type="submit"
+                  class="btn-primary"
+                  id="bikewo-login-submit"
+                >
+                  <span>Sign In</span>
+                  <div class="btn-icon">
+                    <i class="fas fa-sign-in-alt"></i>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  class="btn-secondary"
+                  id="bikewo-open-crm"
+                >
+                  <span>Open CRM Settings</span>
+                  <div class="btn-icon">
+                    <i class="fas fa-external-link-alt"></i>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  class="btn-secondary"
+                  id="bikewo-test-connection"
+                  style="margin-top: 8px; font-size: 12px"
+                >
+                  <span>Test Connection</span>
+                </button>
+              </div>
+              <div
+                class="bikewo-login-error"
+                id="bikewo-login-error"
+                style="display: none"
+              ></div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Data Import UI (shown when authenticated) -->
+        <div
+          class="bikewo-sidebar-loading"
+          id="bikewo-sidebar-loading"
+          style="display: none"
+        >
+          <div class="bikewo-loading-card">
+            <div class="bikewo-spinner"></div>
+            <h3>Please wait</h3>
+            <p>Loading…</p>
+          </div>
+        </div>
+
+        <!-- Existing Lead Details UI (shown when contact already exists) -->
+        <div
+          class="bikewo-existing-lead"
+          id="bikewo-existing-lead"
+          style="display: none"
+        >
+          <div class="bikewo-existing-top">
+            <div class="bikewo-card bikewo-existing-profile-card">
+              <div class="bikewo-existing-profile">
+                <div class="bikewo-existing-image bikewo-avatar" id="bikewo-existing-image">
+                  <i class="fas fa-user default-avatar"></i>
+                </div>
+                <div class="bikewo-existing-info">
+                  <h2 class="bikewo-existing-name" id="bikewo-existing-name">Name</h2>
+                  <p class="bikewo-existing-subtitle" id="bikewo-existing-title">Title</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="bikewo-tab-navigation">
+              <button class="bikewo-tab-btn active" data-tab="details" id="bikewo-details-tab">
+                <i class="fas fa-id-card"></i><span>Details</span>
+              </button>
+              <button class="bikewo-tab-btn" data-tab="related" id="bikewo-related-tab">
+                <i class="fas fa-link"></i><span>Related</span>
+              </button>
+              <button class="bikewo-tab-btn" data-tab="company" id="bikewo-company-tab">
+                <i class="fas fa-building"></i><span>Company</span>
+              </button>
+              <button class="bikewo-tab-btn" data-tab="chats" id="bikewo-chats-tab">
+                <i class="fas fa-comments"></i><span>Chats</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Tab Content -->
+          <div class="bikewo-existing-content">
+            <div class="bikewo-tab-content active" id="bikewo-details-content">
+              <div class="bikewo-card">
+                <div class="bikewo-card-title-row">
+                  <span class="bikewo-card-title-icon"><i class="fas fa-user"></i></span>
+                  <h3 class="bikewo-card-title">Contact Overview</h3>
+                </div>
+                <div class="bikewo-info-rows">
+                  <div class="bikewo-info-row">
+                    <div class="bikewo-info-row-header">
+                      <span class="bikewo-info-row-icon"><i class="fas fa-user"></i></span>
+                      <span class="bikewo-info-label">Name</span>
+                    </div>
+                    <div class="bikewo-info-value" id="bikewo-existing-full-name">-</div>
+                  </div>
+                  <div class="bikewo-info-row">
+                    <div class="bikewo-info-row-header">
+                      <span class="bikewo-info-row-icon"><i class="fas fa-building"></i></span>
+                      <span class="bikewo-info-label">Company</span>
+                    </div>
+                    <div class="bikewo-info-value bikewo-info-value--emphasize" id="bikewo-existing-company">-</div>
+                  </div>
+                  <div class="bikewo-info-row">
+                    <div class="bikewo-info-row-header">
+                      <span class="bikewo-info-row-icon"><i class="fas fa-briefcase"></i></span>
+                      <span class="bikewo-info-label">Title</span>
+                    </div>
+                    <div class="bikewo-info-value" id="bikewo-existing-job-title">-</div>
+                  </div>
+                  <div class="bikewo-info-row">
+                    <div class="bikewo-info-row-header">
+                      <span class="bikewo-info-row-icon"><i class="fas fa-tag"></i></span>
+                      <span class="bikewo-info-label">Contact Type</span>
+                    </div>
+                    <div class="bikewo-info-value" id="bikewo-existing-contact-type">Potential Customer</div>
+                  </div>
+                  <div class="bikewo-info-row bikewo-info-row--last">
+                    <div class="bikewo-info-row-header">
+                      <span class="bikewo-info-row-icon"><i class="fas fa-user-tie"></i></span>
+                      <span class="bikewo-info-label">Owner</span>
+                    </div>
+                    <div class="bikewo-info-value">
+                      <span class="bikewo-emphasis-pill" id="bikewo-existing-owner">-</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bikewo-card">
+                <div class="bikewo-card-title-row">
+                  <span class="bikewo-card-title-icon"><i class="fas fa-address-book"></i></span>
+                  <h3 class="bikewo-card-title">Contact Details</h3>
+                </div>
+                <div class="bikewo-info-rows">
+                  <div class="bikewo-info-row">
+                    <div class="bikewo-info-row-header">
+                      <span class="bikewo-info-row-icon"><i class="fas fa-envelope"></i></span>
+                      <span class="bikewo-info-label">Work Email</span>
+                    </div>
+                    <div class="bikewo-info-value bikewo-inline-editable bikewo-email-placeholder" id="bikewo-existing-email" data-field="email" title="Click to edit">Add Email</div>
+                  </div>
+                  <div class="bikewo-info-row">
+                    <div class="bikewo-info-row-header">
+                      <span class="bikewo-info-row-icon"><i class="fas fa-phone"></i></span>
+                      <span class="bikewo-info-label">Work Phone</span>
+                    </div>
+                    <div class="bikewo-info-value bikewo-inline-editable bikewo-phone-placeholder" id="bikewo-existing-phone" data-field="phone" title="Click to edit">Add Phone</div>
+                  </div>
+                  <div class="bikewo-info-row bikewo-info-row--last">
+                    <div class="bikewo-info-row-header">
+                      <span class="bikewo-info-row-icon"><i class="fas fa-globe"></i></span>
+                      <span class="bikewo-info-label">Website</span>
+                    </div>
+                    <div class="bikewo-info-value bikewo-inline-editable bikewo-website-placeholder" id="bikewo-existing-website" data-field="companyWebsite" title="Click to edit">Add Website</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bikewo-card">
+                <div class="bikewo-card-title-row">
+                  <span class="bikewo-card-title-icon"><i class="fas fa-align-left"></i></span>
+                  <h3 class="bikewo-card-title">About</h3>
+                </div>
+                <div class="bikewo-info-value bikewo-description-text bikewo-description-empty" id="bikewo-existing-description">
+                  No description available
+                </div>
+              </div>
+            </div>
+
+            <div class="bikewo-tab-content" id="bikewo-related-content">
+              <div class="bikewo-metrics-grid">
+                <div class="bikewo-metric-card">
+                  <span class="bikewo-metric-icon"><i class="fas fa-trophy"></i></span>
+                  <span class="bikewo-info-label">Total Won</span>
+                  <div class="bikewo-metric-value" id="bikewo-total-won">₹0</div>
+                </div>
+                <div class="bikewo-metric-card">
+                  <span class="bikewo-metric-icon"><i class="fas fa-chart-pie"></i></span>
+                  <span class="bikewo-info-label">Win Rate</span>
+                  <div class="bikewo-metric-value" id="bikewo-win-rate">0%</div>
+                </div>
+              </div>
+
+              <div class="bikewo-card bikewo-accordion-card bikewo-related-section">
+                <div class="bikewo-accordion-header bikewo-related-header">
+                  <div class="bikewo-accordion-title">
+                    <span class="bikewo-card-title-icon"><i class="fas fa-handshake"></i></span>
+                    <h3 class="bikewo-accordion-label" id="bikewo-deals-title">Deals (0)</h3>
+                  </div>
+                  <button type="button" class="bikewo-expand-btn" aria-label="Toggle deals"><i class="fas fa-chevron-down"></i></button>
+                </div>
+                <div class="bikewo-related-content-area expanded" id="bikewo-pipeline-content">
+                  <div class="bikewo-empty-state">No pipeline records found</div>
+                </div>
+              </div>
+
+              <div class="bikewo-card bikewo-accordion-card bikewo-related-section">
+                <div class="bikewo-accordion-header bikewo-related-header">
+                  <div class="bikewo-accordion-title">
+                    <span class="bikewo-card-title-icon"><i class="fas fa-tasks"></i></span>
+                    <h3 class="bikewo-accordion-label" id="bikewo-tasks-title">Tasks (0)</h3>
+                  </div>
+                  <div class="bikewo-accordion-actions">
+                    <button type="button" class="bikewo-expand-btn" aria-label="Toggle tasks"><i class="fas fa-chevron-down"></i></button>
+                    <button type="button" class="bikewo-add-btn" title="Add task"><i class="fas fa-plus"></i></button>
+                  </div>
+                </div>
+                <div class="bikewo-related-content-area" id="bikewo-tasks-content">
+                  <div class="bikewo-empty-state">No tasks found</div>
+                </div>
+              </div>
+
+              <div class="bikewo-card bikewo-accordion-card bikewo-related-section">
+                <div class="bikewo-accordion-header bikewo-related-header">
+                  <div class="bikewo-accordion-title">
+                    <span class="bikewo-card-title-icon"><i class="fas fa-file-alt"></i></span>
+                    <h3 class="bikewo-accordion-label" id="bikewo-files-title">Files (0)</h3>
+                  </div>
+                  <div class="bikewo-accordion-actions">
+                    <button type="button" class="bikewo-expand-btn" aria-label="Toggle files"><i class="fas fa-chevron-down"></i></button>
+                    <button type="button" class="bikewo-add-btn" title="Add file"><i class="fas fa-plus"></i></button>
+                  </div>
+                </div>
+                <div class="bikewo-related-content-area" id="bikewo-files-content">
+                  <div class="bikewo-empty-state">No files found</div>
+                </div>
+              </div>
+
+              <div class="bikewo-card bikewo-accordion-card bikewo-related-section">
+                <div class="bikewo-accordion-header bikewo-related-header">
+                  <div class="bikewo-accordion-title">
+                    <span class="bikewo-card-title-icon"><i class="fas fa-calendar-alt"></i></span>
+                    <h3 class="bikewo-accordion-label" id="bikewo-calendar-title">Calendar Events (0)</h3>
+                  </div>
+                  <div class="bikewo-accordion-actions">
+                    <button type="button" class="bikewo-expand-btn" aria-label="Toggle calendar"><i class="fas fa-chevron-down"></i></button>
+                    <button type="button" class="bikewo-add-btn" title="Add event"><i class="fas fa-plus"></i></button>
+                  </div>
+                </div>
+                <div class="bikewo-related-content-area" id="bikewo-calendar-content">
+                  <div class="bikewo-empty-state">No calendar events found</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bikewo-tab-content" id="bikewo-company-content">
+              <div class="bikewo-card bikewo-company-hero">
+                <div class="bikewo-company-hero-inner">
+                  <div class="bikewo-company-hero-icon"><i class="fas fa-building"></i></div>
+                  <div class="bikewo-company-hero-body">
+                    <h3 class="bikewo-company-hero-name" id="bikewo-company-name">Company Name</h3>
+                    <span class="bikewo-company-status-badge lead" id="bikewo-company-status">Lead</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bikewo-card">
+                <div class="bikewo-card-title-row">
+                  <span class="bikewo-card-title-icon"><i class="fas fa-info-circle"></i></span>
+                  <h3 class="bikewo-card-title">Company Information</h3>
+                </div>
+                <div class="bikewo-info-rows bikewo-company-details">
+                  <div class="bikewo-info-row bikewo-company-row">
+                    <div class="bikewo-info-row-header"><span class="bikewo-info-row-icon"><i class="fas fa-industry"></i></span><span class="bikewo-info-label">Industry</span></div>
+                    <div class="bikewo-info-value" id="bikewo-company-industry">-</div>
+                  </div>
+                  <div class="bikewo-info-row bikewo-company-row">
+                    <div class="bikewo-info-row-header"><span class="bikewo-info-row-icon"><i class="fas fa-globe"></i></span><span class="bikewo-info-label">Website</span></div>
+                    <div class="bikewo-info-value" id="bikewo-company-website">-</div>
+                  </div>
+                  <div class="bikewo-info-row bikewo-company-row">
+                    <div class="bikewo-info-row-header"><span class="bikewo-info-row-icon"><i class="fas fa-users"></i></span><span class="bikewo-info-label">Employees</span></div>
+                    <div class="bikewo-info-value" id="bikewo-company-employees">-</div>
+                  </div>
+                  <div class="bikewo-info-row bikewo-company-row">
+                    <div class="bikewo-info-row-header"><span class="bikewo-info-row-icon"><i class="fas fa-calendar"></i></span><span class="bikewo-info-label">Founded</span></div>
+                    <div class="bikewo-info-value" id="bikewo-company-founded">-</div>
+                  </div>
+                  <div class="bikewo-info-row bikewo-company-row">
+                    <div class="bikewo-info-row-header"><span class="bikewo-info-row-icon"><i class="fas fa-map-marker-alt"></i></span><span class="bikewo-info-label">Location</span></div>
+                    <div class="bikewo-info-value" id="bikewo-company-location">-</div>
+                  </div>
+                  <div class="bikewo-info-row bikewo-company-row">
+                    <div class="bikewo-info-row-header"><span class="bikewo-info-row-icon"><i class="fas fa-heartbeat"></i></span><span class="bikewo-info-label">Health Score</span></div>
+                    <div class="bikewo-info-value" id="bikewo-company-health-score">-</div>
+                  </div>
+                  <div class="bikewo-info-row bikewo-company-row bikewo-lead-only" id="bikewo-lead-segment-row" style="display: none">
+                    <div class="bikewo-info-row-header"><span class="bikewo-info-row-icon"><i class="fas fa-layer-group"></i></span><span class="bikewo-info-label">Segment</span></div>
+                    <div class="bikewo-info-value" id="bikewo-company-segment">-</div>
+                  </div>
+                  <div class="bikewo-info-row bikewo-company-row bikewo-lead-only" id="bikewo-lead-status-row" style="display: none">
+                    <div class="bikewo-info-row-header"><span class="bikewo-info-row-icon"><i class="fas fa-flag"></i></span><span class="bikewo-info-label">Lead Status</span></div>
+                    <div class="bikewo-info-value" id="bikewo-company-lead-status">-</div>
+                  </div>
+                  <div class="bikewo-info-row bikewo-company-row bikewo-lead-only" id="bikewo-deal-value-row" style="display: none">
+                    <div class="bikewo-info-row-header"><span class="bikewo-info-row-icon"><i class="fas fa-rupee-sign"></i></span><span class="bikewo-info-label">Deal Value</span></div>
+                    <div class="bikewo-info-value" id="bikewo-company-deal-value">-</div>
+                  </div>
+                  <div class="bikewo-info-row bikewo-company-row bikewo-client-only" id="bikewo-client-type-row" style="display: none">
+                    <div class="bikewo-info-row-header"><span class="bikewo-info-row-icon"><i class="fas fa-id-badge"></i></span><span class="bikewo-info-label">Client Type</span></div>
+                    <div class="bikewo-info-value" id="bikewo-company-client-type">-</div>
+                  </div>
+                  <div class="bikewo-info-row bikewo-company-row bikewo-client-only" id="bikewo-revenue-row" style="display: none">
+                    <div class="bikewo-info-row-header"><span class="bikewo-info-row-icon"><i class="fas fa-chart-line"></i></span><span class="bikewo-info-label">Revenue</span></div>
+                    <div class="bikewo-info-value" id="bikewo-company-revenue">-</div>
+                  </div>
+                  <div class="bikewo-info-row bikewo-company-row bikewo-client-only" id="bikewo-conversion-date-row" style="display: none">
+                    <div class="bikewo-info-row-header"><span class="bikewo-info-row-icon"><i class="fas fa-exchange-alt"></i></span><span class="bikewo-info-label">Conversion Date</span></div>
+                    <div class="bikewo-info-value" id="bikewo-company-conversion-date">-</div>
+                  </div>
+                  <div class="bikewo-info-row bikewo-company-row bikewo-info-row--last">
+                    <div class="bikewo-info-row-header"><span class="bikewo-info-row-icon"><i class="fas fa-clock"></i></span><span class="bikewo-info-label">Last Contact</span></div>
+                    <div class="bikewo-info-value" id="bikewo-company-last-contact">-</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bikewo-card bikewo-accordion-card bikewo-related-section">
+                <div class="bikewo-accordion-header bikewo-related-header">
+                  <div class="bikewo-accordion-title">
+                    <span class="bikewo-card-title-icon"><i class="fas fa-address-book"></i></span>
+                    <h3 class="bikewo-accordion-label" id="bikewo-company-contacts-title">Other Contacts (0)</h3>
+                  </div>
+                  <button type="button" class="bikewo-expand-btn" aria-label="Toggle contacts"><i class="fas fa-chevron-down"></i></button>
+                </div>
+                <div class="bikewo-related-content-area expanded" id="bikewo-company-contacts-content">
+                  <div class="bikewo-empty-state">No other contacts found</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bikewo-tab-content" id="bikewo-chats-content">
+              <div class="bikewo-card">
+                <div class="bikewo-card-title-row bikewo-chats-header">
+                  <div class="bikewo-accordion-title">
+                    <span class="bikewo-card-title-icon"><i class="fas fa-comments"></i></span>
+                    <h3 class="bikewo-card-title">Recent Messages</h3>
+                  </div>
+                  <button type="button" class="bikewo-add-btn" title="Start New Chat"><i class="fas fa-plus"></i></button>
+                </div>
+                <div class="bikewo-chats-list" id="bikewo-chats-list">
+                  <div class="bikewo-empty-state">No chat messages found</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Action Button -->
+          <div class="bikewo-existing-actions">
+            <button class="btn-view-crm" id="bikewo-view-crm-btn">
+              <span>View in CRM</span>
+              <div class="btn-icon">
+                <i class="fas fa-arrow-up-right"></i>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="bikewo-sidebar-body"
+          id="bikewo-sidebar-body"
+          style="display: none"
+        >
+          <!-- Profile + Activity group -->
+          <div class="bikewo-profile-stack">
+          <div class="bikewo-card bikewo-profile-card">
+            <div class="bikewo-profile-header">
+              <div class="bikewo-profile-left">
+                <div class="bikewo-profile-image bikewo-avatar" id="bikewo-profile-image">
+                  <i class="fas fa-user default-avatar"></i>
+                </div>
+                <div class="bikewo-profile-info">
+                  <h2 class="bikewo-profile-name" id="bikewo-profile-name">
+                    Name
+                  </h2>
+                  <p
+                    class="bikewo-profile-headline"
+                    id="bikewo-profile-headline"
+                    style="display: none"
+                  ></p>
+                  <p
+                    class="bikewo-profile-location"
+                    id="bikewo-profile-location"
+                    style="display: none"
+                  ></p>
+                </div>
+              </div>
+            </div>
+            <button class="btn-add-bikewo bikewo-profile-import-btn" id="bikewo-import-btn">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <span>Import to CRM</span>
+            </button>
+          </div>
+
+          <!-- Activity Score -->
+          <div
+            class="bikewo-card bikewo-activity-score-section"
+            id="bikewo-activity-score-section"
+            style="display: none"
+          >
+            <div class="bikewo-card-title-row">
+              <span class="bikewo-card-title-icon"><i class="fas fa-chart-line"></i></span>
+              <h3 class="bikewo-card-title">Activity Score</h3>
+            </div>
+            <div class="bikewo-activity-score-top">
+              <p class="bikewo-activity-score-summary" id="bikewo-activity-score-summary">
+                Based on recent LinkedIn posts
+              </p>
+              <div class="bikewo-activity-score-badge" id="bikewo-activity-score-badge">
+                <span class="bikewo-activity-score-value" id="bikewo-activity-score-value">0</span>
+                <span class="bikewo-activity-score-max">/100</span>
+              </div>
+            </div>
+            <div class="bikewo-activity-score-bar">
+              <div
+                class="bikewo-activity-score-fill"
+                id="bikewo-activity-score-fill"
+                style="width: 0%"
+              ></div>
+            </div>
+            <div class="bikewo-activity-score-label" id="bikewo-activity-score-label">
+              Inactive
+            </div>
+          </div>
+          </div>
+
+          <!-- Experience Selection Section -->
+          <div
+            class="bikewo-card bikewo-experience-section"
+            id="bikewo-experience-section"
+            style="display: none"
+          >
+            <div class="bikewo-card-title-row">
+              <span class="bikewo-card-title-icon"><i class="fas fa-briefcase"></i></span>
+              <h3 class="bikewo-card-title">Select Experience to Add</h3>
+            </div>
+            <div class="bikewo-experience-list" id="bikewo-experience-list">
+              <!-- Experience items will be populated by JavaScript -->
+            </div>
+          </div>
+
+          <div
+            class="bikewo-divider"
+            id="bikewo-experience-divider"
+            style="display: none"
+          ></div>
+
+          <!-- Details Section -->
+          <div class="bikewo-card bikewo-details-section">
+            <div class="bikewo-card-title-row">
+              <span class="bikewo-card-title-icon"><i class="fas fa-id-card"></i></span>
+              <h3 class="bikewo-card-title">Profile Details</h3>
+            </div>
+
+            <div class="bikewo-info-rows">
+              <div
+                class="bikewo-info-row"
+                id="bikewo-job-title-item"
+                style="display: none"
+              >
+                <div class="bikewo-info-row-header">
+                  <span class="bikewo-info-row-icon"><i class="fas fa-briefcase"></i></span>
+                  <span class="bikewo-info-label" id="bikewo-job-title-label">Job Title</span>
+                </div>
+                <div class="bikewo-info-value" id="bikewo-job-title">-</div>
+              </div>
+
+              <div
+                class="bikewo-info-row"
+                id="bikewo-linkedin-item"
+                style="display: none"
+              >
+                <div class="bikewo-info-row-header">
+                  <span class="bikewo-info-row-icon"><i class="fab fa-linkedin-in"></i></span>
+                  <span class="bikewo-info-label">LinkedIn</span>
+                </div>
+                <div class="bikewo-info-value">
+                  <a
+                    href="#"
+                    id="bikewo-linkedin-url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="bikewo-linkedin-link"
+                    >-</a
+                  >
+                </div>
+              </div>
+
+              <div
+                class="bikewo-info-row"
+                id="bikewo-description-item"
+                style="display: none"
+              >
+                <div class="bikewo-info-row-header">
+                  <span class="bikewo-info-row-icon"><i class="fas fa-align-left"></i></span>
+                  <span class="bikewo-info-label">About</span>
+                </div>
+                <div
+                  class="bikewo-info-value bikewo-description-text"
+                  id="bikewo-description"
+                >
+                  -
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="bikewo-company-highlight"
+              id="bikewo-company-section"
+              style="display: none"
+            >
+              <div class="bikewo-company-highlight-icon">
+                <i class="fas fa-building"></i>
+              </div>
+              <div class="bikewo-company-highlight-body">
+                <span class="bikewo-info-label">Company</span>
+                <div
+                  class="bikewo-company-highlight-name"
+                  id="bikewo-profile-company-name"
+                >
+                  -
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="../utils/logger.js"></script>
+    <script src="../utils/config.js"></script>
+    <script src="../utils/error-handler.js"></script>
+    <script src="../content/profile-url-utils.js"></script>
+    <script src="../content/profile-structured-parser.js"></script>
+    <script src="sidebar.js"></script>
+  </body>
+</html>

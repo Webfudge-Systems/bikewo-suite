@@ -1,0 +1,22 @@
+{
+  "name": "@bikewo/linkedin-extension",
+  "version": "1.0.0",
+  "description": "Chrome extension for importing LinkedIn data to BikeWo CRM",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "package": "npm run build && node scripts/package.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "chrome-extension",
+    "linkedin",
+    "crm",
+    "bikewo"
+  ],
+  "author": "BikeWo",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "archiver": "^7.0.1"
+  },
+  "private": true
+}

@@ -1,0 +1,17 @@
+{
+  "id": "/",
+  "name": "BikeWo Client Portal",
+  "short_name": "Portal",
+  "description": "BikeWo client portal for projects, communities, events, and team collaboration.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#F5630F",
+  "background_color": "#FFFAF7",
+  "icons": [
+    { "src": "/favicon_io/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/favicon_io/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/favicon_io/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/favicon_io/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

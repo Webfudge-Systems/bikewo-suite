@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build outputs
+dist/
+*.zip
+*.crx
+*.pem
+
+# Development files
+.DS_Store
+*.log
+.vscode/
+.idea/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Test files
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+
+

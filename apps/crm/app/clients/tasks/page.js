@@ -26,6 +26,7 @@ import {
   TabsWithActions,
   KPICard,
   Modal,
+  ConfirmDeleteModal,
   TableCellCreated,
   TableCellDateOnly,
   TableCellOwner,
@@ -36,6 +37,7 @@ import {
   TableRowActionMenuPortal,
   useTableColumnPreferences,
   TableColumnPicker,
+  TableEmptyBelow,
 } from '@webfudge/ui';
 import CRMPageHeader from '../../../components/CRMPageHeader';
 import taskService from '../../../lib/api/taskService';
@@ -1085,21 +1087,24 @@ export default function ClientsTasksPage() {
               {...tableResizeProps}
             />
             {paginatedTasks.length === 0 && (
-              <div className="border-t border-gray-200 p-12 text-center">
-                <ClipboardList className="mx-auto mb-3 h-12 w-12 text-gray-300" />
-                <h3 className="mb-2 text-lg font-semibold text-gray-700">No tasks found</h3>
-                <p className="mb-4 text-sm text-gray-500">
-                  {searchQuery || activeTab !== 'all' || hasActiveFilters
+              <TableEmptyBelow
+                icon={ClipboardList}
+                title="No tasks found"
+                description={
+                  searchQuery || activeTab !== 'all' || hasActiveFilters
                     ? 'Try adjusting search or filters'
-                    : 'Create a task to track delivery work'}
-                </p>
-                {!searchQuery && activeTab === 'all' && !hasActiveFilters && (
-                  <Button variant="primary" onClick={openCreate}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add task
-                  </Button>
-                )}
-              </div>
+                    : 'Create a task to track delivery work'
+                }
+                action={
+                  !searchQuery && activeTab === 'all' && !hasActiveFilters ? (
+                    <Button variant="primary" onClick={openCreate}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add task
+                    </Button>
+                  ) : null
+                }
+                className="border-t border-gray-200"
+              />
             )}
             {totalPages > 1 && (
               <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
@@ -1116,52 +1121,21 @@ export default function ClientsTasksPage() {
         )}
       </div>
 
-      <Modal
+      <ConfirmDeleteModal
         isOpen={showDeleteModal && !!taskToDelete}
         onClose={() => {
-          if (taskToDelete && loadingActions[`${taskToDelete.id}-delete`]) return;
-          setShowDeleteModal(false);
-          setTaskToDelete(null);
+          if (!(taskToDelete && loadingActions[`${taskToDelete.id}-delete`])) {
+            setShowDeleteModal(false);
+            setTaskToDelete(null);
+          }
         }}
+        onConfirm={handleDeleteTask}
         title="Delete Task"
-        size="md"
-        closeOnBackdrop={!(taskToDelete && loadingActions[`${taskToDelete.id}-delete`])}
-      >
-        {taskToDelete ? (
-          <div className="space-y-5">
-            <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
-              <Trash2 className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
-              <p className="text-sm text-red-900">
-                <span className="font-semibold">This action cannot be undone</span>
-              </p>
-            </div>
-            <p className="text-sm text-gray-700">Are you sure you want to delete this task?</p>
-            <div className="mt-1 flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
-              <Button
-                type="button"
-                variant="muted"
-                disabled={!!loadingActions[`${taskToDelete.id}-delete`]}
-                onClick={() => {
-                  setShowDeleteModal(false);
-                  setTaskToDelete(null);
-                }}
-                className="w-full rounded-xl border-[1.5px] border-gray-400 bg-gray-300 px-5 py-2.5 sm:w-auto"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                variant="danger"
-                onClick={handleDeleteTask}
-                disabled={!!loadingActions[`${taskToDelete.id}-delete`]}
-                className="w-full min-w-[9rem] rounded-xl py-2.5 sm:w-auto"
-              >
-                {loadingActions[`${taskToDelete.id}-delete`] ? 'Deleting…' : 'Delete Task'}
-              </Button>
-            </div>
-          </div>
-        ) : null}
-      </Modal>
+        description="Are you sure you want to delete this task?"
+        confirmLabel="Delete Task"
+        loading={!!(taskToDelete && loadingActions[`${taskToDelete.id}-delete`])}
+        loadingLabel="Deleting…"
+      />
 
       <Modal isOpen={createOpen} onClose={() => !createSaving && setCreateOpen(false)} title="New task" size="lg">
         <div className="space-y-4">

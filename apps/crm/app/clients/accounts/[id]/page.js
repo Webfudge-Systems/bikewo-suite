@@ -47,6 +47,7 @@ import {
   LoadingSpinner,
   EmptyState,
   Table,
+  TableEmptyBelow,
   Modal,
   Select,
   Input,
@@ -2367,18 +2368,17 @@ export default function ClientAccountDetailPage() {
                     <LoadingSpinner size="lg" message="Loading contacts..." />
                   </div>
                 ) : linkedContacts.length === 0 ? (
-                  <div className="border-t border-gray-200 p-12 text-center">
-                    <div className="mb-2 text-gray-400">
-                      <Users className="mx-auto mb-3 h-12 w-12 opacity-50" />
-                    </div>
-                    <h3 className="mb-2 text-lg font-semibold text-gray-700">No contacts found</h3>
-                    <p className="mb-4 text-sm text-gray-500">Add your first contact to get started</p>
-                    <Link href={`/sales/contacts/new?clientAccount=${encodeURIComponent(String(id))}`}>
-                      <Button variant="primary">
-                        Add Contact
-                      </Button>
-                    </Link>
-                  </div>
+                  <TableEmptyBelow
+                    icon={Users}
+                    title="No contacts found"
+                    description="Add your first contact to get started"
+                    action={
+                      <Link href={`/sales/contacts/new?clientAccount=${encodeURIComponent(String(id))}`}>
+                        <Button variant="primary">Add Contact</Button>
+                      </Link>
+                    }
+                    className="border-t border-gray-200"
+                  />
                 ) : (
                   <Table
                     columns={leadContactsColumns}

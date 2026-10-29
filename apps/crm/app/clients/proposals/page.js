@@ -23,12 +23,13 @@ import {
   LoadingSpinner,
   TabsWithActions,
   KPICard,
-  Modal,
+  ConfirmDeleteModal,
   TableCellCreated,
   TableCellDateOnly,
   TableCellText,
   useTableColumnPreferences,
   TableColumnPicker,
+  TableEmptyBelow,
 } from '@webfudge/ui';
 import CRMPageHeader from '../../../components/CRMPageHeader';
 import proposalService from '../../../lib/api/proposalService';
@@ -403,8 +404,6 @@ export default function ProposalsPage() {
         ]}
         showActions={true}
         onAddClick={() => router.push('/clients/proposals/new')}
-        onFilterClick={() => { }}
-        onExportClick={() => { }}
       />
 
       {/* KPI Cards — four summary metrics; Rejected/Expired remain in tabs */}
@@ -444,15 +443,11 @@ export default function ProposalsPage() {
           showAdd={true}
           onAddClick={() => router.push('/clients/proposals/new')}
           addTitle="Add Proposal"
-          showFilter={true}
-          onFilterClick={() => {}}
-          filterTitle="Filter"
+          showFilter={false}
           showColumnVisibility={true}
           onColumnVisibilityClick={() => setColumnPickerOpen((o) => !o)}
           columnVisibilityTitle="Show, hide, or reorder columns"
-          showExport={true}
-          onExportClick={() => {}}
-          exportTitle="Export"
+          showExport={false}
         />
         <TableColumnPicker
           open={columnPickerOpen}
@@ -502,18 +497,21 @@ export default function ProposalsPage() {
               {...tableResizeProps}
             />
             {filtered.length === 0 && (
-              <div className="p-12 text-center border-t border-gray-200">
-                <FileText className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">No proposals found</h3>
-                <p className="text-sm text-gray-500 mb-4">
-                  {searchQuery || activeTab !== 'all' ? 'Try adjusting your filters' : 'Create your first proposal to get started'}
-                </p>
-                {!searchQuery && activeTab === 'all' && (
-                  <Button variant="primary" onClick={() => router.push('/clients/proposals/new')}>
-                    <Plus className="w-4 h-4 mr-2" /> Create Proposal
-                  </Button>
-                )}
-              </div>
+              <TableEmptyBelow
+                icon={FileText}
+                title="No proposals found"
+                description={
+                  searchQuery || activeTab !== 'all' ? 'Try adjusting your filters' : 'Create your first proposal to get started'
+                }
+                action={
+                  !searchQuery && activeTab === 'all' ? (
+                    <Button variant="primary" onClick={() => router.push('/clients/proposals/new')}>
+                      <Plus className="w-4 h-4 mr-2" /> Create Proposal
+                    </Button>
+                  ) : null
+                }
+                className="border-t border-gray-200"
+              />
             )}
             {totalPages > 1 && (
               <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
@@ -526,46 +524,18 @@ export default function ProposalsPage() {
       </div>
     </div>
 
-    <Modal
+    <ConfirmDeleteModal
       isOpen={!!deleteProposalId}
       onClose={() => {
-        if (deletingId) return;
-        setDeleteProposalId(null);
+        if (!deletingId) setDeleteProposalId(null);
       }}
+      onConfirm={confirmDeleteProposal}
       title="Delete Proposal"
-      size="md"
-      closeOnBackdrop={!deletingId}
-    >
-      <div className="space-y-5">
-        <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
-          <Trash2 className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
-          <p className="text-sm text-red-900">
-            <span className="font-semibold">This action cannot be undone</span>
-          </p>
-        </div>
-        <p className="text-sm text-gray-700">Are you sure you want to delete this proposal?</p>
-        <div className="mt-1 flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <Button
-            type="button"
-            variant="muted"
-            disabled={!!deletingId}
-            onClick={() => setDeleteProposalId(null)}
-            className="w-full rounded-xl border-[1.5px] border-gray-400 bg-gray-300 px-5 py-2.5 sm:w-auto"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            variant="danger"
-            disabled={!!deletingId}
-            onClick={confirmDeleteProposal}
-            className="w-full min-w-[9rem] rounded-xl py-2.5 sm:w-auto"
-          >
-            {deletingId ? 'Deleting…' : 'Delete Proposal'}
-          </Button>
-        </div>
-      </div>
-    </Modal>
+      description="Are you sure you want to delete this proposal?"
+      confirmLabel="Delete Proposal"
+      loading={!!deletingId}
+      loadingLabel="Deleting…"
+    />
     </>
   );
 }

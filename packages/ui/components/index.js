@@ -99,6 +99,7 @@ export { Tabs } from './Tabs';
 export { TabsWithActions } from './TabsWithActions';
 export { ViewToggleGroup, ViewToggleButton } from './ViewToggleGroup';
 export { Modal } from './Modal';
+export { ConfirmDeleteModal } from './ConfirmDeleteModal';
 export { WorkspaceSearchModal } from './WorkspaceSearchModal';
 
 // AUTOMATION / WORKFLOW COMPONENTS

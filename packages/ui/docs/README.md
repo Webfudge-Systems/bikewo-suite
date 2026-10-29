@@ -14,20 +14,14 @@ yarn add @webfudge/ui
 
 ```
 @webfudge/ui/
-├── components/       # 🎨 Core UI Components (14 components)
-│   ├── Button        # Action button
-│   ├── Input         # Text input field
-│   ├── Select        # Dropdown selector
-│   ├── Checkbox      # Checkbox input
-│   ├── Textarea      # Multi-line text input
-│   ├── Card          # Content container
-│   ├── Badge         # Status badge
-│   ├── Avatar        # User avatar
-│   ├── Table         # Data table
-│   ├── Pagination    # Page navigation
-│   ├── EmptyState    # Empty placeholder
-│   ├── Tabs          # Tabbed interface
-│   └── Modal         # Overlay dialog
+├── components/       # 🎨 Core UI Components (50+ folders)
+│   ├── Button / Input / Select / Checkbox / Textarea
+│   ├── Card / Badge / Avatar / KPICard / FormSectionCard
+│   ├── Table / TableColumnPicker / TableSortDropdown / TableCrmCells
+│   ├── TableEmptyBelow / EmptyState / Pagination
+│   ├── Modal / ConfirmDeleteModal / WorkspaceSearchModal
+│   ├── Tabs / TabsWithActions / AppPageHeader / …
+│   └── (charts, activity/chat, calendar, layouts — see components/)
 │
 ├── layouts/          # 🏗️ Layout Components (2 components)
 │   ├── Container     # Responsive container

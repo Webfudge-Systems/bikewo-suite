@@ -37,6 +37,7 @@ import {
   ownerDisplayFromUser,
   useTableColumnPreferences,
   TableColumnPicker,
+  TableEmptyBelow,
 } from '@webfudge/ui'
 import AccountsPageHeader from '../../components/AccountsPageHeader'
 import { auditService } from '../../lib/api'
@@ -1135,11 +1136,12 @@ export default function AuditLogsPage() {
                   {...tableResizeProps}
                 />
                 {paginatedLogs.length === 0 && (
-                  <div className="p-12 text-center border-t border-gray-200">
-                    <Activity className="w-10 h-10 mx-auto mb-3 text-gray-300" />
-                    <h3 className="text-lg font-semibold text-gray-700 mb-2">No audit events found</h3>
-                    <p className="text-sm text-gray-500">Try adjusting filters or search criteria.</p>
-                  </div>
+                  <TableEmptyBelow
+                    icon={Activity}
+                    title="No audit events found"
+                    description="Try adjusting filters or search criteria."
+                    className="border-t border-gray-200"
+                  />
                 )}
               </>
             ) : (

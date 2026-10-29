@@ -8,10 +8,11 @@ import {
 } from 'lucide-react';
 import {
   Button, Table, Pagination, Avatar, Badge, LoadingSpinner,
-  TabsWithActions, KPICard, Modal,
+  TabsWithActions, KPICard, Modal, ConfirmDeleteModal,
   TableCellCreated, TableCellDateOnly, TableCellText, TableCellTitleSubtitle, TableRowActionMenuPortal,
   useTableColumnPreferences,
   TableColumnPicker,
+  TableEmptyBelow,
 } from '@webfudge/ui';
 import CRMPageHeader from '../../../components/CRMPageHeader';
 import invoiceService from '../../../lib/api/invoiceService';
@@ -324,8 +325,6 @@ export default function InvoicesPage() {
         ]}
         showActions={true}
         onAddClick={() => router.push('/clients/invoices/new')}
-        onFilterClick={() => {}}
-        onExportClick={() => {}}
       />
 
       {/* KPI Cards — four summary metrics; Overdue/Partial remain in tabs */}
@@ -369,8 +368,7 @@ export default function InvoicesPage() {
           showColumnVisibility={true}
           onColumnVisibilityClick={() => setColumnPickerOpen((o) => !o)}
           columnVisibilityTitle="Show or hide columns"
-          showExport={true}
-          onExportClick={() => {}}
+          showExport={false}
         />
         <TableColumnPicker
           open={columnPickerOpen}
@@ -413,18 +411,21 @@ export default function InvoicesPage() {
               onRowClick={(row) => router.push(`/clients/invoices/${row.id}`)}
               {...tableResizeProps} />
             {filtered.length === 0 && (
-              <div className="p-12 text-center border-t border-gray-200">
-                <Receipt className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">No invoices found</h3>
-                <p className="text-sm text-gray-500 mb-4">
-                  {searchQuery || activeTab !== 'all' ? 'Try adjusting your filters' : 'Create your first invoice to get started'}
-                </p>
-                {!searchQuery && activeTab === 'all' && (
-                  <Button variant="primary" onClick={() => router.push('/clients/invoices/new')}>
-                    <Plus className="w-4 h-4 mr-2" /> Create Invoice
-                  </Button>
-                )}
-              </div>
+              <TableEmptyBelow
+                icon={Receipt}
+                title="No invoices found"
+                description={
+                  searchQuery || activeTab !== 'all' ? 'Try adjusting your filters' : 'Create your first invoice to get started'
+                }
+                action={
+                  !searchQuery && activeTab === 'all' ? (
+                    <Button variant="primary" onClick={() => router.push('/clients/invoices/new')}>
+                      <Plus className="w-4 h-4 mr-2" /> Create Invoice
+                    </Button>
+                  ) : null
+                }
+                className="border-t border-gray-200"
+              />
             )}
             {totalPages > 1 && (
               <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
@@ -499,46 +500,18 @@ export default function InvoicesPage() {
         })()}
     </div>
 
-    <Modal
+    <ConfirmDeleteModal
       isOpen={!!deleteInvoiceId}
       onClose={() => {
-        if (deletingId) return;
-        setDeleteInvoiceId(null);
+        if (!deletingId) setDeleteInvoiceId(null);
       }}
+      onConfirm={confirmDeleteInvoice}
       title="Delete Invoice"
-      size="md"
-      closeOnBackdrop={!deletingId}
-    >
-      <div className="space-y-5">
-        <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
-          <Trash2 className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
-          <p className="text-sm text-red-900">
-            <span className="font-semibold">This action cannot be undone</span>
-          </p>
-        </div>
-        <p className="text-sm text-gray-700">Are you sure you want to delete this invoice?</p>
-        <div className="mt-1 flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <Button
-            type="button"
-            variant="muted"
-            disabled={!!deletingId}
-            onClick={() => setDeleteInvoiceId(null)}
-            className="w-full rounded-xl border-[1.5px] border-gray-400 bg-gray-300 px-5 py-2.5 sm:w-auto"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            variant="danger"
-            disabled={!!deletingId}
-            onClick={confirmDeleteInvoice}
-            className="w-full min-w-[9rem] rounded-xl py-2.5 sm:w-auto"
-          >
-            {deletingId ? 'Deleting…' : 'Delete Invoice'}
-          </Button>
-        </div>
-      </div>
-    </Modal>
+      description="Are you sure you want to delete this invoice?"
+      confirmLabel="Delete Invoice"
+      loading={!!deletingId}
+      loadingLabel="Deleting…"
+    />
     <Modal isOpen={showFilterModal} onClose={() => setShowFilterModal(false)} title="Filter Invoices" size="md">
       <div className="space-y-4">
         <p className="text-sm text-gray-600">Quick filter by status:</p>

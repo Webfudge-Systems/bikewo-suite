@@ -26,6 +26,7 @@ import {
   TabsWithActions,
   KPICard,
   Modal,
+  ConfirmDeleteModal,
   TableCellCreated,
   TableCellDateOnly,
   TableCellOwner,
@@ -35,6 +36,7 @@ import {
   TableRowActionMenuPortal,
   useTableColumnPreferences,
   TableColumnPicker,
+  TableEmptyBelow,
 } from '@webfudge/ui';
 import CRMPageHeader from '../../../components/CRMPageHeader';
 import projectService from '../../../lib/api/projectService';
@@ -808,26 +810,29 @@ export default function ClientsProjectsPage() {
               {...tableResizeProps}
             />
             {paginatedProjects.length === 0 && (
-              <div className="border-t border-gray-200 p-12 text-center">
-                <FolderKanban className="mx-auto mb-3 h-12 w-12 text-gray-300" />
-                <h3 className="mb-2 text-lg font-semibold text-gray-700">No projects found</h3>
-                <p className="mb-4 text-sm text-gray-500">
-                  {searchQuery || activeTab !== 'all' || hasActiveFilters
+              <TableEmptyBelow
+                icon={FolderKanban}
+                title="No projects found"
+                description={
+                  searchQuery || activeTab !== 'all' || hasActiveFilters
                     ? 'Try adjusting search or filters'
-                    : 'Create a project or add one from a won deal'}
-                </p>
-                {!searchQuery && activeTab === 'all' && !hasActiveFilters && (
-                  <div className="flex flex-wrap items-center justify-center gap-2">
-                    <Button variant="primary" onClick={openCreate}>
-                      <Plus className="mr-2 h-4 w-4" />
-                      Add project
-                    </Button>
-                    <Button variant="outline" onClick={() => router.push('/clients/projects/board')}>
-                      Open board
-                    </Button>
-                  </div>
-                )}
-              </div>
+                    : 'Create a project or add one from a won deal'
+                }
+                action={
+                  !searchQuery && activeTab === 'all' && !hasActiveFilters ? (
+                    <div className="flex flex-wrap items-center justify-center gap-2">
+                      <Button variant="primary" onClick={openCreate}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add project
+                      </Button>
+                      <Button variant="outline" onClick={() => router.push('/clients/projects/board')}>
+                        Open board
+                      </Button>
+                    </div>
+                  ) : null
+                }
+                className="border-t border-gray-200"
+              />
             )}
             {totalPages > 1 && (
               <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
@@ -844,52 +849,21 @@ export default function ClientsProjectsPage() {
         )}
       </div>
 
-      <Modal
+      <ConfirmDeleteModal
         isOpen={showDeleteModal && !!projectToDelete}
         onClose={() => {
-          if (projectToDelete && loadingActions[`${projectToDelete.id}-delete`]) return;
-          setShowDeleteModal(false);
-          setProjectToDelete(null);
+          if (!(projectToDelete && loadingActions[`${projectToDelete.id}-delete`])) {
+            setShowDeleteModal(false);
+            setProjectToDelete(null);
+          }
         }}
+        onConfirm={handleDeleteProject}
         title="Delete Project"
-        size="md"
-        closeOnBackdrop={!(projectToDelete && loadingActions[`${projectToDelete.id}-delete`])}
-      >
-        {projectToDelete ? (
-          <div className="space-y-5">
-            <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
-              <Trash2 className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
-              <p className="text-sm text-red-900">
-                <span className="font-semibold">This action cannot be undone</span>
-              </p>
-            </div>
-            <p className="text-sm text-gray-700">Are you sure you want to delete this project?</p>
-            <div className="mt-1 flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
-              <Button
-                type="button"
-                variant="muted"
-                disabled={!!loadingActions[`${projectToDelete.id}-delete`]}
-                onClick={() => {
-                  setShowDeleteModal(false);
-                  setProjectToDelete(null);
-                }}
-                className="w-full rounded-xl border-[1.5px] border-gray-400 bg-gray-300 px-5 py-2.5 sm:w-auto"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                variant="danger"
-                onClick={handleDeleteProject}
-                disabled={!!loadingActions[`${projectToDelete.id}-delete`]}
-                className="w-full min-w-[9rem] rounded-xl py-2.5 sm:w-auto"
-              >
-                {loadingActions[`${projectToDelete.id}-delete`] ? 'Deleting…' : 'Delete Project'}
-              </Button>
-            </div>
-          </div>
-        ) : null}
-      </Modal>
+        description="Are you sure you want to delete this project?"
+        confirmLabel="Delete Project"
+        loading={!!(projectToDelete && loadingActions[`${projectToDelete.id}-delete`])}
+        loadingLabel="Deleting…"
+      />
 
       <Modal isOpen={createOpen} onClose={() => !createSaving && setCreateOpen(false)} title="New project" size="md">
         <div className="space-y-4">

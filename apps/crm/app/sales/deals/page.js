@@ -30,6 +30,7 @@ import {
   TabsWithActions,
   KPICard,
   Modal,
+  ConfirmDeleteModal,
   Textarea,
   ChatMessageText,
   TableRowActionMenuPortal,
@@ -48,6 +49,7 @@ import {
   ViewToggleButton,
   useTableColumnPreferences,
   TableColumnPicker,
+  TableEmptyBelow,
 } from '@webfudge/ui';
 import CRMPageHeader from '../../../components/CRMPageHeader';
 import { DealsKanbanBoard, DEAL_PIPELINE_STAGES } from '../../../components/DealsKanbanBoard';
@@ -819,9 +821,6 @@ export default function DealsPage() {
         ]}
         showActions
         onAddClick={canCreateDeals ? () => router.push('/sales/deals/new') : undefined}
-        onFilterClick={() => {}}
-        onImportClick={() => {}}
-        onExportClick={() => {}}
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -874,8 +873,7 @@ export default function DealsPage() {
           showAdd={canCreateDeals}
           onAddClick={canCreateDeals ? () => router.push('/sales/deals/new') : undefined}
           addTitle="Add Deal"
-          showFilter
-          onFilterClick={() => {}}
+          showFilter={false}
           showColumnVisibility={dealViewMode === 'table'}
           onColumnVisibilityClick={() => { setColumnPickerOpen((o) => !o); setSortOpen(false); }}
           columnVisibilityTitle="Show or hide columns"
@@ -936,33 +934,36 @@ export default function DealsPage() {
               {...tableResizeProps}
             />
             {paginatedDeals.length === 0 && (
-              <div className="border-t border-gray-200 p-12 text-center">
-                <Briefcase className="mx-auto mb-3 h-12 w-12 text-gray-400 opacity-50" />
-                <h3 className="mb-2 text-lg font-semibold text-gray-700">No deals found</h3>
-                <p className="mb-4 text-sm text-gray-500">
-                  {searchQuery || activeTab !== 'all'
+              <TableEmptyBelow
+                icon={Briefcase}
+                title="No deals found"
+                description={
+                  searchQuery || activeTab !== 'all'
                     ? 'Try adjusting your filters'
                     : canCreateDeals
                       ? 'Create your first deal to get started'
-                      : 'No deals are available yet.'}
-                </p>
-                {!searchQuery && activeTab === 'all' && (
-                  <div className="flex flex-wrap justify-center gap-3">
-                    {canCreateDeals ? (
-                      <Button variant="primary" onClick={() => router.push('/sales/deals/new')}>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Deal
+                      : 'No deals are available yet.'
+                }
+                action={
+                  !searchQuery && activeTab === 'all' ? (
+                    <div className="flex flex-wrap justify-center gap-3">
+                      {canCreateDeals ? (
+                        <Button variant="primary" onClick={() => router.push('/sales/deals/new')}>
+                          <Plus className="mr-2 h-4 w-4" />
+                          Add Deal
+                        </Button>
+                      ) : null}
+                      <Button variant="outline" onClick={() => handleDealViewChange('kanban')}>
+                        Board view
                       </Button>
-                    ) : null}
-                    <Button variant="outline" onClick={() => handleDealViewChange('kanban')}>
-                      Board view
-                    </Button>
-                    <Button variant="outline" onClick={goToPipelineRoute}>
-                      Full pipeline
-                    </Button>
-                  </div>
-                )}
-              </div>
+                      <Button variant="outline" onClick={goToPipelineRoute}>
+                        Full pipeline
+                      </Button>
+                    </div>
+                  ) : null
+                }
+                className="border-t border-gray-200"
+              />
             )}
             {totalPages > 1 && (
               <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
@@ -977,30 +978,32 @@ export default function DealsPage() {
             )}
           </>
         ) : sortedDeals.length === 0 ? (
-          <div className="p-12 text-center">
-            <Briefcase className="mx-auto mb-3 h-12 w-12 text-gray-400 opacity-50" />
-            <h3 className="mb-2 text-lg font-semibold text-gray-700">No deals found</h3>
-            <p className="mb-4 text-sm text-gray-500">
-              {searchQuery || activeTab !== 'all'
+          <TableEmptyBelow
+            icon={Briefcase}
+            title="No deals found"
+            description={
+              searchQuery || activeTab !== 'all'
                 ? 'Try adjusting your filters'
                 : canCreateDeals
                   ? 'Create your first deal to get started'
-                  : 'No deals are available yet.'}
-            </p>
-            {!searchQuery && activeTab === 'all' && (
-              <div className="flex flex-wrap justify-center gap-3">
-                {canCreateDeals ? (
-                  <Button variant="primary" onClick={() => router.push('/sales/deals/new')}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Deal
+                  : 'No deals are available yet.'
+            }
+            action={
+              !searchQuery && activeTab === 'all' ? (
+                <div className="flex flex-wrap justify-center gap-3">
+                  {canCreateDeals ? (
+                    <Button variant="primary" onClick={() => router.push('/sales/deals/new')}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Deal
+                    </Button>
+                  ) : null}
+                  <Button variant="outline" onClick={() => handleDealViewChange('table')}>
+                    Table view
                   </Button>
-                ) : null}
-                <Button variant="outline" onClick={() => handleDealViewChange('table')}>
-                  Table view
-                </Button>
-              </div>
-            )}
-          </div>
+                </div>
+              ) : null
+            }
+          />
         ) : (
           <DealsKanbanBoard
             stageColumns={kanbanStageColumns}
@@ -1012,52 +1015,21 @@ export default function DealsPage() {
         )}
       </div>
 
-      <Modal
+      <ConfirmDeleteModal
         isOpen={showDeleteModal && !!dealToDelete}
         onClose={() => {
-          if (deleting) return;
-          setShowDeleteModal(false);
-          setDealToDelete(null);
+          if (!deleting) {
+            setShowDeleteModal(false);
+            setDealToDelete(null);
+          }
         }}
+        onConfirm={handleDeleteDeal}
         title="Delete Deal"
-        size="md"
-        closeOnBackdrop={!deleting}
-      >
-        {dealToDelete ? (
-          <div className="space-y-5">
-            <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
-              <Trash2 className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
-              <p className="text-sm text-red-900">
-                <span className="font-semibold">This action cannot be undone</span>
-              </p>
-            </div>
-            <p className="text-sm text-gray-700">Are you sure you want to delete this deal?</p>
-            <div className="mt-1 flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
-              <Button
-                type="button"
-                variant="muted"
-                disabled={deleting}
-                onClick={() => {
-                  setShowDeleteModal(false);
-                  setDealToDelete(null);
-                }}
-                className="w-full rounded-xl border-[1.5px] border-gray-400 bg-gray-300 px-5 py-2.5 sm:w-auto"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                variant="danger"
-                disabled={deleting}
-                onClick={handleDeleteDeal}
-                className="w-full min-w-[9rem] rounded-xl py-2.5 sm:w-auto"
-              >
-                {deleting ? 'Deleting…' : 'Delete Deal'}
-              </Button>
-            </div>
-          </div>
-        ) : null}
-      </Modal>
+        description="Are you sure you want to delete this deal?"
+        confirmLabel="Delete Deal"
+        loading={!!deleting}
+        loadingLabel="Deleting…"
+      />
 
       {moreActionMenu &&
         (() => {

@@ -26,6 +26,7 @@ import {
   TabsWithActions,
   LoadingSpinner,
   Modal,
+  ConfirmDeleteModal,
   WorkflowStatusBadge,
   Pagination,
   TableCellCreated,
@@ -33,6 +34,7 @@ import {
   TableRowActionMenuPortal,
   useTableColumnPreferences,
   TableColumnPicker,
+  TableEmptyBelow,
 } from '@webfudge/ui';
 import CRMPageHeader from '../../components/CRMPageHeader';
 import { getWorkflows, deleteWorkflow, publishWorkflow, pauseWorkflow } from './services/automationService';
@@ -597,25 +599,24 @@ export default function AutomationsPage() {
               {...tableResizeProps}
             />
             {paginatedWorkflows.length === 0 ? (
-              <div className="border-t border-gray-200 p-12 text-center">
-                <div className="mb-2 text-gray-400">
-                  <Zap className="mx-auto mb-3 h-12 w-12 opacity-50" />
-                </div>
-                <h3 className="mb-2 text-lg font-semibold text-gray-700">
-                  {activeTab === 'all' ? 'No automations found' : `No ${activeTab} workflows`}
-                </h3>
-                <p className="mb-4 text-sm text-gray-500">
-                  {searchQuery || hasActiveFilters || activeTab !== 'all'
+              <TableEmptyBelow
+                icon={Zap}
+                title={activeTab === 'all' ? 'No automations found' : `No ${activeTab} workflows`}
+                description={
+                  searchQuery || hasActiveFilters || activeTab !== 'all'
                     ? 'Try adjusting your search or filters'
-                    : 'Create your first automation workflow to get started'}
-                </p>
-                {!searchQuery && !hasActiveFilters && activeTab === 'all' ? (
-                  <Button variant="primary" onClick={() => router.push('/automations/new')}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    New Automation
-                  </Button>
-                ) : null}
-              </div>
+                    : 'Create your first automation workflow to get started'
+                }
+                action={
+                  !searchQuery && !hasActiveFilters && activeTab === 'all' ? (
+                    <Button variant="primary" onClick={() => router.push('/automations/new')}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      New Automation
+                    </Button>
+                  ) : null
+                }
+                className="border-t border-gray-200"
+              />
             ) : null}
             {totalPages > 1 ? (
               <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
@@ -709,28 +710,23 @@ export default function AutomationsPage() {
         </div>
       </Modal>
 
-      <Modal isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Delete Workflow">
-        <div className="space-y-4">
-          <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
-            <Trash2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-500" />
-            <div>
-              <p className="text-sm font-semibold text-red-800">This action cannot be undone</p>
-              <p className="mt-1 text-sm text-red-600">
-                The workflow <strong>&quot;{deleteTarget?.name || 'Untitled'}&quot;</strong> and all its
-                configuration will be permanently deleted.
-              </p>
-            </div>
-          </div>
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setDeleteTarget(null)}>
-              Cancel
-            </Button>
-            <Button variant="danger" onClick={handleDelete} disabled={deleting}>
-              {deleting ? 'Deleting…' : 'Delete Workflow'}
-            </Button>
-          </div>
-        </div>
-      </Modal>
+      <ConfirmDeleteModal
+        isOpen={!!deleteTarget}
+        onClose={() => {
+          if (!deleting) setDeleteTarget(null);
+        }}
+        onConfirm={handleDelete}
+        title="Delete Workflow"
+        description={
+          <>
+            The workflow <strong>&quot;{deleteTarget?.name || 'Untitled'}&quot;</strong> and all its
+            configuration will be permanently deleted.
+          </>
+        }
+        confirmLabel="Delete Workflow"
+        loading={!!deleting}
+        loadingLabel="Deleting…"
+      />
 
       {moreActionMenu &&
         (() => {

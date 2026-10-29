@@ -29,6 +29,7 @@ import {
   ownerDisplayFromUser,
   useTableColumnPreferences,
   TableColumnPicker,
+  TableEmptyBelow,
 } from '@webfudge/ui'
 import AccountsPageHeader from '../../components/AccountsPageHeader'
 import { departmentsService, usersService } from '../../lib/api'
@@ -524,19 +525,22 @@ export default function DepartmentsPage() {
           <>
             <Table columns={visibleColumns} data={filtered} keyField="id" variant="modern" {...tableResizeProps} />
             {filtered.length === 0 && (
-              <div className="border-t border-gray-200 p-12 text-center">
-                <Building2 className="mx-auto mb-3 h-10 w-10 text-gray-300" />
-                <h3 className="mb-2 text-lg font-semibold text-gray-700">No departments found</h3>
-                <p className="mb-4 text-sm text-gray-500">
-                  {searchQuery || activeTab !== 'all'
+              <TableEmptyBelow
+                icon={Building2}
+                title="No departments found"
+                description={
+                  searchQuery || activeTab !== 'all'
                     ? 'Try adjusting your search or tab filter.'
-                    : 'Create departments to organize users across your workspace.'}
-                </p>
-                <Button variant="primary" onClick={openCreate}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Department
-                </Button>
-              </div>
+                    : 'Create departments to organize users across your workspace.'
+                }
+                action={
+                  <Button variant="primary" onClick={openCreate}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Department
+                  </Button>
+                }
+                className="border-t border-gray-200"
+              />
             )}
           </>
         )}

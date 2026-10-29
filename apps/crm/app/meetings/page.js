@@ -52,6 +52,7 @@ import {
   formatTableDate,
   useTableColumnPreferences,
   TableColumnPicker,
+  TableEmptyBelow,
 } from '@webfudge/ui';
 import CRMPageHeader from '../../components/CRMPageHeader';
 import meetingService from '../../lib/api/meetingService';
@@ -1302,23 +1303,24 @@ export default function MeetingsPage() {
                   {...tableResizeProps}
                 />
                 {paginatedMeetings.length === 0 && (
-                  <div className="border-t border-gray-200 p-12 text-center">
-                    <div className="mb-2 text-gray-400">
-                      <CalendarDays className="mx-auto mb-3 h-12 w-12 opacity-50" />
-                    </div>
-                    <h3 className="mb-2 text-lg font-semibold text-gray-700">No meetings found</h3>
-                    <p className="mb-4 text-sm text-gray-500">
-                      {searchQuery || hasActiveFilters || activeTab !== 'all'
+                  <TableEmptyBelow
+                    icon={CalendarDays}
+                    title="No meetings found"
+                    description={
+                      searchQuery || hasActiveFilters || activeTab !== 'all'
                         ? 'Try adjusting your filters'
-                        : 'Schedule your first meeting to get started'}
-                    </p>
-                    {!searchQuery && !hasActiveFilters && activeTab === 'all' && (
-                      <Button variant="primary" onClick={() => router.push('/meetings/new')}>
-                        <Plus className="mr-2 h-4 w-4" />
-                        New Meeting
-                      </Button>
-                    )}
-                  </div>
+                        : 'Schedule your first meeting to get started'
+                    }
+                    action={
+                      !searchQuery && !hasActiveFilters && activeTab === 'all' ? (
+                        <Button variant="primary" onClick={() => router.push('/meetings/new')}>
+                          <Plus className="mr-2 h-4 w-4" />
+                          New Meeting
+                        </Button>
+                      ) : null
+                    }
+                    className="border-t border-gray-200"
+                  />
                 )}
                 {totalPages > 1 && (
                   <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">

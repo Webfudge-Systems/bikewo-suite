@@ -98,6 +98,7 @@ export {
   ViewToggleGroup,
   ViewToggleButton,
   Modal,
+  ConfirmDeleteModal,
   WorkspaceSearchModal,
   // Automation / Workflow Components
   NodeHandle,

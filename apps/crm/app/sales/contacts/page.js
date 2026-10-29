@@ -30,8 +30,10 @@ import {
   TableCellRole,
   TableRowActionMenuPortal,
   Modal,
+  ConfirmDeleteModal,
   useTableColumnPreferences,
   TableColumnPicker,
+  TableEmptyBelow,
 } from '@webfudge/ui';
 import CRMPageHeader from '../../../components/CRMPageHeader';
 import { TableSortDropdown as CrmTableSortDropdown } from '@webfudge/ui';
@@ -800,21 +802,22 @@ export default function ContactsPage() {
               {...tableResizeProps}
             />
             {paginatedContacts.length === 0 && (
-              <div className="p-12 text-center border-t border-gray-200">
-                <div className="text-gray-400 mb-2">
-                  <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">No contacts found</h3>
-                <p className="text-sm text-gray-500 mb-4">
-                  {searchQuery || activeTab !== 'all' ? 'Try adjusting your filters' : 'Add your first contact to get started'}
-                </p>
-                {!searchQuery && activeTab === 'all' && (
-                  <Button variant="primary" onClick={() => router.push('/sales/contacts/new')}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Contact
-                  </Button>
-                )}
-              </div>
+              <TableEmptyBelow
+                icon={Users}
+                title="No contacts found"
+                description={
+                  searchQuery || activeTab !== 'all' ? 'Try adjusting your filters' : 'Add your first contact to get started'
+                }
+                action={
+                  !searchQuery && activeTab === 'all' ? (
+                    <Button variant="primary" onClick={() => router.push('/sales/contacts/new')}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Contact
+                    </Button>
+                  ) : null
+                }
+                className="border-t border-gray-200"
+              />
             )}
             {totalPages > 1 && (
               <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
@@ -831,46 +834,18 @@ export default function ContactsPage() {
         )}
       </div>
 
-      <Modal
+      <ConfirmDeleteModal
         isOpen={!!deleteContactId}
         onClose={() => {
-          if (deletingId) return;
-          setDeleteContactId(null);
+          if (!deletingId) setDeleteContactId(null);
         }}
+        onConfirm={confirmDeleteContact}
         title="Delete Contact"
-        size="md"
-        closeOnBackdrop={!deletingId}
-      >
-        <div className="space-y-5">
-          <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
-            <Trash2 className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
-            <p className="text-sm text-red-900">
-              <span className="font-semibold">This action cannot be undone</span>
-            </p>
-          </div>
-          <p className="text-sm text-gray-700">Are you sure you want to delete this contact?</p>
-          <div className="mt-1 flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
-            <Button
-              type="button"
-              variant="muted"
-              disabled={!!deletingId}
-              onClick={() => setDeleteContactId(null)}
-              className="w-full rounded-xl border-[1.5px] border-gray-400 bg-gray-300 px-5 py-2.5 sm:w-auto"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              variant="danger"
-              disabled={!!deletingId}
-              onClick={confirmDeleteContact}
-              className="w-full min-w-[9rem] rounded-xl py-2.5 sm:w-auto"
-            >
-              {deletingId ? 'Deleting…' : 'Delete Contact'}
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        description="Are you sure you want to delete this contact?"
+        confirmLabel="Delete Contact"
+        loading={!!deletingId}
+        loadingLabel="Deleting…"
+      />
 
       <Modal
         isOpen={showFilterModal}

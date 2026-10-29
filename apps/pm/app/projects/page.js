@@ -11,6 +11,7 @@ import {
   Card,
   KPICard,
   LoadingSpinner,
+  ConfirmDeleteModal,
   Modal,
   Pagination,
   Select,
@@ -28,6 +29,7 @@ import {
   PROJECT_STATUS_OPTIONS,
   useTableColumnPreferences,
   TableColumnPicker,
+  TableEmptyBelow,
 } from '@webfudge/ui';
 import { clsx } from 'clsx';
 import {
@@ -1123,15 +1125,15 @@ export default function ProjectsPage() {
       ) : activeView === 'kanban' ? (
         <div className="overflow-x-auto rounded-xl border border-gray-200 bg-gray-50/60">
           {projects.length === 0 ? (
-            <div className="p-12 text-center">
-              <FolderOpen className="mx-auto mb-3 h-12 w-12 text-gray-300" />
-              <h3 className="text-lg font-semibold text-gray-700">No projects found</h3>
-              <p className="mt-2 text-sm text-gray-500">
-                {searchQuery || activeTab !== 'all' || hasActiveFilters
+            <TableEmptyBelow
+              icon={FolderOpen}
+              title="No projects found"
+              description={
+                searchQuery || activeTab !== 'all' || hasActiveFilters
                   ? 'Try adjusting your filters or search'
-                  : 'Create your first project to get started'}
-              </p>
-            </div>
+                  : 'Create your first project to get started'
+              }
+            />
           ) : (
             <ProjectsKanbanBoard
               projects={projects}
@@ -1153,23 +1155,24 @@ export default function ProjectsPage() {
               onRowClick={(row) => router.push(`/projects/${row.slug || row.id}`)}
             />
             {projects.length === 0 ? (
-              <div className="border-t border-gray-200 p-12 text-center">
-                <div className="mb-2 text-gray-400">
-                  <FolderOpen className="mx-auto mb-3 h-12 w-12 opacity-50" />
-                </div>
-                <h3 className="mb-2 text-lg font-semibold text-gray-700">No projects found</h3>
-                <p className="mb-4 text-sm text-gray-500">
-                  {searchQuery || activeTab !== 'all' || hasActiveFilters
+              <TableEmptyBelow
+                icon={FolderOpen}
+                title="No projects found"
+                description={
+                  searchQuery || activeTab !== 'all' || hasActiveFilters
                     ? 'Try adjusting your filters or search'
-                    : 'Create your first project to get started'}
-                </p>
-                {!searchQuery && activeTab === 'all' && !hasActiveFilters && canShowAddProject ? (
-                  <Button variant="primary" onClick={() => router.push('/projects/add')} className="gap-2">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Create Project
-                  </Button>
-                ) : null}
-              </div>
+                    : 'Create your first project to get started'
+                }
+                action={
+                  !searchQuery && activeTab === 'all' && !hasActiveFilters && canShowAddProject ? (
+                    <Button variant="primary" onClick={() => router.push('/projects/add')} className="gap-2">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Create Project
+                    </Button>
+                  ) : null
+                }
+                className="border-t border-gray-200"
+              />
             ) : null}
             {totalPages > 1 ? (
               <Pagination
@@ -1217,27 +1220,19 @@ export default function ProjectsPage() {
         </div>
       </Modal>
 
-      <Modal
+      <ConfirmDeleteModal
         isOpen={deleteModal.open}
-        onClose={() => setDeleteModal({ open: false, project: null })}
+        onClose={() => {
+          if (deleting) return
+          setDeleteModal({ open: false, project: null })
+        }}
+        onConfirm={handleDelete}
         title="Delete Project"
-        size="sm"
-      >
-        <div className="space-y-5">
-          <p className="text-sm text-gray-700">
-            Delete <span className="font-semibold text-gray-900">{deleteModal.project?.name}</span>? This action cannot
-            be undone.
-          </p>
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setDeleteModal({ open: false, project: null })} disabled={deleting}>
-              Cancel
-            </Button>
-            <Button variant="danger" onClick={handleDelete} disabled={deleting}>
-              {deleting ? 'Deleting...' : 'Delete'}
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        description={`Delete ${deleteModal.project?.name || 'this project'}?`}
+        confirmLabel="Delete"
+        loading={deleting}
+        loadingLabel="Deleting…"
+      />
 
       {commentComposerMenu &&
         (() => {

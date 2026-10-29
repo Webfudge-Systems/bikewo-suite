@@ -12,6 +12,7 @@ import {
   TabsWithActions,
   useTableColumnPreferences,
   TableColumnPicker,
+  TableEmptyBelow,
 } from '@webfudge/ui'
 import AccountsPageHeader from '../../components/AccountsPageHeader'
 import RoleTableCell from '../../components/RoleTableCell'
@@ -532,15 +533,18 @@ export default function RolesPage() {
           <>
             <Table columns={visibleColumns} data={filteredRoles} keyField="id" variant="modern" {...tableResizeProps} />
             {filteredRoles.length === 0 && (
-              <div className="p-12 text-center border-t border-gray-200">
-                <Shield className="w-10 h-10 mx-auto mb-3 text-gray-300" />
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">No roles match your filters</h3>
-                <p className="text-sm text-gray-500 mb-4">Try another tab or search term, or add a custom role.</p>
-                <Button variant="primary" onClick={openCreate}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Custom Role
-                </Button>
-              </div>
+              <TableEmptyBelow
+                icon={Shield}
+                title="No roles match your filters"
+                description="Try another tab or search term, or add a custom role."
+                action={
+                  <Button variant="primary" onClick={openCreate}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Custom Role
+                  </Button>
+                }
+                className="border-t border-gray-200"
+              />
             )}
           </>
         )}

@@ -180,9 +180,6 @@ export default function PipelinePage() {
         ]}
         showActions
         onAddClick={canCreateDeals ? () => router.push('/sales/deals/new') : undefined}
-        onFilterClick={() => {}}
-        onImportClick={() => {}}
-        onExportClick={() => {}}
       />
 
       <TabsWithActions
@@ -201,8 +198,7 @@ export default function PipelinePage() {
         showAdd={canCreateDeals}
         addTitle="Add Deal"
         onAddClick={canCreateDeals ? () => router.push('/sales/deals/new') : undefined}
-        showFilter
-        onFilterClick={() => {}}
+        showFilter={false}
       />
 
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">

@@ -37,6 +37,7 @@ import {
   TabsWithActions,
   KPICard,
   Modal,
+  ConfirmDeleteModal,
   Textarea,
   Input,
   ChatMessageText,
@@ -53,6 +54,7 @@ import {
   ViewToggleButton,
   useTableColumnPreferences,
   TableColumnPicker,
+  TableEmptyBelow,
 } from '@webfudge/ui';
 import CRMPageHeader from '../../../components/CRMPageHeader';
 import { LeadsKanbanBoard, LEAD_PIPELINE_STAGES } from '../../../components/LeadsKanbanBoard';
@@ -1449,30 +1451,31 @@ export default function LeadCompaniesPage() {
               {...tableResizeProps}
             />
             {paginatedCompanies.length === 0 && (
-              <div className="p-12 text-center border-t border-gray-200">
-                <div className="text-gray-400 mb-2">
-                  <Building2 className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">No lead companies found</h3>
-                <p className="text-sm text-gray-500 mb-4">
-                  {activeTab === 'my' && !searchQuery && !hasActiveFilters
+              <TableEmptyBelow
+                icon={Building2}
+                title="No lead companies found"
+                description={
+                  activeTab === 'my' && !searchQuery && !hasActiveFilters
                     ? 'No leads are assigned to you yet'
                     : searchQuery || activeTab !== 'all' || hasActiveFilters
                       ? 'Try adjusting your filters'
-                      : 'Add your first lead company to get started'}
-                </p>
-                {!searchQuery && activeTab === 'all' && !hasActiveFilters && (
-                  <div className="flex flex-wrap justify-center gap-3">
-                    <Button variant="primary" onClick={() => router.push('/sales/lead-companies/new')}>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Lead Company
-                    </Button>
-                    <Button variant="outline" onClick={() => handleLeadViewChange('kanban')}>
-                      Board view
-                    </Button>
-                  </div>
-                )}
-              </div>
+                      : 'Add your first lead company to get started'
+                }
+                action={
+                  !searchQuery && activeTab === 'all' && !hasActiveFilters ? (
+                    <div className="flex flex-wrap justify-center gap-3">
+                      <Button variant="primary" onClick={() => router.push('/sales/lead-companies/new')}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Lead Company
+                      </Button>
+                      <Button variant="outline" onClick={() => handleLeadViewChange('kanban')}>
+                        Board view
+                      </Button>
+                    </div>
+                  ) : null
+                }
+                className="border-t border-gray-200"
+              />
             )}
             {totalPages > 1 && (
               <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
@@ -1496,22 +1499,24 @@ export default function LeadCompaniesPage() {
             tableResizeProps={tableResizeProps}
           />
         ) : leadViewMode === 'kanban' && paginatedCompanies.length === 0 ? (
-          <div className="p-12 text-center">
-            <Building2 className="mx-auto mb-3 h-12 w-12 text-gray-400 opacity-50" />
-            <h3 className="mb-2 text-lg font-semibold text-gray-700">No lead companies found</h3>
-            <p className="mb-4 text-sm text-gray-500">{membersEmptyMessage}</p>
-            {!searchQuery && activeTab === 'all' && !hasActiveFilters && (
-              <div className="flex flex-wrap justify-center gap-3">
-                <Button variant="primary" onClick={() => router.push('/sales/lead-companies/new')}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Lead Company
-                </Button>
-                <Button variant="outline" onClick={() => handleLeadViewChange('table')}>
-                  Table view
-                </Button>
-              </div>
-            )}
-          </div>
+          <TableEmptyBelow
+            icon={Building2}
+            title="No lead companies found"
+            description={membersEmptyMessage}
+            action={
+              !searchQuery && activeTab === 'all' && !hasActiveFilters ? (
+                <div className="flex flex-wrap justify-center gap-3">
+                  <Button variant="primary" onClick={() => router.push('/sales/lead-companies/new')}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Lead Company
+                  </Button>
+                  <Button variant="outline" onClick={() => handleLeadViewChange('table')}>
+                    Table view
+                  </Button>
+                </div>
+              ) : null
+            }
+          />
         ) : leadViewMode === 'kanban' ? (
           <LeadsKanbanBoard
             statusColumns={kanbanStatusColumns}
@@ -1524,66 +1529,42 @@ export default function LeadCompaniesPage() {
       </div>
 
       {/* Delete Confirmation Modal */}
-      <Modal
+      <ConfirmDeleteModal
         isOpen={showDeleteModal && !!companyToDelete}
         onClose={() => {
-          if (companyToDelete && loadingActions[`${companyToDelete.id}-delete`]) return;
-          setShowDeleteModal(false);
-          setCompanyToDelete(null);
+          if (!(companyToDelete && loadingActions[`${companyToDelete.id}-delete`])) {
+            setShowDeleteModal(false);
+            setCompanyToDelete(null);
+          }
         }}
+        onConfirm={handleDeleteCompany}
         title="Delete Lead Company"
-        size="md"
-        closeOnBackdrop={!(companyToDelete && loadingActions[`${companyToDelete.id}-delete`])}
-      >
-        {companyToDelete ? (
-          <div className="space-y-5">
-            <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
-              <Trash2 className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
-              <p className="text-sm text-red-900">
-                <span className="font-semibold">This action cannot be undone</span>
-              </p>
-            </div>
-            <p className="text-sm text-gray-700">
+        description={
+          companyToDelete ? (
+            <>
               Are you sure you want to delete{' '}
               <span className="font-semibold text-gray-900">{companyToDelete.companyName}</span>?
-            </p>
-            <div className="rounded-xl border border-red-100 bg-red-50/60 p-4">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-red-700">
-                This will permanently delete:
-              </p>
-              <ul className="space-y-1 text-sm text-red-900">
-                <li>• Company information and details</li>
-                <li>• All associated contacts</li>
-                <li>• All deals and proposals</li>
-                <li>• Activity history and notes</li>
-              </ul>
-            </div>
-            <div className="mt-1 flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
-              <Button
-                type="button"
-                variant="muted"
-                disabled={loadingActions[`${companyToDelete.id}-delete`]}
-                onClick={() => {
-                  setShowDeleteModal(false);
-                  setCompanyToDelete(null);
-                }}
-                className="w-full rounded-xl border-[1.5px] border-gray-400 bg-gray-300 px-5 py-2.5 sm:w-auto"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                onClick={handleDeleteCompany}
-                disabled={loadingActions[`${companyToDelete.id}-delete`]}
-                variant="danger"
-                className="w-full min-w-[10rem] rounded-xl py-2.5 sm:w-auto"
-              >
-                {loadingActions[`${companyToDelete.id}-delete`] ? 'Deleting…' : 'Delete Company'}
-              </Button>
-            </div>
-          </div>
-        ) : null}
-      </Modal>
+            </>
+          ) : (
+            'Are you sure you want to delete this lead company?'
+          )
+        }
+        confirmLabel="Delete Company"
+        loading={!!(companyToDelete && loadingActions[`${companyToDelete.id}-delete`])}
+        loadingLabel="Deleting…"
+      >
+        <div className="rounded-xl border border-red-100 bg-red-50/60 p-4">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-red-700">
+            This will permanently delete:
+          </p>
+          <ul className="space-y-1 text-sm text-red-900">
+            <li>• Company information and details</li>
+            <li>• All associated contacts</li>
+            <li>• All deals and proposals</li>
+            <li>• Activity history and notes</li>
+          </ul>
+        </div>
+      </ConfirmDeleteModal>
 
       {/* Convert to Client confirmation modal */}
       <Modal

@@ -1,20 +1,22 @@
-/** Shared public asset paths for Fudge Suite workspace apps. */
+/** Shared public asset paths for Fudge Suite workspace apps (CRM / PM / Accounts). */
 export const FUDGE_SUITE_ASSETS = {
   bikewo: {
-    logoPath: '/favicon_io/android-chrome-512x512.png',
-    brandIconPath: '/favicon_io/android-chrome-512x512.png',
-    brandLogoPath: '/logo/bikewo_logo_full.png',
-    manifestPath: '/favicon_io/site.webmanifest',
-    faviconIco: '/favicon_io/favicon.ico',
-    favicon16: '/favicon_io/favicon-16x16.png',
-    favicon32: '/favicon_io/favicon-32x32.png',
-    appleTouchIcon: '/favicon_io/apple-touch-icon.png',
-    pwaIcon192: '/favicon_io/android-chrome-192x192.png',
-    pwaIcon512: '/favicon_io/android-chrome-512x512.png',
+    logoPath: '/logos/bikewo-logo-primary.png',
+    brandIconPath: '/favicon/web-app-manifest-512x512.png',
+    brandLogoPath: '/logos/bikewo-logo-primary.png',
+    manifestPath: '/favicon/site.webmanifest',
+    faviconIco: '/favicon.ico',
+    faviconSvg: '/favicon/favicon.svg',
+    favicon96: '/favicon/favicon-96x96.png',
+    favicon16: '/favicon/favicon-96x96.png',
+    favicon32: '/favicon/favicon-96x96.png',
+    appleTouchIcon: '/favicon/apple-touch-icon.png',
+    pwaIcon192: '/favicon/web-app-manifest-192x192.png',
+    pwaIcon512: '/favicon/web-app-manifest-512x512.png',
   },
   webfudge: {
     logoPath: '/favicon/web-app-manifest-512x512.png',
-    brandLogoPath: '/logo/Vertical logo 1 bg removed.png',
+    brandLogoPath: '/favicon/web-app-manifest-512x512.png',
     manifestPath: '/favicon/site.webmanifest',
     faviconSvg: '/favicon/favicon.svg',
     favicon96: '/favicon/favicon-96x96.png',
@@ -25,12 +27,12 @@ export const FUDGE_SUITE_ASSETS = {
 }
 
 export function bikewoMetadataIcons() {
-  const { faviconIco, favicon16, favicon32, appleTouchIcon } = FUDGE_SUITE_ASSETS.bikewo
+  const { faviconIco, faviconSvg, favicon96, appleTouchIcon } = FUDGE_SUITE_ASSETS.bikewo
   return {
     icon: [
       { url: faviconIco },
-      { url: favicon32, sizes: '32x32', type: 'image/png' },
-      { url: favicon16, sizes: '16x16', type: 'image/png' },
+      { url: faviconSvg, type: 'image/svg+xml' },
+      { url: favicon96, sizes: '96x96', type: 'image/png' },
     ],
     apple: [{ url: appleTouchIcon, sizes: '180x180', type: 'image/png' }],
     shortcut: [faviconIco],

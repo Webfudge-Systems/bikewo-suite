@@ -21,7 +21,6 @@ Your complete guide to the Webfudge Platform documentation.
 | ------------------------------------------ | --------------------------------------- | --------- | --------- |
 | **[README.md](./README.md)**               | Project overview and structure          | 10 min    | 🔴 High   |
 | **[ARCHITECTURE.md](./ARCHITECTURE.md)**   | System design and architecture diagrams | 20 min    | 🟡 Medium |
-| **[SETUP_SUMMARY.md](./SETUP_SUMMARY.md)** | Detailed summary of what's initialized  | 10 min    | 🟡 Medium |
 
 ### 🛠️ Reference Guides
 
@@ -35,17 +34,11 @@ Your complete guide to the Webfudge Platform documentation.
 | **[ACCOUNTS_PRODUCTION_DEPLOY.md](./ACCOUNTS_PRODUCTION_DEPLOY.md)** | Accounts app production deploy (env, build, run) | 5 min | 🟡 Medium |
 | **[RAILWAY_STRAPI_DEPLOY.md](./RAILWAY_STRAPI_DEPLOY.md)** | Strapi on Railway: Postgres variables, SSL, pool, crash-loop fixes | 5 min | 🔴 High |
 
-### 📋 Project Management
-
-| Document                                           | Description                       | Read Time | Priority |
-| -------------------------------------------------- | --------------------------------- | --------- | -------- |
-| **[PROJECT_CHECKLIST.md](./PROJECT_CHECKLIST.md)** | Track implementation progress     | 15 min    | 🟢 Low   |
-| **[COMPLETION_REPORT.md](./COMPLETION_REPORT.md)** | Initialization completion details | 10 min    | 🟢 Low   |
-
 ### 📝 Change summaries / Updates
 
 | Document                                                                                                 | Description                                                                                                                                                                   |
 | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **[REPO_CLEANUP.md](./REPO_CLEANUP.md)**                                                                 | Repo cleanup: dead assets, unused hooks package, empty stubs, obsolete docs, gitignore gaps                                                                                |
 | **[UI_CONSISTENCY_AUDIT_2026-10.md](./UI_CONSISTENCY_AUDIT_2026-10.md)**                                 | Full-suite UI/table/modules audit: shared stack, fixes shipped, remaining gaps (sort/filter/dupes) by priority |
 | **[CONFIRM_DELETE_MODAL_LIST_MIGRATION.md](./CONFIRM_DELETE_MODAL_LIST_MIGRATION.md)**                   | CRM/PM list delete dialogs migrated to shared `ConfirmDeleteModal`; dead filter/export no-ops cleaned on deals/proposals/invoices |
 | **[TABLE_EMPTY_BELOW_LIST_MIGRATION.md](./TABLE_EMPTY_BELOW_LIST_MIGRATION.md)**                         | CRM/PM/Accounts list empties migrated from hand-rolled markup to shared `TableEmptyBelow`                                                                                    |
@@ -54,8 +47,6 @@ Your complete guide to the Webfudge Platform documentation.
 | **[BIKEWO_USER_MANUAL.md](./BIKEWO_USER_MANUAL.md)**                                                 | Complete end-user manual: login credentials, Orbit (steps done), Fudge Base, Fudge Grow, Fudge Work, Landing CMS, Client Portal; Fudge Books excluded                      |
 | **[LEAD_COMPANIES_LOAD_PERFORMANCE.md](./LEAD_COMPANIES_LOAD_PERFORMANCE.md)**                             | CRM Lead Companies + Contacts lists: server pagination, `/stats` endpoints, scoped queries — fixes slow initial load |
 | **[FUDGE_SUITE_BRANDING.md](./FUDGE_SUITE_BRANDING.md)**                                                 | Fudge Suite (Option A) branding across CRM, PM, Accounts, Books — BikeWo-primary product names with Webfudge Systems creator credit                                  |
-| **[ORBIT_WEBFUDGE_BRANDING.md](./ORBIT_WEBFUDGE_BRANDING.md)**                                           | Organization Manager (Orbit) — full Webfudge Systems branding (naming, logos, favicons, theme)                                                                              |
-| **[LANDING_MONOREPO_UPDATE.md](./LANDING_MONOREPO_UPDATE.md)**                                           | Marketing site at `apps/landing` as `@bikewo/landing` (renamed from `client`), Turbo/Vercel monorepo wiring                                                               |
 | **[WEBFUDGE_SYSTEMS_DEPLOYMENT_GUIDE.md](./WEBFUDGE_SYSTEMS_DEPLOYMENT_GUIDE.md)**                       | Full from-scratch: Webfudge Systems GitHub + Vercel, Railway reconnect, Postgres migrate/keep/empty                                                                           |
 | **[BIKEWO_PRODUCTION_DEPLOYMENT_GUIDE.md](./BIKEWO_PRODUCTION_DEPLOYMENT_GUIDE.md)**                 | Production quick reference and `*.bikewo.com` layout                                                                                                                        |
 | **[LOCAL_DB_RESET.md](./LOCAL_DB_RESET.md)**                                                             | Wipe local SQLite, re-seed platform admin (`admin@bikewo.com`), fix `isPlatformAdmin` + Orbit login                                                                           |
@@ -65,10 +56,7 @@ Your complete guide to the Webfudge Platform documentation.
 | **[CROSS_APP_UI_CONSOLIDATION.md](./CROSS_APP_UI_CONSOLIDATION.md)**                                     | PM→CRM→Accounts consolidation: TableSortDropdown, AccessDeniedPanel, WorkspaceLayoutContent, shared utils (leadCompanyProfileOptions, contactCompanyFields, industryVisuals) |
 | **[CRM_TABLE_SORT_RESIZE.md](./CRM_TABLE_SORT_RESIZE.md)**                                               | CRM tables (Lead Companies, Contacts, Deals) — multi-column sort panel + drag-to-resize columns, mirroring PM feature set |
 | **[SHARED_UI_OPTIMIZATION.md](./SHARED_UI_OPTIMIZATION.md)**                                             | PM + CRM shared UI consolidation: EntityDetailLayout, MeetingsEmbedList, AppPageHeader, ProgressBar moved to `@webfudge/ui`; CRM GlobalSearchModal refactored; PM SidebarTrialUpsell added |
-| **[WRAPPER_FILES_REMOVAL.md](./WRAPPER_FILES_REMOVAL.md)**                                               | Removed all thin re-export wrapper files from `apps/pm` and `apps/crm`; all consumers now import directly from `@webfudge/ui` or `@webfudge/utils` |
 | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **[LANDING_WEBSITE_SIGNUP_CRM.md](./LANDING_WEBSITE_SIGNUP_CRM.md)**                                     | Landing signup → CRM client account in BikeWo org (secured `/client-accounts/website-signup`, primary contact, onboarding project)                                          |
-| **[LANDING_SIGNUP_ONBOARDING_EMAIL.md](./LANDING_SIGNUP_ONBOARDING_EMAIL.md)**                           | Onboarding confirmation email to personal address after new landing signup (portal link + next steps)                                                                         |
 | **[CLIENT_PORTAL_AUTH_UPDATE.md](./CLIENT_PORTAL_AUTH_UPDATE.md)**                                       | Client portal sign-in: `POST /api/auth/client/login`, client JWT on `/api/auth/me`, portal-access credential lookup |
 | **[CLIENT_PORTAL_COMPANY_MEMBERS_UPDATE.md](./CLIENT_PORTAL_COMPANY_MEMBERS_UPDATE.md)**                 | Company Members page: CRUD via `/api/auth/company-members`, CRM contact sync linked to client account |
 | **[CRM_CLIENT_PORTAL_PASSWORD_CHANGE.md](./CRM_CLIENT_PORTAL_PASSWORD_CHANGE.md)**                       | CRM client account Contacts tab: internal action to change a linked contact's client portal password |
@@ -83,10 +71,6 @@ Your complete guide to the Webfudge Platform documentation.
 | **[CLIENT_PORTAL_COMPLETE_PROFILE_UPDATE.md](./CLIENT_PORTAL_COMPLETE_PROFILE_UPDATE.md)**           | Client portal: Complete Profile page + header dropdown routing to `/profile` and `/settings` |
 | **[CLIENT_PORTAL_HEADER_EXPORT_ONLY_UPDATE.md](./CLIENT_PORTAL_HEADER_EXPORT_ONLY_UPDATE.md)**       | Client portal headers updated to export-only: removed Add/Filter buttons, kept Export (CSV) aligned with CRM/PM |
 | **[CLIENT_PORTAL_SUPPORT_TEAM_CARD_UPDATE.md](./CLIENT_PORTAL_SUPPORT_TEAM_CARD_UPDATE.md)**     | Client portal sidebar “Support Team” card: CRM-like orange gradient + assigned-POC UI state |
-| **[LANDING_CONTACT_FORM.md](./LANDING_CONTACT_FORM.md)**                                                 | Landing Get in Touch form — Gmail SMTP API route, env setup, submissions to webfugesystems@gmail.com                                                                          |
-| **[LANDING_MOBILE_RESPONSIVE_UPDATE.md](./LANDING_MOBILE_RESPONSIVE_UPDATE.md)**                         | Landing home page mobile responsive pass: overflow fixes, responsive grids, sticky/stack behavior, typography, navbar menu                                                     |
-| **[LANDING_AUTH_UI_UPDATE.md](./LANDING_AUTH_UI_UPDATE.md)**                                             | Landing `/auth` full-viewport split layout: dedicated `(auth)` route group without Navbar/Footer, refreshed sign-in/sign-up UX                                                |
-| **[LANDING_COMPANY_DUPLICATE_CHECK.md](./LANDING_COMPANY_DUPLICATE_CHECK.md)**                           | Landing signup company name real-time fuzzy match against CRM client accounts and leads; suggestions UI + confirmation for strong matches                                   |
 | **[AUTOMATION_BUILDER.md](./AUTOMATION_BUILDER.md)**                                                     | Visual Automation Builder: drag-and-drop canvas, NodeLibrary, NodeConfigPanel, 14 node types, useAutomationBuilder hook, automationService, packages/ui NodeHandle + WorkflowStatusBadge |
 | **[PM_CRM_RBAC_FOUNDATION.md](./PM_CRM_RBAC_FOUNDATION.md)**                                             | PM + CRM RBAC foundation: effective backend permissions, Accounts settings/app access, shared auth helpers, and PM/CRM module gating                                           |
 | **[CRM_DASHBOARD_MULTI_VIEW_RBAC.md](./CRM_DASHBOARD_MULTI_VIEW_RBAC.md)**                               | CRM dashboard Personal / Sales / Manager views with org-role tabs, team performance widget, and sales quick links                                                             |
@@ -172,7 +156,6 @@ Your complete guide to the Webfudge Platform documentation.
 | **[CRM_CONTENT_API_SERVICES.md](./CRM_CONTENT_API_SERVICES.md)**                                         | Shared `strapiContentApi.js`: Strapi 5 `populate`, `buildListQuery`, normalized list/one responses across CRM \*Service modules                                               |
 | **[BACKEND_CONTENT_API_CONTROLLERS.md](./BACKEND_CONTENT_API_CONTROLLERS.md)**                           | Strapi org-scoped CRM controllers/routes: `content-api-helpers.js`, task/project tenancy, deal `deliveryProject` populate                                                     |
 | **[CRM_THREADS_PAGE.md](./CRM_THREADS_PAGE.md)**                                                         | Threads page rebuilt: two-panel conversation hub, global comments feed, entity-grouped threads, real-time reply, `?type=` filter on `/crm-activities/feed`                    |
-| **[VLM_APP_AND_STRAPI.md](./VLM_APP_AND_STRAPI.md)**                                                     | New VLM app (`apps/(automobile)/vlm`) + Strapi collections (`vehicles`, `vehicle-events`, `allocations`, `service-records`, `warranty-records`) with event-driven lifecycle     |
 | **[ACCOUNTS_APP_FOUNDATION.md](./ACCOUNTS_APP_FOUNDATION.md)**                                           | Accounts app foundation in `apps/accounts`: CRM/PM-aligned app shell, auth/layout wiring, sidebar/header, org-aware API client, and core module route scaffolds               |
 | **[ACCOUNTS_USERS_PAGE_TABLE_UI.md](./ACCOUNTS_USERS_PAGE_TABLE_UI.md)**                                 | Accounts `/users` page upgraded from scaffold to CRM-style functional list: KPI cards, tabs, search, org-scoped users table, pagination                                   |
 | **[ORG_CREATOR_ADMIN_USERS_SYNC.md](./ORG_CREATOR_ADMIN_USERS_SYNC.md)**                                 | Org creation now auto-adds creator as Admin membership; Accounts users switched to org-members API; landing profile now sets active `current-org-id` for app/org navigation |
@@ -214,16 +197,12 @@ Your complete guide to the Webfudge Platform documentation.
 
 **Day 2 - Understanding:** 4. [README.md](./README.md) - Project structure 5. [ARCHITECTURE.md](./ARCHITECTURE.md) - System design 6. [COMMANDS.md](./COMMANDS.md) - Learn commands
 
-**Day 3 onwards:** 7. [ENVIRONMENT.md](./ENVIRONMENT.md) - Configure environments 8. [PROJECT_CHECKLIST.md](./PROJECT_CHECKLIST.md) - Track tasks
 
 ### For Project Managers
 
 **Essential Reading:**
 
 1. [BIKEWO_USER_MANUAL.md](./BIKEWO_USER_MANUAL.md) - End-user feature guide for the full suite
-2. [COMPLETION_REPORT.md](./COMPLETION_REPORT.md) - Current status
-3. [PROJECT_CHECKLIST.md](./PROJECT_CHECKLIST.md) - Progress tracking
-4. [SETUP_SUMMARY.md](./SETUP_SUMMARY.md) - Technical overview
 5. [ARCHITECTURE.md](./ARCHITECTURE.md) - System design
 
 **Optional:**
@@ -248,12 +227,10 @@ Your complete guide to the Webfudge Platform documentation.
 **Essential Reading:**
 
 1. [ARCHITECTURE.md](./ARCHITECTURE.md) - Complete architecture
-2. [SETUP_SUMMARY.md](./SETUP_SUMMARY.md) - Technical stack
 3. [README.md](./README.md) - Project structure
 
 **Optional:**
 
-- [COMPLETION_REPORT.md](./COMPLETION_REPORT.md) - Implementation status
 
 ---
 
@@ -270,19 +247,14 @@ Your complete guide to the Webfudge Platform documentation.
 
 - [README.md](./README.md) - Project overview
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System design
-- [SETUP_SUMMARY.md](./SETUP_SUMMARY.md) - What's included
 
 ### Daily Development
 
 - [COMMANDS.md](./COMMANDS.md) - Command reference
 - [QUICKSTART.md](./QUICKSTART.md) - Quick tips
-- [PROJECT_CHECKLIST.md](./PROJECT_CHECKLIST.md) - Task tracking
 
 ### Project Status
 
-- [COMPLETION_REPORT.md](./COMPLETION_REPORT.md) - Current state
-- [PROJECT_CHECKLIST.md](./PROJECT_CHECKLIST.md) - Progress tracking
-- [SETUP_SUMMARY.md](./SETUP_SUMMARY.md) - Implementation details
 
 ---
 
@@ -315,13 +287,11 @@ INSTALLATION.md (30 min - hands-on)
          ↓
 ARCHITECTURE.md (45 min)
          ↓
-SETUP_SUMMARY.md (15 min)
          ↓
 COMMANDS.md (30 min)
          ↓
 ENVIRONMENT.md (30 min)
          ↓
-PROJECT_CHECKLIST.md (15 min)
          ↓
 Ready to Lead! 💪
 ```
@@ -333,9 +303,7 @@ Perfect for: Project managers and stakeholders
 ```
 README.md (10 min)
          ↓
-COMPLETION_REPORT.md (15 min)
          ↓
-PROJECT_CHECKLIST.md (20 min)
          ↓
 ARCHITECTURE.md - Skim (15 min)
          ↓
@@ -355,8 +323,6 @@ Fully Informed! 📊
 | Run a specific command?  | [COMMANDS.md](./COMMANDS.md)                   | Search by task          |
 | Configure environment?   | [ENVIRONMENT.md](./ENVIRONMENT.md)             | Configuration           |
 | Understand architecture? | [ARCHITECTURE.md](./ARCHITECTURE.md)           | High-Level Architecture |
-| Track progress?          | [PROJECT_CHECKLIST.md](./PROJECT_CHECKLIST.md) | Checklist               |
-| See what's done?         | [COMPLETION_REPORT.md](./COMPLETION_REPORT.md) | Completion Metrics      |
 | Use CRM, PM, or Accounts? | [BIKEWO_USER_MANUAL.md](./BIKEWO_USER_MANUAL.md) | Full user manual |
 | Set up a new organization? | [BIKEWO_USER_MANUAL.md](./BIKEWO_USER_MANUAL.md) | Orbit — steps done |
 
@@ -365,10 +331,8 @@ Fully Informed! 📊
 | Looking for        | Document                                       | Section           |
 | ------------------ | ---------------------------------------------- | ----------------- |
 | Project structure  | [README.md](./README.md)                       | Project Structure |
-| App configurations | [SETUP_SUMMARY.md](./SETUP_SUMMARY.md)         | Applications      |
 | Command list       | [COMMANDS.md](./COMMANDS.md)                   | All sections      |
 | Environment vars   | [ENVIRONMENT.md](./ENVIRONMENT.md)             | All sections      |
-| Tech stack         | [COMPLETION_REPORT.md](./COMPLETION_REPORT.md) | Technology Stack  |
 
 ### "What is...?"
 
@@ -376,8 +340,6 @@ Fully Informed! 📊
 | ------------------- | ---------------------------------------------- | ------------ |
 | Webfudge Platform   | [README.md](./README.md)                       | Overview     |
 | System architecture | [ARCHITECTURE.md](./ARCHITECTURE.md)           | Architecture |
-| Each application    | [SETUP_SUMMARY.md](./SETUP_SUMMARY.md)         | Applications |
-| Current status      | [COMPLETION_REPORT.md](./COMPLETION_REPORT.md) | Summary      |
 
 ---
 
@@ -534,7 +496,6 @@ Before you start developing:
 - [ ] Bookmark COMMANDS.md
 - [ ] Understand ARCHITECTURE.md
 - [ ] Configure ENVIRONMENT.md
-- [ ] Review PROJECT_CHECKLIST.md
 
 ---
 
@@ -551,6 +512,3 @@ _Last Updated: May 27, 2026_
 | Document | Description | Date |
 |----------|-------------|------|
 | **[BIKEWO_USER_MANUAL.md](./BIKEWO_USER_MANUAL.md)** | Complete end-user manual: login passes, Landing Firebase CMS, all suite apps (Orbit steps done; Books excluded) | Jun 2026 |
-| **[LANDING_PREMIUM_REDESIGN.md](./LANDING_PREMIUM_REDESIGN.md)** | Complete premium redesign of the landing page — new design system, animations, all sections | May 2026 |
-| **[LANDING_CONTENT_UPDATE_2026.md](./LANDING_CONTENT_UPDATE_2026.md)** | Full content refresh — brand repositioning, 5 core services, updated copy across all sections | May 2026 |
-| **[LANDING_INDUSTRIES_UPDATE.md](./LANDING_INDUSTRIES_UPDATE.md)** | New Industries section (8 industries), expanded Why Choose Us to 6 cards, fixed Navbar dead links | May 2026 |

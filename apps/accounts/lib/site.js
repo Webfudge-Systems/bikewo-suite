@@ -23,8 +23,6 @@ export const ACCOUNTS_SITE = {
   ...FUDGE_SUITE_ASSETS.bikewo,
   brandLogoPath: FUDGE_SUITE_ASSETS.bikewo.brandLogoPath,
   ogImagePath: FUDGE_SUITE_ASSETS.bikewo.brandLogoPath,
-  creatorLogoPath: FUDGE_SUITE_ASSETS.webfudge.brandLogoPath,
-  creatorIconPath: FUDGE_SUITE_ASSETS.webfudge.logoPath,
   locale: 'en_US',
   themeColor: '#F5630F',
   backgroundColor: '#FFFAF7',

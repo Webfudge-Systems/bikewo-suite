@@ -12,17 +12,17 @@ Each app uses **three** env files:
 
 Root and app `.gitignore` exclude `.env`, `.env.local`, and `.env.production`.
 
-## Production URLs (`*.bikewo.com`)
+## Production URLs (`*.bikewo.in`)
 
 | App | URL |
 |-----|-----|
 | API | `https://bikewo-suite-production.up.railway.app` |
-| CRM | `https://crm.bikewo.com` |
-| PM | `https://pm.bikewo.com` |
-| Accounts | `https://accounts.bikewo.com` |
+| CRM | `https://crm.bikewo.in` |
+| PM | `https://pm.bikewo.in` |
+| Accounts | `https://accounts.bikewo.in` |
 | Orbit | `https://orbit.10x1.webfudge.in` |
-| Landing | `https://bikewo.com` |
-| Client portal | `https://portal.bikewo.com` |
+| Landing | `https://bikewo.in` |
+| Client portal | `https://portal.bikewo.in` |
 
 ## Backend (Strapi)
 

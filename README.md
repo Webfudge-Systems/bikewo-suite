@@ -19,7 +19,7 @@ This is a **single-organization** deployment. There is one organization, **BikeW
 | LinkedIn extension | `apps/linkedin-extension` | `@bikewo/linkedin-extension` | – | Chrome (unpacked / store) |
 | **API** | `apps/backend` | `backend` | 1337 | Railway |
 
-Shared: `@webfudge/ui`, `@webfudge/auth`, `@webfudge/utils`, `@webfudge/config`, `@webfudge/hooks`.
+Shared: `@webfudge/ui`, `@webfudge/auth`, `@webfudge/utils`, `@webfudge/config`.
 
 ---
 
@@ -38,8 +38,7 @@ bikewo-suite/
 │   ├── ui/
 │   ├── auth/
 │   ├── config/
-│   ├── utils/
-│   └── hooks/
+│   └── utils/
 ├── tooling/
 └── docs/
 ```

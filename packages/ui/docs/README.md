@@ -265,7 +265,6 @@ module.exports = {
 
 - **@webfudge/utils** - Formatting and utility functions
 - **@webfudge/auth** - Authentication and RBAC
-- **@webfudge/hooks** - Custom React hooks
 - **@webfudge/config** - Configuration management
 
 ## 📊 Component Overview

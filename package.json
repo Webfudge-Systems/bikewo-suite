@@ -23,7 +23,6 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md,js,jsx,json}\"",
     "clean": "turbo run clean",
-    "strip-console": "node scripts/strip-console.js",
     "build:linkedin-extension": "npm run build -w @bikewo/linkedin-extension"
   },
   "devDependencies": {

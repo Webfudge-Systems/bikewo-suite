@@ -1,12 +1,6 @@
 {
   "name": "Fudge Base",
   "short_name": "Base",
-  "description": "Fudge Base for users, roles, departments, teams, security, app access, and audit logs.",
-  "start_url": "/",
-  "scope": "/",
-  "display": "standalone",
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
   "icons": [
     {
       "src": "/favicon/web-app-manifest-192x192.png",
@@ -20,5 +14,9 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "theme_color": "#F5630F",
+  "background_color": "#FFFAF7",
+  "display": "standalone",
+  "start_url": "/"
 }

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { QuickActionsFab } from '@webfudge/ui'
 import { canWriteCRM } from '../lib/rbac'
+import { SHOW_WIP_BUILDER_NAV } from '../lib/wipNavFeatures'
 
 const comingSoonHref = (feature) => `/coming-soon?feature=${encodeURIComponent(feature)}`
 
@@ -74,7 +75,10 @@ const ACTION_ITEMS = [
 export default function CRMQuickActionsFab() {
   const router = useRouter()
 
-  const actions = ACTION_ITEMS.filter((item) => canWriteCRM(item.module)).map((item) => ({
+  const actions = ACTION_ITEMS.filter((item) => {
+    if (!SHOW_WIP_BUILDER_NAV && item.module === 'proposals') return false
+    return canWriteCRM(item.module)
+  }).map((item) => ({
     ...item,
     onClick: () => router.push(item.href),
   }))

@@ -33,6 +33,7 @@ import SubSidebar from './SubSidebar'
 import { fetchGlobalActivityFeed } from '../lib/api/crmActivityService'
 import { canReadCRM } from '../lib/rbac'
 import { CRM_SITE } from '../lib/site'
+import { SHOW_WIP_BUILDER_NAV, WIP_BUILDER_NAV_IDS } from '../lib/wipNavFeatures'
 
 function formatRelativeTime(dateString) {
   if (!dateString) return ''
@@ -319,7 +320,10 @@ export default function CRMSidebar({ collapsed = false, onToggle }) {
   const visibleNavigationData = navigationData
     .map((section) => ({
       ...section,
-      children: (section.children || []).filter((item) => !item.module || canReadCRM(item.module)),
+      children: (section.children || []).filter((item) => {
+        if (!SHOW_WIP_BUILDER_NAV && WIP_BUILDER_NAV_IDS.has(item.id)) return false
+        return !item.module || canReadCRM(item.module)
+      }),
     }))
     .filter((section) => section.children.length > 0)
   const visibleMainNavigationItems = mainNavigationItems.filter((item) => {
@@ -369,7 +373,7 @@ export default function CRMSidebar({ collapsed = false, onToggle }) {
                 />
                 <SidebarProductBranding
                   productName={CRM_SITE.name}
-                  companyName={CRM_SITE.brandName}
+                  companyName={CRM_SITE.creatorLine}
                 />
               </Link>
             )}
@@ -410,7 +414,7 @@ export default function CRMSidebar({ collapsed = false, onToggle }) {
                 const active = item.hasSubNav ? sectionActive : linkActive
                 const tileClass = `relative rounded-xl px-2 py-3.5 flex flex-col items-center justify-center gap-1.5 min-h-[4.5rem] transition-all border shadow-md ${
                   active
-                    ? 'bg-brand-primary text-white border-brand-primary/40 shadow-lg shadow-orange-500/25'
+                    ? 'bg-brand-indigo text-white border-brand-indigo/40 shadow-lg shadow-[0_8px_20px_rgba(36,31,93,0.25)]'
                     : 'bg-white/20 backdrop-blur-md border-white/30 text-brand-foreground hover:bg-white/35 hover:shadow-lg'
                 }`
 
@@ -452,13 +456,13 @@ export default function CRMSidebar({ collapsed = false, onToggle }) {
             </div>
           </div>
 
-          {!collapsed && (
+          {!collapsed && SHOW_WIP_BUILDER_NAV && (
             <div className="px-3 pt-2 pb-2">
               <Link
                 href="/automations"
                 className={`w-full rounded-xl px-3 py-3 flex items-center justify-center gap-2 text-sm font-semibold shadow-md border transition-all ${
                   pathname.startsWith('/automations')
-                    ? 'bg-brand-primary text-white border-brand-primary/40 shadow-lg shadow-orange-500/25'
+                    ? 'bg-brand-indigo text-white border-brand-indigo/40 shadow-lg shadow-[0_8px_20px_rgba(36,31,93,0.25)]'
                     : 'bg-white/20 backdrop-blur-md border-white/30 text-brand-foreground hover:bg-white/35 hover:shadow-lg'
                 }`}
               >
@@ -554,7 +558,7 @@ export default function CRMSidebar({ collapsed = false, onToggle }) {
                 onClick={() => handleTopLevelClick('analytics')}
                 className={`w-full rounded-xl px-3 py-3 flex flex-col items-center gap-1.5 shadow-md border transition-all ${
                   isAnalyticsActive()
-                    ? 'bg-brand-primary text-white border-brand-primary/40 shadow-lg shadow-orange-500/25'
+                    ? 'bg-brand-indigo text-white border-brand-indigo/40 shadow-lg shadow-[0_8px_20px_rgba(36,31,93,0.25)]'
                     : 'bg-white/20 backdrop-blur-md border-white/30 text-brand-foreground hover:bg-white/35 hover:shadow-lg'
                 }`}
               >
@@ -571,7 +575,7 @@ export default function CRMSidebar({ collapsed = false, onToggle }) {
                 onClick={() => handleTopLevelClick('analytics')}
                 className={`p-3 rounded-xl border shadow-md transition-all ${
                   isAnalyticsActive()
-                    ? 'bg-brand-primary text-white border-brand-primary/40 shadow-lg shadow-orange-500/25'
+                    ? 'bg-brand-indigo text-white border-brand-indigo/40 shadow-lg shadow-[0_8px_20px_rgba(36,31,93,0.25)]'
                     : 'bg-white/20 border-white/30 text-brand-foreground hover:bg-white/35'
                 }`}
                 title="Analytics"

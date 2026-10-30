@@ -1,81 +1,105 @@
 // ============================================
-// WEBFUDGE PLATFORM - BRAND THEME
+// BIKEWO — BRAND THEME
 // Official Brand Colors & Design Tokens
+// Source: BikeWo Brand Guidelines v1.0
 // ============================================
 
-// Brand colors based on official guidelines
 export const colors = {
-  // Brand Primary - Orange (#F5630F)
+  // Brand primary action — BikeWo Green
   brand: {
-    50: '#fff7ed',
-    100: '#ffedd5',
-    200: '#fed7aa',
-    300: '#fdba74',
-    400: '#fb923c',
-    500: '#F5630F',  // Primary Brand Orange
-    600: '#ea580c',
-    700: '#c2410c',
-    800: '#9a3412',
-    900: '#7c2d12',
+    50: '#EEF9F5',
+    100: '#D4F1E5',
+    200: '#AAE2CB',
+    300: '#7FD4B0',
+    400: '#55C596',
+    500: '#2AB77C',
+    600: '#229666',
+    700: '#17754F',
+    800: '#14603F',
+    900: '#0F4A30',
   },
 
-  // Primary Orange (Main Brand Color)
+  // Mapped action palette (Tailwind orange-* → green ramp)
   orange: {
-    50: '#fff7ed',
-    100: '#ffedd5',
-    200: '#fed7aa',
-    300: '#fdba74',
-    400: '#fb923c',
-    500: '#F5630F',  // RGB(245, 99, 15)
-    600: '#ea580c',
-    700: '#c2410c',
-    800: '#9a3412',
-    900: '#7c2d12',
+    50: '#EEF9F5',
+    100: '#D4F1E5',
+    200: '#AAE2CB',
+    300: '#7FD4B0',
+    400: '#55C596',
+    500: '#2AB77C',
+    600: '#229666',
+    700: '#17754F',
+    800: '#14603F',
+    900: '#0F4A30',
   },
 
-  // Yellow/Gold (Gradient complement)
+  green: {
+    50: '#EEF9F5',
+    100: '#D4F1E5',
+    200: '#AAE2CB',
+    300: '#7FD4B0',
+    400: '#55C596',
+    500: '#2AB77C',
+    600: '#229666',
+    700: '#17754F',
+    800: '#14603F',
+    900: '#0F4A30',
+  },
+
+  indigo: {
+    50: '#F7F7FA',
+    100: '#EDEDF2',
+    200: '#D3D2DF',
+    300: '#A7A5BE',
+    400: '#7C799E',
+    500: '#504C7D',
+    600: '#504C7D',
+    700: '#322B7A',
+    800: '#241F5D',
+    900: '#1E194C',
+    950: '#14113A',
+    DEFAULT: '#241F5D',
+  },
+
   yellow: {
-    50: '#fefce8',
-    100: '#fef9c3',
-    200: '#fef08a',
-    300: '#fde047',
-    400: '#facc15',
-    500: '#eab308',
-    600: '#ca8a04',
-    700: '#a16207',
-    800: '#854d0e',
-    900: '#713f12',
+    50: '#FFF8EB',
+    100: '#FDECC8',
+    200: '#FBD89A',
+    300: '#F8C46C',
+    400: '#F5B54E',
+    500: '#F2A93B',
+    600: '#D48F28',
+    700: '#A66C1A',
+    800: '#7A4E12',
+    900: '#52340C',
   },
 
-  // Dark/Black (#1A1A1A)
   dark: {
-    50: '#f8f8f8',
-    100: '#e8e8e8',
-    200: '#d1d1d1',
-    300: '#b0b0b0',
-    400: '#888888',
-    500: '#6d6d6d',
-    600: '#4d4d4d',
-    700: '#333333',
-    800: '#262626',  // RGB(26, 26, 26)
-    900: '#1A1A1A',  // Primary Dark
+    50: '#F7F7FA',
+    100: '#EDEDF2',
+    200: '#D3D2DF',
+    300: '#A7A5BE',
+    400: '#7C799E',
+    500: '#504C7D',
+    600: '#4A4869',
+    700: '#322B7A',
+    800: '#1E194C',
+    900: '#241F5D',
   },
 
-  // Light/White (#FFFAF7)
   light: {
-    50: '#FFFAF7',   // RGB(255, 250, 247) - Primary Light
-    100: '#FFF5F0',
-    200: '#FFEBE0',
-    300: '#FFE1D1',
-    400: '#FFD7C1',
-    500: '#FFCDB1',
-    600: '#FFC3A2',
-    700: '#FFB992',
-    800: '#FFAF82',
-    900: '#FFA573',
+    50: '#F1F1F5',
+    100: '#EDEDF2',
+    200: '#D3D2DF',
+    300: '#C8C7D6',
+    400: '#A7A5BE',
+    500: '#918FAE',
+    600: '#7C799E',
+    700: '#504C7D',
+    800: '#322B7A',
+    900: '#241F5D',
   },
 
-  // Gray scale
   gray: {
     50: '#f9fafb',
     100: '#f3f4f6',
@@ -89,54 +113,50 @@ export const colors = {
     900: '#111827',
   },
 
-  // Status colors
   success: {
-    light: '#10b981',
-    DEFAULT: '#059669',
-    dark: '#047857',
+    light: '#55C596',
+    DEFAULT: '#2AB77C',
+    dark: '#17754F',
   },
   warning: {
-    light: '#fbbf24',
-    DEFAULT: '#F5630F',  // Use brand orange
-    dark: '#c2410c',
+    light: '#F5B54E',
+    DEFAULT: '#F2A93B',
+    dark: '#A66C1A',
   },
   error: {
     light: '#ef4444',
-    DEFAULT: '#dc2626',
+    DEFAULT: '#E2574C', // Signal Coral
     dark: '#b91c1c',
   },
   info: {
     light: '#60a5fa',
-    DEFAULT: '#3b82f6',
+    DEFAULT: '#1FA6B8', // Grid Cyan
     dark: '#1d4ed8',
   },
 };
 
-// Spacing scale (consistent with Tailwind)
 export const spacing = {
-  xs: '0.25rem',  // 4px
-  sm: '0.5rem',   // 8px
-  md: '1rem',     // 16px
-  lg: '1.5rem',   // 24px
-  xl: '2rem',     // 32px
-  '2xl': '3rem',  // 48px
-  '3xl': '4rem',  // 64px
+  xs: '0.25rem',
+  sm: '0.5rem',
+  md: '1rem',
+  lg: '1.5rem',
+  xl: '2rem',
+  '2xl': '3rem',
+  '3xl': '4rem',
 };
 
-// Border radius
 export const borderRadius = {
   none: '0',
-  sm: '0.125rem',    // 2px
-  DEFAULT: '0.25rem', // 4px
-  md: '0.375rem',    // 6px
-  lg: '0.5rem',      // 8px
-  xl: '0.75rem',     // 12px
-  '2xl': '1rem',     // 16px
-  '3xl': '1.5rem',   // 24px
+  sm: '0.125rem',
+  DEFAULT: '0.25rem',
+  md: '0.375rem',
+  lg: '0.5rem',
+  xl: '0.75rem',
+  '2xl': '1rem',
+  '3xl': '1.5rem',
   full: '9999px',
 };
 
-// Shadows
 export const shadows = {
   sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
   DEFAULT: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
@@ -148,10 +168,9 @@ export const shadows = {
   none: 'none',
 };
 
-// Typography
 export const typography = {
   fontFamily: {
-    sans: ['Inter', 'system-ui', 'sans-serif'],
+    sans: ['Host Grotesk', 'system-ui', 'sans-serif'],
     mono: ['Fira Code', 'monospace'],
   },
   fontSize: {
@@ -172,7 +191,6 @@ export const typography = {
   },
 };
 
-// Export complete theme object
 export const theme = {
   colors,
   spacing,

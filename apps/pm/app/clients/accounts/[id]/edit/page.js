@@ -448,7 +448,7 @@ export default function EditClientAccountPage() {
               title="Company Information"
               description="Basic information about the client company"
               cardClassName="rounded-xl p-6"
-              iconContainerClassName="bg-brand-primary shadow-sm"
+              iconContainerClassName="bg-brand-indigo shadow-sm"
             >
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -543,7 +543,7 @@ export default function EditClientAccountPage() {
               title="Address Information"
               description="Primary location on file"
               cardClassName="rounded-xl p-6"
-              iconContainerClassName="bg-brand-primary shadow-sm"
+              iconContainerClassName="bg-brand-indigo shadow-sm"
             >
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -575,7 +575,7 @@ export default function EditClientAccountPage() {
               title="Account Details"
               description="Status, ownership, and commercial fields"
               cardClassName="rounded-xl p-6"
-              iconContainerClassName="bg-brand-primary shadow-sm"
+              iconContainerClassName="bg-brand-indigo shadow-sm"
             >
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -630,7 +630,7 @@ export default function EditClientAccountPage() {
               title="Contract &amp; billing"
               description="Dates and billing preferences"
               cardClassName="rounded-xl p-6"
-              iconContainerClassName="bg-brand-primary shadow-sm"
+              iconContainerClassName="bg-brand-indigo shadow-sm"
             >
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -682,7 +682,7 @@ export default function EditClientAccountPage() {
               title="Social &amp; additional information"
               description="Social profiles and notes"
               cardClassName="rounded-xl p-6"
-              iconContainerClassName="bg-brand-primary shadow-sm"
+              iconContainerClassName="bg-brand-indigo shadow-sm"
             >
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

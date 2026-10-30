@@ -5,7 +5,6 @@ export const PM_ROUTE_MODULES = [
   { prefix: '/tasks', module: 'tasks' },
   { prefix: '/my-tasks', module: 'my_tasks' },
   { prefix: '/inbox', module: 'inbox' },
-  { prefix: '/message', module: 'inbox' },
   { prefix: '/clients', module: 'client_accounts' },
   { prefix: '/calendar', module: 'calendar' },
   { prefix: '/analytics', module: 'analytics' },
@@ -48,6 +47,8 @@ export function pmModuleForPath(pathname = '/') {
 }
 
 export function canReadCurrentPMPath(pathname = '/') {
+  // Own profile is available to any authenticated workspace user.
+  if (pathname === '/profile' || pathname.startsWith('/profile/')) return true
   if (pathname.startsWith('/clients')) {
     return canReadClientAccounts()
   }

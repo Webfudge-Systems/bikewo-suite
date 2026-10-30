@@ -6,21 +6,24 @@ Aligned workspace apps to **Option A — Fudge Suite** branding: each app is a n
 
 ## Scope
 
-| App | Product name | Config |
-|-----|--------------|--------|
-| CRM | Fudge Grow | `apps/crm/lib/site.js` |
-| PM | Fudge Work | `apps/pm/lib/site.js` |
-| Accounts | Fudge Base | `apps/accounts/lib/site.js` |
-| Client portal | BikeWo Client Portal | `apps/client-portal/src/lib/site.js` |
+| App | Product name | Credit line | Config |
+|-----|--------------|-------------|--------|
+| CRM | BikeWo Grow | Fudge System | `apps/crm/lib/site.js` |
+| PM | BikeWo Work | Fudge System | `apps/pm/lib/site.js` |
+| Accounts | BikeWo Base | Fudge System | `apps/accounts/lib/site.js` |
+| Client portal | BikeWo Client Portal | — | `apps/client-portal/src/lib/site.js` |
 
 ## Shared assets
 
 | Asset | Path |
 |-------|------|
 | Favicon set | `public/favicon/` |
-| Full logo | `public/logos/bikewo-logo-primary.png` |
+| Full logo (light surfaces) | `public/logos/bikewo-logo-primary.png` |
+| Full logo reversed (indigo / midnight) | `public/logos/bikewo-logo-reversed.png` |
 | App Router tab icon | `app/favicon.ico` + `app/apple-icon.png` |
 | Metadata helper | `bikewoMetadataIcons()` + `FUDGE_SUITE_ASSETS.bikewo` from `@webfudge/utils` |
+
+Brand colours (Indigo `#241F5D` + Green `#2AB77C`) are documented in `docs/BIKEWO_BRAND_COLORS_UPDATE.md`.
 
 ## Visual pattern
 
@@ -28,8 +31,8 @@ Aligned workspace apps to **Option A — Fudge Suite** branding: each app is a n
 - **Full brand logo:** `public/logos/bikewo-logo-primary.png`
 - **Creator credit:** text only (`by Webfudge Systems`) — no separate creator image asset
 - **Browser tab / PWA:** `public/favicon/`
-- **Primary title:** Product name (e.g. Fudge Grow)
-- **Secondary line:** `by Webfudge Systems` (small, muted)
+- **Primary title:** Product name (e.g. BikeWo Grow)
+- **Secondary line:** `Fudge System` (small, muted)
 
 Shared paths live in `packages/utils/src/siteBranding.js` (`FUDGE_SUITE_ASSETS`).
 
@@ -37,5 +40,5 @@ Shared paths live in `packages/utils/src/siteBranding.js` (`FUDGE_SUITE_ASSETS`)
 
 - `lib/site.js` — single source for name, logo, creator line
 - Sidebar header — product name + creator line
-- Login page — BikeWo wordmark; product name + creator line as text (`LoginBrandCorner`, `LoginProductCredit` in `@webfudge/ui`)
+- Login page — full BikeWo logo; product name (e.g. BikeWo Grow) + `Fudge System` credit (`LoginBrandCorner`, `LoginProductCredit` in `@webfudge/ui`)
 - `public/favicon/site.webmanifest` — PWA install name (BikeWo)

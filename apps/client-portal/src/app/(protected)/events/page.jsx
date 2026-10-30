@@ -240,7 +240,7 @@ export default function EventsPage() {
                     onClick={() => setEventCategoryTab(tab.key)}
                     className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 whitespace-nowrap ${
                       active
-                        ? "bg-brand-primary text-white shadow-lg"
+                        ? "bg-brand-indigo text-white shadow-lg"
                         : "bg-white/80 backdrop-blur-sm text-gray-700 hover:bg-white/90 border border-white/40"
                     }`}
                   >
@@ -289,7 +289,7 @@ export default function EventsPage() {
                   onClick={() => setShowFilters((v) => !v)}
                   className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-all duration-300 shadow-sm ${
                     showFilters || filterStatus !== "all"
-                      ? "bg-brand-primary text-white border-brand-primary/50"
+                      ? "bg-brand-indigo text-white border-brand-indigo/50"
                       : "bg-white/80 text-gray-700 border-white/40 hover:bg-white/90"
                   }`}
                 >
@@ -415,7 +415,7 @@ export default function EventsPage() {
                           onClick={() => setActiveTab("details")}
                           className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
                             activeTab === "details"
-                              ? "bg-brand-primary text-white shadow-md"
+                              ? "bg-brand-indigo text-white shadow-md"
                               : "bg-white/80 text-gray-700 border border-white/40 hover:bg-white"
                           }`}
                         >
@@ -426,7 +426,7 @@ export default function EventsPage() {
                           onClick={() => setActiveTab("ticket")}
                           className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
                             activeTab === "ticket"
-                              ? "bg-brand-primary text-white shadow-md"
+                              ? "bg-brand-indigo text-white shadow-md"
                               : "bg-white/80 text-gray-700 border border-white/40 hover:bg-white"
                           }`}
                         >

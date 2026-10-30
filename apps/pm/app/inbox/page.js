@@ -551,10 +551,6 @@ export default function InboxPage() {
                           <Archive className="mr-2 h-4 w-4" />
                           {isArchived ? 'Unarchive' : 'Archive'}
                         </Button>
-                        <a href="/message" className="inline-flex items-center text-sm text-gray-500 hover:text-orange-600">
-                          <MessageSquare className="mr-1 h-4 w-4" />
-                          Direct messages
-                        </a>
                       </div>
                     </>
                   )

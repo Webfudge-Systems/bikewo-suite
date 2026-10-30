@@ -1,4 +1,5 @@
 const { seed } = require('../database/seeds/apps-and-modules');
+const { seedPlatformAdmin } = require('../database/seeds/platform-admin');
 const rbac = require('./constants/rbac-app-matrix');
 const {
   resolveOrganizationRoleId,
@@ -57,6 +58,13 @@ module.exports = {
       } catch (error) {
         console.error('❌ Seeding failed:', error);
       }
+    }
+
+    // CRM/Orbit login user (idempotent). Needed for local SQLite; safe on Railway too.
+    try {
+      await seedPlatformAdmin(strapi);
+    } catch (error) {
+      console.error('❌ Platform admin seed failed:', error);
     }
 
     // Seed default organization roles for membership templates

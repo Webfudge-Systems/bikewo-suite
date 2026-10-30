@@ -108,6 +108,7 @@ export { WorkflowStatusBadge } from './WorkflowStatusBadge';
 
 // CROSS-APP SHARED COMPONENTS
 export { AppPageHeader } from './AppPageHeader';
+export { WorkspaceProfileView } from './WorkspaceProfileView';
 export { ProgressBar } from './ProgressBar';
 export { MeetingsEmbedList } from './MeetingsEmbedList';
 export { TableSortDropdown } from './TableSortDropdown';

@@ -533,7 +533,7 @@ export default function ProjectDetailsPage() {
                     }
                     alt={project.projectManager ? userLabel(project.projectManager) : "Unassigned"}
                     size="lg"
-                    className="shrink-0 !bg-brand-primary font-semibold text-white shadow-sm ring-2 ring-brand-primary/25"
+                    className="shrink-0 !bg-brand-indigo font-semibold text-white shadow-sm ring-2 ring-brand-indigo/25"
                   />
                   <p className="min-w-0 flex-1 truncate text-base font-semibold text-gray-900">
                     {project.projectManager ? userLabel(project.projectManager) : "Unassigned"}

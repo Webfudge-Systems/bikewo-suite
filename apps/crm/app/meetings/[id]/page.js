@@ -815,7 +815,7 @@ export default function MeetingDetailPage() {
                         fallback={ownerInitials(meeting.assignedTo)}
                         alt={ownerDisplayName(meeting.assignedTo)}
                         size="lg"
-                        className="!bg-brand-primary font-semibold text-white shadow-sm ring-2 ring-brand-primary/25"
+                        className="!bg-brand-indigo font-semibold text-white shadow-sm ring-2 ring-brand-indigo/25"
                       />
                       <div className="min-w-0">
                         <p className="truncate text-base font-semibold text-gray-900">

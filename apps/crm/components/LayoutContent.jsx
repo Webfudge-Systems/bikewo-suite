@@ -31,7 +31,7 @@ export default function LayoutContent({ children }) {
       sidebarBranding={{
         logoPath: CRM_SITE.logoPath,
         productName: CRM_SITE.name,
-        companyName: CRM_SITE.brandName,
+        companyName: CRM_SITE.creatorLine,
         homeHref: '/',
       }}
       appName={CRM_SITE.name}

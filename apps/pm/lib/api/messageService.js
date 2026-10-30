@@ -52,11 +52,10 @@ export async function fetchOrganizationMembers() {
 }
 
 /**
- * Users for PM assignee dropdowns: organization members when `current-org-id` is set
- * (same source as inbox / messaging). Falls back to GET /users when org list is empty
- * or the org request fails — plain `/users` is often forbidden for non-admin roles.
+ * Users for PM assignee dropdowns: organization members when `current-org-id` is set.
+ * Falls back to GET /users when org list is empty or the org request fails.
  */
-/** Normalize Strapi user entry for messaging / assignee lists. */
+/** Normalize Strapi user entry for assignee / mention lists. */
 export function normalizeContactUser(entry) {
   if (!entry) return null
   const flat =
@@ -110,90 +109,10 @@ export async function fetchPmAssignableUsers() {
   }
 }
 
-/**
- * Contacts for direct messaging: org directory first, then assignable users fallback
- * (same as task assignee list) so the Messages UI is not empty when org roster returns [].
- */
-export async function fetchMessageContacts({ excludeUserId } = {}) {
-  const ex = excludeUserId != null ? String(excludeUserId) : null
-  const { members, error } = await fetchOrganizationMembers()
-  if (error === 'no_org') {
-    return { contacts: [], error: 'no_org' }
-  }
-  const out = []
-  const seen = new Set()
-  const add = (arr) => {
-    for (const row of arr || []) {
-      const c =
-        row?.id != null && (row.email != null || row.name != null || row.username != null)
-          ? { ...row, name: row.name || memberDisplayName(row) }
-          : normalizeContactUser(row)
-      if (!c?.id) continue
-      if (ex && String(c.id) === ex) continue
-      const key = String(c.id)
-      if (seen.has(key)) continue
-      seen.add(key)
-      out.push(c)
-    }
-  }
-  add(members)
-  if (out.length === 0) {
-    const fallback = await fetchPmAssignableUsers()
-    add(fallback)
-  }
-  return { contacts: out, error: null }
-}
-
-/**
- * GET /direct-messages?withUser=<id>
- */
-export async function fetchConversation(withUserId) {
-  const id = typeof withUserId === 'string' ? parseInt(withUserId, 10) : withUserId
-  if (!id || Number.isNaN(id)) return []
-  const res = await strapiClient.request(`/direct-messages?withUser=${encodeURIComponent(id)}`, {
-    method: 'GET',
-  })
-  const list = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
-  return list.map((row) => normalizeMessage(row))
-}
-
-function normalizeMessage(row) {
-  const m = flattenEntry(row) || row
-  const sender = flattenEntry(m.sender) || m.sender
-  const recipient = flattenEntry(m.recipient) || m.recipient
-  return {
-    id: row.id ?? m.id,
-    content: m.content,
-    createdAt: m.createdAt,
-    senderId: sender?.id,
-    recipientId: recipient?.id,
-    sender,
-    recipient,
-  }
-}
-
-/**
- * POST /direct-messages
- */
-export async function sendDirectMessage(recipientId, content) {
-  const rid = typeof recipientId === 'string' ? parseInt(recipientId, 10) : recipientId
-  const text = (content || '').trim()
-  if (!text || !rid || Number.isNaN(rid)) {
-    throw new Error('Invalid message or recipient')
-  }
-  await strapiClient.request('/direct-messages', {
-    method: 'POST',
-    body: { data: { content: text, recipient: rid } },
-  })
-}
-
 export default {
   fetchOrganizationMembers,
   fetchProjectDirectoryUsers,
   fetchPmAssignableUsers,
-  fetchMessageContacts,
-  fetchConversation,
-  sendDirectMessage,
   memberDisplayName,
   normalizeContactUser,
 }

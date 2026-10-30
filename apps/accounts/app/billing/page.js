@@ -89,13 +89,14 @@ export default function BillingPage() {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-              <KPICard title="Organization status" value={org.status || 'â€”'} icon={CreditCard} />
-              <KPICard title="Active users" value={String(seats.activeUsers ?? 0)} subtitle={`${seats.totalUsers ?? 0} total`} />
-              <KPICard title="Billed seats" value={String(seats.billedSeats ?? 0)} />
+              <KPICard title="Organization status" value={org.status || 'â€”'} icon={CreditCard} showFooterDot={false} />
+              <KPICard title="Active users" value={String(seats.activeUsers ?? 0)} subtitle={`${seats.totalUsers ?? 0} total`} showFooterDot={false} />
+              <KPICard title="Billed seats" value={String(seats.billedSeats ?? 0)} showFooterDot={false} />
               <KPICard
                 title="Monthly spend"
                 value={formatCurrency(overview?.monthlySpend)}
                 subtitle={org.trialDaysRemaining != null ? `${org.trialDaysRemaining} trial days left` : undefined}
+                showFooterDot={false}
               />
             </div>
 

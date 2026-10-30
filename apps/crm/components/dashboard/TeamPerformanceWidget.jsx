@@ -7,7 +7,7 @@ import { Users, ChevronRight, Info } from 'lucide-react'
 import { fetchTeamPerformanceSummary } from '../../lib/api/teamPerformanceService'
 import TeamMemberPerformanceModal from './manager/TeamMemberPerformanceModal'
 
-const PRIMARY_ORANGE_SHADES = ['#FF7A20', '#ea580c', '#fb923c', '#c2410c', '#f97316', '#fdba74']
+const PRIMARY_ORANGE_SHADES = ['#2AB77C', '#229666', '#55C596', '#17754F', '#35D68F', '#7FD4B0']
 
 function shortenMemberLabel(name) {
   const s = String(name || '').trim()

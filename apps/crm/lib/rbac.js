@@ -98,5 +98,7 @@ export function crmModuleForPath(pathname = '/') {
 }
 
 export function canReadCurrentCRMPath(pathname = '/') {
+  // Own profile is available to any authenticated workspace user.
+  if (pathname === '/profile' || pathname.startsWith('/profile/')) return true
   return canReadCRM(crmModuleForPath(pathname))
 }

@@ -2,29 +2,26 @@
 
 import Image from 'next/image'
 
-/** BikeWo icon + name — top-left on login branding panels. */
+/** Full BikeWo logo — top-left on login branding panels. */
 export function LoginBrandCorner({
   brandIconPath,
   brandLogoPath,
   brandName = 'BikeWo',
   className = '',
 }) {
-  const iconSrc = brandIconPath || brandLogoPath
-  if (!iconSrc) return null
+  const logoSrc = brandLogoPath || brandIconPath
+  if (!logoSrc) return null
 
   return (
-    <div
-      className={`absolute top-8 left-8 z-10 flex items-center gap-3 ${className}`.trim()}
-    >
+    <div className={`absolute top-8 left-8 z-10 ${className}`.trim()}>
       <Image
-        src={iconSrc}
-        alt=""
-        width={40}
-        height={40}
-        className="h-10 w-10 shrink-0 rounded-xl object-contain"
+        src={logoSrc}
+        alt={brandName}
+        width={200}
+        height={80}
+        className="h-12 w-auto max-w-[220px] object-contain object-left"
         priority
       />
-      <span className="text-white font-bold text-xl tracking-tight">{brandName}</span>
     </div>
   )
 }
@@ -64,17 +61,17 @@ export function SidebarProductBranding({
 }) {
   return (
     <div className={`min-w-0 ${className}`.trim()}>
-      <span className="block font-bold text-xl tracking-tight leading-tight bg-gradient-to-r from-orange-700 via-orange-500 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(249,115,22,0.35)]">
+      <span className="block font-bold text-xl tracking-tight leading-tight text-brand-indigo">
         {productName}
       </span>
-      <span className="block text-xs font-medium text-gray-500 tracking-tight mt-0.5">
+      <span className="block text-xs font-medium text-brand-slate tracking-tight mt-0.5">
         {companyName}
       </span>
     </div>
   )
 }
 
-/** Mobile login form column — product mark + product / company names. */
+/** Mobile login form column — full BikeWo logo + product / company names. */
 export function LoginMobileBrandHeader({
   brandIconPath,
   brandLogoPath,
@@ -82,22 +79,24 @@ export function LoginMobileBrandHeader({
   productName,
   creatorLine = 'BikeWo',
 }) {
-  const iconSrc = brandIconPath || brandLogoPath || logoPath
+  const logoSrc = brandLogoPath || logoPath || brandIconPath
 
   return (
     <div className="mb-8 lg:hidden">
-      {iconSrc && productName ? (
-        <div className="flex items-center gap-2.5">
+      {logoSrc ? (
+        <div className="mb-4">
           <Image
-            src={iconSrc}
-            alt=""
-            width={32}
-            height={32}
-            className="h-8 w-8 shrink-0 rounded-lg object-contain"
+            src={logoSrc}
+            alt="BikeWo"
+            width={180}
+            height={72}
+            className="h-10 w-auto max-w-[200px] object-contain object-left"
             priority
           />
-          <SidebarProductBranding productName={productName} companyName={creatorLine} />
         </div>
+      ) : null}
+      {productName ? (
+        <SidebarProductBranding productName={productName} companyName={creatorLine} />
       ) : null}
     </div>
   )

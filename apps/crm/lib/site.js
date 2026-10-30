@@ -6,10 +6,11 @@ export const CRM_SITE = {
   brandName: 'BikeWo',
   brandShortName: 'BikeWo',
   legalName: 'BikeWo',
-  name: 'Fudge Grow',
+  name: 'BikeWo Grow',
   shortName: 'Grow',
+  creatorLine: 'Fudge System',
   description:
-    'Fudge Grow is the sales CRM workspace for leads, deals, contacts, client accounts, and pipeline management across the BikeWo suite.',
+    'BikeWo Grow is the sales CRM workspace for leads, deals, contacts, client accounts, and pipeline management across the BikeWo suite.',
   tagline: 'Manage leads, deals, contacts, and your pipeline in one place.',
   loginTagline: 'Close more deals, faster.',
   loginDetail:
@@ -24,8 +25,8 @@ export const CRM_SITE = {
   brandLogoPath: FUDGE_SUITE_ASSETS.bikewo.brandLogoPath,
   ogImagePath: FUDGE_SUITE_ASSETS.bikewo.brandLogoPath,
   locale: 'en_US',
-  themeColor: '#F5630F',
-  backgroundColor: '#FFFAF7',
+  themeColor: '#2AB77C',
+  backgroundColor: '#F1F1F5',
   twitterHandle: '@bikewo',
-  keywords: ['Fudge Grow', 'CRM', 'sales CRM', 'lead management', 'deal pipeline', 'BikeWo'],
+  keywords: ['BikeWo Grow', 'CRM', 'sales CRM', 'lead management', 'deal pipeline', 'BikeWo', 'Fudge System'],
 }

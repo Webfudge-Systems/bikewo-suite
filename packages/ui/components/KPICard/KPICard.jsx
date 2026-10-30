@@ -37,6 +37,8 @@ const KPICard = ({
   onClick,
   className = '',
   compact = false,
+  /** When false, hides the colored status dot in the change/subtitle footer. */
+  showFooterDot = true,
   /** `books` uses `--books-*` tokens for Books app light/dark surfaces. */
   theme = 'default',
 }) => {
@@ -143,14 +145,18 @@ const KPICard = ({
           </p>
           {showFooter && change && (
             <div className={footerClass}>
-              <span className={isBooks ? booksDot : `h-2 w-2 rounded-full ${colors.dotColor}`} aria-hidden />
+              {showFooterDot ? (
+                <span className={isBooks ? booksDot : `h-2 w-2 rounded-full ${colors.dotColor}`} aria-hidden />
+              ) : null}
               <span className={changeClass}>{change}</span>
               {change !== '0' && <span className={isBooks ? 'ml-0.5' : 'ml-1'}>this period</span>}
             </div>
           )}
           {showFooter && !change && subtitle && (
             <div className={footerClass}>
-              <span className={isBooks ? booksDot : `h-2 w-2 rounded-full ${colors.dotColor}`} aria-hidden />
+              {showFooterDot ? (
+                <span className={isBooks ? booksDot : `h-2 w-2 rounded-full ${colors.dotColor}`} aria-hidden />
+              ) : null}
               <span>{subtitle}</span>
             </div>
           )}

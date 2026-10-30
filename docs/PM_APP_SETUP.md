@@ -116,10 +116,12 @@ apps/pm/
 - Mark as read on click, Mark all as read
 - Polls every 5 seconds
 
-### Messages (`/message`)
-- User list with search
-- Chat thread per user (Enter to send)
-- Two-panel layout: users left, chat right
+### Messages
+- Removed from PM (no `/message` route). Use Inbox + task/project comment threads for collaboration.
+
+### Reports (`/analytics`)
+- Workspace tools → Reports
+- Date-range KPIs, status/priority/project/assignee charts, activity trend, overdue table
 
 ## UI Consistency with CRM
 

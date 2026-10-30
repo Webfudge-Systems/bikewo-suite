@@ -644,7 +644,7 @@ export default function EditLeadCompanyPage() {
               title="Company Information"
               description="Update company details and contact info"
               cardClassName="rounded-xl p-6"
-              iconContainerClassName="bg-brand-primary shadow-sm"
+              iconContainerClassName="bg-brand-indigo shadow-sm"
             >
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -736,7 +736,7 @@ export default function EditLeadCompanyPage() {
               title="Address Information"
               description="Primary location on file"
               cardClassName="rounded-xl p-6"
-              iconContainerClassName="bg-brand-primary shadow-sm"
+              iconContainerClassName="bg-brand-indigo shadow-sm"
             >
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -764,7 +764,7 @@ export default function EditLeadCompanyPage() {
               title="Lead Information"
               description="Status, value, and timing"
               cardClassName="rounded-xl p-6"
-              iconContainerClassName="bg-brand-primary shadow-sm"
+              iconContainerClassName="bg-brand-indigo shadow-sm"
             >
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -807,7 +807,7 @@ export default function EditLeadCompanyPage() {
               title="Social & Additional Information"
               description="Social profiles and notes"
               cardClassName="rounded-xl p-6"
-              iconContainerClassName="bg-brand-primary shadow-sm"
+              iconContainerClassName="bg-brand-indigo shadow-sm"
             >
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -855,7 +855,7 @@ export default function EditLeadCompanyPage() {
               title="Contacts"
               description="Manage contacts linked to this lead company"
               cardClassName="rounded-xl p-6"
-              iconContainerClassName="bg-brand-primary shadow-sm"
+              iconContainerClassName="bg-brand-indigo shadow-sm"
             >
               <div className="mb-4 flex items-start justify-between gap-4">
                 <div />

@@ -584,7 +584,7 @@ export default function EditDealPage() {
               title="Deal Information"
               description="Basic deal details and status."
               cardClassName="rounded-xl p-6"
-              iconContainerClassName="bg-brand-primary shadow-sm"
+              iconContainerClassName="bg-brand-indigo shadow-sm"
             >
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 <div className="lg:col-span-3">
@@ -682,7 +682,7 @@ export default function EditDealPage() {
               title="Company & contact association"
               description="Link the deal to companies and contacts."
               cardClassName="rounded-xl p-6"
-              iconContainerClassName="bg-brand-primary shadow-sm"
+              iconContainerClassName="bg-brand-indigo shadow-sm"
             >
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <Select
@@ -729,7 +729,7 @@ export default function EditDealPage() {
               title="Additional information"
               description="Internal notes and context."
               cardClassName="rounded-xl p-6"
-              iconContainerClassName="bg-brand-primary shadow-sm"
+              iconContainerClassName="bg-brand-indigo shadow-sm"
             >
               <Textarea
                 label="Notes"

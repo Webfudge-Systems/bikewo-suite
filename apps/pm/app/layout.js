@@ -7,7 +7,7 @@ import { PM_SITE } from '../lib/site';
 const xAssets = FUDGE_SUITE_ASSETS.bikewo;
 
 export const viewport = {
-  themeColor: '#F5630F',
+  themeColor: '#2AB77C',
   width: 'device-width',
   initialScale: 1,
 };

@@ -9,7 +9,6 @@ import {
   LayoutDashboard,
   CheckSquare,
   Inbox,
-  MessageCircle,
   BarChart3,
   FolderOpen,
   Plus,
@@ -35,7 +34,7 @@ export default function PMSidebar({ collapsed = false, onToggle }) {
   const searchParams = useSearchParams()
   const router = useRouter()
 
-  const { inboxCount, messageCount } = usePmSidebarBadges()
+  const { inboxCount } = usePmSidebarBadges()
   const [projects, setProjects] = useState([])
   const [loadingProjects, setLoadingProjects] = useState(true)
   const [showAllProjects, setShowAllProjects] = useState(false)
@@ -89,26 +88,11 @@ export default function PMSidebar({ collapsed = false, onToggle }) {
       badge: inboxCount,
     },
     {
-      id: 'message',
-      module: 'inbox',
-      label: 'Message',
-      icon: MessageCircle,
-      href: '/message',
-      badge: messageCount,
-    },
-    {
       id: 'clients',
       module: 'client_accounts',
       label: 'Clients',
       icon: Building2,
       href: '/clients/accounts',
-    },
-    {
-      id: 'reports',
-      module: 'analytics',
-      label: 'Reports',
-      icon: PieChart,
-      href: '/coming-soon?feature=reports',
     },
   ]
 
@@ -120,6 +104,12 @@ export default function PMSidebar({ collapsed = false, onToggle }) {
       comingSoonFeature: 'documents',
     },
     { label: 'Calendar', module: 'calendar', icon: Calendar, href: '/calendar' },
+    {
+      label: 'Reports',
+      module: 'analytics',
+      icon: PieChart,
+      href: '/analytics',
+    },
   ]
 
   const visibleNavigationItems = mainNavigationItems.filter((item) => {
@@ -238,7 +228,7 @@ export default function PMSidebar({ collapsed = false, onToggle }) {
               />
               <SidebarProductBranding
                 productName={PM_SITE.name}
-                companyName={PM_SITE.brandName}
+                companyName={PM_SITE.creatorLine}
               />
             </Link>
           )}
@@ -285,7 +275,7 @@ export default function PMSidebar({ collapsed = false, onToggle }) {
                   href={item.href || '/'}
                   className={`relative rounded-xl px-2 py-3.5 flex flex-col items-center justify-center gap-1.5 min-h-[4.5rem] transition-all border shadow-md ${
                     active
-                      ? 'bg-brand-primary text-white border-brand-primary/40 shadow-lg shadow-orange-500/25'
+                      ? 'bg-brand-indigo text-white border-brand-indigo/40 shadow-lg shadow-[0_8px_20px_rgba(36,31,93,0.25)]'
                       : 'bg-white/20 backdrop-blur-md border-white/30 text-brand-foreground hover:bg-white/35 hover:shadow-lg'
                   }`}
                   title={collapsed ? item.label : undefined}

@@ -34,7 +34,7 @@ export function ViewToggleButton({ active, onClick, title, children, className, 
       className={clsx(
         'flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-all duration-200',
         active
-          ? 'bg-[#FF7A20] text-white shadow-[0_1px_2px_rgba(0,0,0,0.12)]'
+          ? 'bg-brand-indigo text-white shadow-[0_1px_2px_rgba(0,0,0,0.12)]'
           : 'text-gray-500 hover:bg-white hover:text-gray-800 active:scale-[0.98]',
         className
       )}

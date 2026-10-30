@@ -129,7 +129,7 @@ export function TabsWithActions({
         ? 'flex min-w-[5rem] flex-1 basis-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2.5 text-sm transition-all duration-200'
         : 'flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2.5 text-sm transition-all duration-200',
       active
-        ? 'bg-[#FF7A20] font-semibold text-white shadow-sm'
+        ? 'bg-brand-indigo font-semibold text-white shadow-sm'
         : 'bg-transparent font-normal text-gray-800 hover:bg-gray-100/90'
     )
   }

@@ -39,6 +39,7 @@ import {
 } from 'lucide-react';
 import { companyTypes, getLeadSubTypeSelectOptions } from '@webfudge/utils';
 import { fetchStoredIndustriesForCrm } from '../../../../lib/industryOptionsLoader';
+import { clsx } from 'clsx';
 
 export default function AddLeadCompanyPage() {
   const router = useRouter();
@@ -46,6 +47,8 @@ export default function AddLeadCompanyPage() {
   const { options: industrySelectOptions, onIndustrySaved } = useIndustrySelectOptions({
     fetchStoredIndustries: fetchStoredIndustriesForCrm,
   });
+  const [formMode, setFormMode] = useState('short'); // 'short' | 'detailed'
+  const isShort = formMode === 'short';
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   const [showSuccess, setShowSuccess] = useState(false);
@@ -249,6 +252,17 @@ export default function AddLeadCompanyPage() {
     );
   };
 
+  const contactHasAnyValue = (contact) =>
+    Boolean(
+      contact.firstName?.trim() ||
+        contact.lastName?.trim() ||
+        contact.email?.trim() ||
+        contact.phone?.trim() ||
+        contact.jobTitle?.trim() ||
+        contact.department?.trim() ||
+        contact.linkedinUrl?.trim()
+    );
+
   const validateForm = () => {
     const newErrors = {};
     if (!companyData.companyName.trim()) {
@@ -261,10 +275,11 @@ export default function AddLeadCompanyPage() {
       newErrors.email = 'Please enter a valid email address';
     }
     contacts.forEach((contact) => {
-      if (!contact.firstName.trim()) {
+      const requireContact = !isShort || contactHasAnyValue(contact);
+      if (requireContact && !contact.firstName.trim()) {
         newErrors[`contact_${contact.id}_firstName`] = 'First name is required';
       }
-      if (!contact.lastName.trim()) {
+      if (requireContact && !contact.lastName.trim()) {
         newErrors[`contact_${contact.id}_lastName`] = 'Last name is required';
       }
       if (contact.email.trim() && !/\S+@\S+\.\S+/.test(contact.email)) {
@@ -324,7 +339,10 @@ export default function AddLeadCompanyPage() {
 
       if (companyId && contacts.length > 0 && contactService?.create) {
         const validContacts = contacts.filter(
-          (c) => c.firstName?.trim() && c.lastName?.trim()
+          (c) =>
+            c.firstName?.trim() &&
+            c.lastName?.trim() &&
+            (!isShort || contactHasAnyValue(c))
         );
         for (const contact of validContacts) {
           const contactData = {
@@ -414,7 +432,9 @@ export default function AddLeadCompanyPage() {
                 )}
                 {Object.keys(errors).filter((k) => k.includes('contact_')).length > 0 && (
                   <li className="font-medium text-red-700">
-                    Contact Information (First Name and Last Name for each contact)
+                    {isShort
+                      ? 'Contact First Name and Last Name (required when adding a contact)'
+                      : 'Contact Information (First Name and Last Name for each contact)'}
                   </li>
                 )}
               </ul>
@@ -432,12 +452,16 @@ export default function AddLeadCompanyPage() {
       </Modal>
 
       <div className="p-4 space-y-6">
-      <CRMPageHeader
+        <CRMPageHeader
           title="Add New Lead Company"
-          subtitle="Create a new lead company with contact information"
-        breadcrumb={[
+          subtitle={
+            isShort
+              ? 'Quickly add a lead with the essentials — switch to Detailed for the full form'
+              : 'Create a new lead company with contact information'
+          }
+          breadcrumb={[
             { label: 'Dashboard', href: '/' },
-          { label: 'Sales', href: '/sales' },
+            { label: 'Sales', href: '/sales' },
             { label: 'Lead Companies', href: '/sales/lead-companies' },
             { label: 'Add New', href: '/sales/lead-companies/new' },
           ]}
@@ -445,6 +469,45 @@ export default function AddLeadCompanyPage() {
           showSearch={false}
           showActions={false}
         />
+
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gray-200/80 bg-gradient-to-br from-white/70 to-white/40 px-4 py-3 shadow-sm backdrop-blur-xl">
+          <div>
+            <p className="text-sm font-semibold text-gray-900">Form length</p>
+            <p className="text-xs text-gray-500">
+              {isShort
+                ? 'Short: company essentials + optional contact'
+                : 'Detailed: full company, contacts, and lead status'}
+            </p>
+          </div>
+          <div
+            role="group"
+            aria-label="Form length"
+            className="inline-flex shrink-0 rounded-full border border-gray-200/95 bg-gradient-to-b from-white to-gray-50/90 p-0.5 shadow-[0_1px_2px_rgba(15,23,42,0.06)] ring-1 ring-black/[0.04]"
+          >
+            {[
+              { id: 'short', label: 'Short' },
+              { id: 'detailed', label: 'Detailed' },
+            ].map((mode) => (
+              <button
+                key={mode.id}
+                type="button"
+                aria-pressed={formMode === mode.id}
+                onClick={() => {
+                  setFormMode(mode.id);
+                  setErrors({});
+                }}
+                className={clsx(
+                  'rounded-full px-4 py-2 text-sm font-medium transition-all duration-200',
+                  formMode === mode.id
+                    ? 'bg-brand-indigo text-white shadow-[0_1px_2px_rgba(0,0,0,0.12)]'
+                    : 'text-gray-600 hover:bg-white hover:text-gray-900'
+                )}
+              >
+                {mode.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {Object.keys(errors).length > 0 && !errors.submit && (
@@ -481,10 +544,13 @@ export default function AddLeadCompanyPage() {
           <FormSectionCard
             icon={Building2}
             title="Company Information"
-            description="Basic information about the lead company"
+            description={
+              isShort
+                ? 'Essentials only — switch to Detailed for address, size, socials, and more'
+                : 'Basic information about the lead company'
+            }
             cardClassName="rounded-2xl bg-gradient-to-br from-white/70 to-white/40 backdrop-blur-xl border border-white/30 shadow-xl p-6"
           >
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
                 <Input
@@ -521,30 +587,34 @@ export default function AddLeadCompanyPage() {
                 />
               </div>
 
-              <div>
-                <Select
-                  label="Sub-Type"
-                  value={companyData.subType}
-                  onChange={(value) => handleCompanyChange('subType', value)}
-                  options={companySubTypeOptions}
-                  placeholder={
-                    companyData.type ? 'Select sub-type' : 'Select company type first'
-                  }
-                  disabled={!companyData.type}
-                  searchable
-                />
-              </div>
+              {!isShort && (
+                <div>
+                  <Select
+                    label="Sub-Type"
+                    value={companyData.subType}
+                    onChange={(value) => handleCompanyChange('subType', value)}
+                    options={companySubTypeOptions}
+                    placeholder={
+                      companyData.type ? 'Select sub-type' : 'Select company type first'
+                    }
+                    disabled={!companyData.type}
+                    searchable
+                  />
+                </div>
+              )}
 
-              <div>
-                <Input
-                  label="Website"
-                  type="url"
-                  value={companyData.website}
-                  onChange={(e) => handleCompanyChange('website', e.target.value)}
-                  placeholder="https://company.com"
-                  icon={Globe}
-                />
-              </div>
+              {!isShort && (
+                <div>
+                  <Input
+                    label="Website"
+                    type="url"
+                    value={companyData.website}
+                    onChange={(e) => handleCompanyChange('website', e.target.value)}
+                    placeholder="https://company.com"
+                    icon={Globe}
+                  />
+                </div>
+              )}
               <div>
                 <Input
                   label="Phone"
@@ -567,134 +637,161 @@ export default function AddLeadCompanyPage() {
                 />
               </div>
 
-              <div className="lg:col-span-2">
-                <Input
-                  label="Address"
-                  value={companyData.address}
-                  onChange={(e) => handleCompanyChange('address', e.target.value)}
-                  placeholder="Street address"
-                  icon={MapPin}
-                />
-              </div>
-              <div>
-                <Input
-                  label="City"
-                  value={companyData.city}
-                  onChange={(e) => handleCompanyChange('city', e.target.value)}
-                  placeholder="City"
-                />
-              </div>
-              <div>
-                <Input
-                  label="State/Province"
-                  value={companyData.state}
-                  onChange={(e) => handleCompanyChange('state', e.target.value)}
-                  placeholder="State or Province"
-                />
-              </div>
-              <div>
-                <Input
-                  label="Country"
-                  value={companyData.country}
-                  onChange={(e) => handleCompanyChange('country', e.target.value)}
-                  placeholder="Country"
-                />
-              </div>
-              <div>
-                <Input
-                  label="ZIP/Postal Code"
-                  value={companyData.zipCode}
-                  onChange={(e) => handleCompanyChange('zipCode', e.target.value)}
-                  placeholder="ZIP or Postal Code"
-                />
-              </div>
+              {isShort && (
+                <>
+                  <div>
+                    <Select
+                      label="Lead Source"
+                      value={companyData.leadSource}
+                      onChange={(value) => handleCompanyChange('leadSource', value)}
+                      options={leadSourceOptions}
+                    />
+                  </div>
+                  <div>
+                    <Select
+                      label="Assigned To"
+                      value={companyData.assignedTo}
+                      onChange={(value) => handleCompanyChange('assignedTo', value)}
+                      options={userSelectOptions}
+                      disabled={loadingUsers}
+                      placeholder="Unassigned"
+                    />
+                  </div>
+                </>
+              )}
 
-              <div>
-                <Select
-                  label="Company Size"
-                  value={companyData.employees}
-                  onChange={(value) => handleCompanyChange('employees', value)}
-                  options={employeeSizeOptions}
-                  placeholder="Select company size"
-                />
-              </div>
-              <div>
-                <Input
-                  label="Founded Year"
-                  type="number"
-                  value={companyData.founded}
-                  onChange={(e) => handleCompanyChange('founded', e.target.value)}
-                  placeholder="2020"
-                  min={1800}
-                  max={new Date().getFullYear()}
-                />
-              </div>
-              <div>
-                <Input
-                  label="Deal Value"
-                  type="number"
-                  value={companyData.dealValue}
-                  onChange={(e) => handleCompanyChange('dealValue', e.target.value)}
-                  placeholder="25000"
-                  min={0}
-                  step="0.01"
-                  icon={IndianRupee}
-                />
-              </div>
+              {!isShort && (
+                <>
+                  <div className="lg:col-span-2">
+                    <Input
+                      label="Address"
+                      value={companyData.address}
+                      onChange={(e) => handleCompanyChange('address', e.target.value)}
+                      placeholder="Street address"
+                      icon={MapPin}
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      label="City"
+                      value={companyData.city}
+                      onChange={(e) => handleCompanyChange('city', e.target.value)}
+                      placeholder="City"
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      label="State/Province"
+                      value={companyData.state}
+                      onChange={(e) => handleCompanyChange('state', e.target.value)}
+                      placeholder="State or Province"
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      label="Country"
+                      value={companyData.country}
+                      onChange={(e) => handleCompanyChange('country', e.target.value)}
+                      placeholder="Country"
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      label="ZIP/Postal Code"
+                      value={companyData.zipCode}
+                      onChange={(e) => handleCompanyChange('zipCode', e.target.value)}
+                      placeholder="ZIP or Postal Code"
+                    />
+                  </div>
 
-              <div>
-                <Input
-                  label="LinkedIn"
-                  value={companyData.linkedIn}
-                  onChange={(e) => handleCompanyChange('linkedIn', e.target.value)}
-                  placeholder="https://linkedin.com/company/..."
-                />
-              </div>
-              <div>
-                <Input
-                  label="Twitter"
-                  value={companyData.twitter}
-                  onChange={(e) => handleCompanyChange('twitter', e.target.value)}
-                  placeholder="https://twitter.com/..."
-                />
-              </div>
-              <div>
-                <Select
-                  label="Lead Source"
-                  value={companyData.leadSource}
-                  onChange={(value) => handleCompanyChange('leadSource', value)}
-                  options={leadSourceOptions}
-                />
-              </div>
-              <div>
-                <Select
-                  label="Assigned To"
-                  value={companyData.assignedTo}
-                  onChange={(value) => handleCompanyChange('assignedTo', value)}
-                  options={userSelectOptions}
-                  disabled={loadingUsers}
-                  placeholder="Unassigned"
-                />
-              </div>
+                  <div>
+                    <Select
+                      label="Company Size"
+                      value={companyData.employees}
+                      onChange={(value) => handleCompanyChange('employees', value)}
+                      options={employeeSizeOptions}
+                      placeholder="Select company size"
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      label="Founded Year"
+                      type="number"
+                      value={companyData.founded}
+                      onChange={(e) => handleCompanyChange('founded', e.target.value)}
+                      placeholder="2020"
+                      min={1800}
+                      max={new Date().getFullYear()}
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      label="Deal Value"
+                      type="number"
+                      value={companyData.dealValue}
+                      onChange={(e) => handleCompanyChange('dealValue', e.target.value)}
+                      placeholder="25000"
+                      min={0}
+                      step="0.01"
+                      icon={IndianRupee}
+                    />
+                  </div>
 
-              <div className="lg:col-span-3">
-                <Textarea
-                  label="Company Description"
-                  value={companyData.description}
-                  onChange={(e) => handleCompanyChange('description', e.target.value)}
-                  placeholder="Brief description of the company and their business..."
-                  rows={3}
-                />
-              </div>
-              <div className="lg:col-span-3">
-                <Textarea
-                  label="Notes"
-                  value={companyData.notes}
-                  onChange={(e) => handleCompanyChange('notes', e.target.value)}
-                  placeholder="Additional notes about this lead..."
-                  rows={2}
-                />
-              </div>
+                  <div>
+                    <Input
+                      label="LinkedIn"
+                      value={companyData.linkedIn}
+                      onChange={(e) => handleCompanyChange('linkedIn', e.target.value)}
+                      placeholder="https://linkedin.com/company/..."
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      label="Twitter"
+                      value={companyData.twitter}
+                      onChange={(e) => handleCompanyChange('twitter', e.target.value)}
+                      placeholder="https://twitter.com/..."
+                    />
+                  </div>
+                  <div>
+                    <Select
+                      label="Lead Source"
+                      value={companyData.leadSource}
+                      onChange={(value) => handleCompanyChange('leadSource', value)}
+                      options={leadSourceOptions}
+                    />
+                  </div>
+                  <div>
+                    <Select
+                      label="Assigned To"
+                      value={companyData.assignedTo}
+                      onChange={(value) => handleCompanyChange('assignedTo', value)}
+                      options={userSelectOptions}
+                      disabled={loadingUsers}
+                      placeholder="Unassigned"
+                    />
+                  </div>
+
+                  <div className="lg:col-span-3">
+                    <Textarea
+                      label="Company Description"
+                      value={companyData.description}
+                      onChange={(e) => handleCompanyChange('description', e.target.value)}
+                      placeholder="Brief description of the company and their business..."
+                      rows={3}
+                    />
+                  </div>
+                  <div className="lg:col-span-3">
+                    <Textarea
+                      label="Notes"
+                      value={companyData.notes}
+                      onChange={(e) => handleCompanyChange('notes', e.target.value)}
+                      placeholder="Additional notes about this lead..."
+                      rows={2}
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </FormSectionCard>
 
@@ -702,65 +799,73 @@ export default function AddLeadCompanyPage() {
           <FormSectionCard
             icon={Users}
             title="Contact Information"
-            description="Add contacts for this lead company"
+            description={
+              isShort
+                ? 'Optional — add a primary contact if you have one'
+                : 'Add contacts for this lead company'
+            }
             cardClassName="rounded-2xl bg-gradient-to-br from-white/70 to-white/40 backdrop-blur-xl border border-white/30 shadow-xl p-6"
             headerAction={
-              <Button
-                type="button"
-                onClick={addContact}
-                size="sm"
-                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Contact
-              </Button>
+              !isShort ? (
+                <Button
+                  type="button"
+                  onClick={addContact}
+                  size="sm"
+                  className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Contact
+                </Button>
+              ) : null
             }
           >
             <div className="space-y-4">
-              {contacts.map((contact, index) => (
+              {(isShort ? contacts.slice(0, 1) : contacts).map((contact, index) => (
                 <div
                   key={contact.id}
                   className="relative p-4 rounded-xl bg-gradient-to-br from-white/60 to-white/40 backdrop-blur-sm border border-white/30"
                 >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <User className="w-4 h-4 text-gray-500" />
-                      <span className="font-medium text-gray-900">Contact {index + 1}</span>
-                      {contact.isPrimary && (
-                        <Badge variant="success" size="sm">
-                          Primary
-                        </Badge>
-                      )}
+                  {!isShort && (
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4 text-gray-500" />
+                        <span className="font-medium text-gray-900">Contact {index + 1}</span>
+                        {contact.isPrimary && (
+                          <Badge variant="success" size="sm">
+                            Primary
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {!contact.isPrimary && (
+                          <Button
+                            type="button"
+                            onClick={() => setPrimaryContact(contact.id)}
+                            size="sm"
+                            variant="outline"
+                          >
+                            Set as Primary
+                          </Button>
+                        )}
+                        {contacts.length > 1 && (
+                          <Button
+                            type="button"
+                            onClick={() => removeContact(contact.id)}
+                            size="sm"
+                            variant="outline"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {!contact.isPrimary && (
-                        <Button
-                          type="button"
-                          onClick={() => setPrimaryContact(contact.id)}
-                          size="sm"
-                          variant="outline"
-                        >
-                          Set as Primary
-                        </Button>
-                      )}
-                      {contacts.length > 1 && (
-                        <Button
-                          type="button"
-                          onClick={() => removeContact(contact.id)}
-                          size="sm"
-                          variant="outline"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
+                  )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div>
                       <Input
-                        label="First Name *"
+                        label={isShort ? 'First Name' : 'First Name *'}
                         value={contact.firstName}
                         onChange={(e) =>
                           handleContactChange(contact.id, 'firstName', e.target.value)
@@ -771,7 +876,7 @@ export default function AddLeadCompanyPage() {
                     </div>
                     <div>
                       <Input
-                        label="Last Name *"
+                        label={isShort ? 'Last Name' : 'Last Name *'}
                         value={contact.lastName}
                         onChange={(e) =>
                           handleContactChange(contact.id, 'lastName', e.target.value)
@@ -805,88 +910,93 @@ export default function AddLeadCompanyPage() {
                         icon={Phone}
                       />
                     </div>
-                    <div>
-                      <Input
-                        label="Job Title"
-                        value={contact.jobTitle}
-                        onChange={(e) =>
-                          handleContactChange(contact.id, 'jobTitle', e.target.value)
-                        }
-                        placeholder="CEO, Manager, etc."
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        label="Department"
-                        value={contact.department}
-                        onChange={(e) =>
-                          handleContactChange(contact.id, 'department', e.target.value)
-                        }
-                        placeholder="Sales, Marketing, IT, etc."
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        label="LinkedIn URL"
-                        type="url"
-                        value={contact.linkedinUrl}
-                        onChange={(e) =>
-                          handleContactChange(contact.id, 'linkedinUrl', e.target.value)
-                        }
-                        placeholder="https://www.linkedin.com/in/..."
-                        icon={Linkedin}
-                      />
-                    </div>
-                    <div className="md:col-span-2 lg:col-span-1">
-                      <Select
-                        label="Contact Role"
-                        value={contact.role}
-                        onChange={(value) => handleContactChange(contact.id, 'role', value)}
-                        options={contactRoleOptions}
-                      />
-                    </div>
+                    {!isShort && (
+                      <>
+                        <div>
+                          <Input
+                            label="Job Title"
+                            value={contact.jobTitle}
+                            onChange={(e) =>
+                              handleContactChange(contact.id, 'jobTitle', e.target.value)
+                            }
+                            placeholder="CEO, Manager, etc."
+                          />
+                        </div>
+                        <div>
+                          <Input
+                            label="Department"
+                            value={contact.department}
+                            onChange={(e) =>
+                              handleContactChange(contact.id, 'department', e.target.value)
+                            }
+                            placeholder="Sales, Marketing, IT, etc."
+                          />
+                        </div>
+                        <div>
+                          <Input
+                            label="LinkedIn URL"
+                            type="url"
+                            value={contact.linkedinUrl}
+                            onChange={(e) =>
+                              handleContactChange(contact.id, 'linkedinUrl', e.target.value)
+                            }
+                            placeholder="https://www.linkedin.com/in/..."
+                            icon={Linkedin}
+                          />
+                        </div>
+                        <div className="md:col-span-2 lg:col-span-1">
+                          <Select
+                            label="Contact Role"
+                            value={contact.role}
+                            onChange={(value) => handleContactChange(contact.id, 'role', value)}
+                            options={contactRoleOptions}
+                          />
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
           </FormSectionCard>
 
-          {/* Lead Status */}
-          <FormSectionCard
-            icon={Calendar}
-            title="Lead Status"
-            description="Set the initial status for this lead"
-            cardClassName="rounded-2xl bg-gradient-to-br from-white/70 to-white/40 backdrop-blur-xl border border-white/30 shadow-xl p-6"
-          >
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <Select
-                  label="Initial Status"
-                  value={companyData.status}
-                  onChange={(value) => handleCompanyChange('status', value)}
-                  options={statusOptions}
-                />
+          {/* Lead Status — detailed only (short uses defaults: NEW / WEBSITE) */}
+          {!isShort && (
+            <FormSectionCard
+              icon={Calendar}
+              title="Lead Status"
+              description="Set the initial status for this lead"
+              cardClassName="rounded-2xl bg-gradient-to-br from-white/70 to-white/40 backdrop-blur-xl border border-white/30 shadow-xl p-6"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Select
+                    label="Initial Status"
+                    value={companyData.status}
+                    onChange={(value) => handleCompanyChange('status', value)}
+                    options={statusOptions}
+                  />
+                </div>
+                <div>
+                  <Select
+                    label="Lead Source"
+                    value={companyData.leadSource}
+                    onChange={(value) => handleCompanyChange('leadSource', value)}
+                    options={leadSourceOptions}
+                  />
+                </div>
+                <div>
+                  <Input
+                    label="Next connect date"
+                    type="date"
+                    value={companyData.nextConnectDate}
+                    onChange={(e) => handleCompanyChange('nextConnectDate', e.target.value)}
+                    icon={Calendar}
+                  />
+                </div>
               </div>
-              <div>
-                <Select
-                  label="Lead Source"
-                  value={companyData.leadSource}
-                  onChange={(value) => handleCompanyChange('leadSource', value)}
-                  options={leadSourceOptions}
-                />
-              </div>
-              <div>
-                <Input
-                  label="Next connect date"
-                  type="date"
-                  value={companyData.nextConnectDate}
-                  onChange={(e) => handleCompanyChange('nextConnectDate', e.target.value)}
-                  icon={Calendar}
-                />
-              </div>
-            </div>
-          </FormSectionCard>
+            </FormSectionCard>
+          )}
 
           {errors.submit && (
             <div className="rounded-xl bg-red-50 border border-red-200 p-4 flex items-center gap-3">

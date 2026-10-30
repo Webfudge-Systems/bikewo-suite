@@ -6,10 +6,11 @@ export const PM_SITE = {
   brandName: 'BikeWo',
   brandShortName: 'BikeWo',
   legalName: 'BikeWo',
-  name: 'Fudge Work',
+  name: 'BikeWo Work',
   shortName: 'Work',
+  creatorLine: 'Fudge System',
   description:
-    'Fudge Work is the project management workspace for projects, tasks, teams, messages, and delivery across the BikeWo suite.',
+    'BikeWo Work is the project management workspace for projects, tasks, teams, messages, and delivery across the BikeWo suite.',
   tagline: 'Track projects, tasks, and your team in one place.',
   loginTagline: 'Plan, track, and deliver — together.',
   loginDetail:
@@ -24,8 +25,8 @@ export const PM_SITE = {
   brandLogoPath: FUDGE_SUITE_ASSETS.bikewo.brandLogoPath,
   ogImagePath: FUDGE_SUITE_ASSETS.bikewo.brandLogoPath,
   locale: 'en_US',
-  themeColor: '#F5630F',
-  backgroundColor: '#FFFAF7',
+  themeColor: '#2AB77C',
+  backgroundColor: '#F1F1F5',
   twitterHandle: '@bikewo',
-  keywords: ['Fudge Work', 'project management', 'tasks', 'team collaboration', 'delivery', 'BikeWo'],
+  keywords: ['BikeWo Work', 'project management', 'tasks', 'team collaboration', 'delivery', 'BikeWo', 'Fudge System'],
 }

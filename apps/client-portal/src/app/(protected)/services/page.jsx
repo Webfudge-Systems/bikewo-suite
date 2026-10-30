@@ -698,7 +698,7 @@ function ServicesContent() {
                   onClick={() => setScope(tab.key)}
                   className={`flex items-center px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 whitespace-nowrap shrink-0 ${
                     scopeFilter === tab.key
-                      ? "bg-brand-primary text-white shadow-lg"
+                      ? "bg-brand-indigo text-white shadow-lg"
                       : "bg-white/80 backdrop-blur-sm text-gray-700 hover:bg-white/90 border border-white/40"
                   }`}
                 >

@@ -22,7 +22,7 @@ export default function AnalyticsPage() {
             Reports &amp; forecasts
           </div>
           <p className="text-sm text-gray-600">Sales performance, conversion, and revenue reporting.</p>
-          <Button as={Link} href={comingSoon('Analytics')} variant="primary" className="mt-auto w-fit">
+          <Button as={Link} href="/analytics/reports" variant="primary" className="mt-auto w-fit">
             Open reports
           </Button>
         </Card>

@@ -71,7 +71,7 @@ export default function AccountsSidebar({ collapsed = false, onToggle }) {
               />
               <SidebarProductBranding
                 productName={ACCOUNTS_SITE.name}
-                companyName={ACCOUNTS_SITE.brandName}
+                companyName={ACCOUNTS_SITE.creatorLine}
               />
             </Link>
           )}
@@ -102,7 +102,7 @@ export default function AccountsSidebar({ collapsed = false, onToggle }) {
               href={item.href}
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 border transition-colors ${
                 active
-                  ? 'bg-brand-primary text-white border-brand-primary/30'
+                  ? 'bg-brand-indigo text-white border-brand-indigo/30'
                   : item.comingSoon
                     ? 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'
                     : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'

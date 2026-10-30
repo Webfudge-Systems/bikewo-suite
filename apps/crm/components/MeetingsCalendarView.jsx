@@ -15,7 +15,7 @@ const TYPE_EVENT_COLORS = {
   check_in: '#0d9488',
   review: '#4f46e5',
   internal: '#6b7280',
-  other: '#ea580c',
+  other: '#2AB77C',
 }
 
 const TYPE_LABELS = {
@@ -68,7 +68,7 @@ function MeetingEventCard({ arg }) {
 
   return (
     <div
-      className="meeting-cal-event-card w-full min-w-0 overflow-hidden rounded-lg border border-gray-200/90 bg-white py-1.5 pl-2 pr-1.5 text-left shadow-sm ring-1 ring-gray-900/[0.04] transition hover:border-orange-200/80 hover:shadow-md hover:ring-orange-100/60"
+      className="meeting-cal-event-card w-full min-w-0 overflow-hidden rounded-lg border border-gray-200/90 bg-white py-1.5 pl-2 pr-1.5 text-left shadow-sm ring-1 ring-gray-900/[0.04] transition hover:border-brand-border hover:shadow-md hover:ring-brand-indigo/10"
       style={{
         borderLeftWidth: 3,
         borderLeftStyle: 'solid',
@@ -208,17 +208,17 @@ export default function MeetingsCalendarView({
           transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s !important;
         }
         .meetings-calendar .fc-button:hover {
-          background: #fff7ed !important;
-          border-color: #fdba74 !important;
-          color: #c2410c !important;
-          box-shadow: 0 2px 6px rgba(234, 88, 12, 0.12) !important;
+          background: #EDEDF2 !important;
+          border-color: #A7A5BE !important;
+          color: #241F5D !important;
+          box-shadow: 0 2px 6px rgba(36, 31, 93, 0.12) !important;
         }
         .meetings-calendar .fc-button-active,
         .meetings-calendar .fc-button-primary:not(:disabled).fc-button-active {
-          background: #ea580c !important;
-          border-color: #ea580c !important;
+          background: #241F5D !important;
+          border-color: #241F5D !important;
           color: white !important;
-          box-shadow: 0 2px 8px rgba(234, 88, 12, 0.35) !important;
+          box-shadow: 0 2px 8px rgba(36, 31, 93, 0.28) !important;
         }
         .meetings-calendar .fc-button:disabled {
           opacity: 0.5 !important;
@@ -246,14 +246,14 @@ export default function MeetingsCalendarView({
           padding: 2px !important;
         }
         .meetings-calendar .fc-event:hover .meeting-cal-event-card {
-          border-color: rgba(251, 146, 60, 0.45);
+          border-color: rgba(36, 31, 93, 0.35);
         }
         .meetings-calendar .fc-day-today {
-          background: #fff7ed !important;
+          background: #EDEDF2 !important;
         }
         .meetings-calendar .fc-day-today .fc-daygrid-day-number {
           font-weight: 800;
-          color: #c2410c;
+          color: #241F5D;
         }
         .meetings-calendar .fc-col-header-cell {
           font-weight: 700 !important;
@@ -279,7 +279,7 @@ export default function MeetingsCalendarView({
         }
         .meetings-calendar .fc-more-link {
           font-weight: 600 !important;
-          color: #ea580c !important;
+          color: #241F5D !important;
           border-radius: 0.375rem !important;
         }
       `}</style>

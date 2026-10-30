@@ -38,7 +38,7 @@ export function FormSectionCard({
                 'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl shadow-sm',
                 isBooks
                   ? 'bg-[var(--books-brand,#ea580c)]'
-                  : 'bg-brand-primary',
+                  : 'bg-brand-indigo',
                 iconContainerClassName
               )}
             >

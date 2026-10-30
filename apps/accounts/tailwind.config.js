@@ -17,15 +17,19 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          primary: '#F5630F',
-          dark: '#1A1A1A',
-          light: '#FFFAF7',
+          primary: '#2AB77C',
+          indigo: '#241F5D',
+          dark: '#241F5D',
+          light: '#F1F1F5',
           white: '#FFFFFF',
-          foreground: '#2d2d2d',
-          'text-light': '#666666',
-          'text-muted': '#999999',
-          border: '#e8e8e8',
-          hover: '#f8f8f8',
+          midnight: '#14113A',
+          charge: '#35D68F',
+          foreground: '#241F5D',
+          'text-light': '#4A4869',
+          'text-muted': '#918FAE',
+          border: '#D3D2DF',
+          hover: '#EDEDF2',
+          slate: '#4A4869',
         },
       },
       fontFamily: {

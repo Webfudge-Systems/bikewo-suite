@@ -15,7 +15,7 @@ const MEETING_TYPE_COLORS = {
   check_in: '#0d9488',
   review: '#4f46e5',
   internal: '#6b7280',
-  other: '#ea580c',
+  other: '#241F5D',
 }
 
 const MEETING_TYPE_LABELS = {
@@ -36,7 +36,7 @@ const MEETING_PASTEL = {
   check_in: { header: '#0d9488', body: '#f0fdfa', title: '#0f766e' },
   review: { header: '#4f46e5', body: '#eef2ff', title: '#4338ca' },
   internal: { header: '#64748b', body: '#f8fafc', title: '#475569' },
-  other: { header: '#ea580c', body: '#fff7ed', title: '#c2410c' },
+  other: { header: '#241F5D', body: '#EDEDF2', title: '#241F5D' },
 }
 
 /** Task / project strips — readable on the grid without heavy contrast */
@@ -308,7 +308,7 @@ function Pill({ children, active }) {
   return (
     <span
       className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-        active ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600 ring-1 ring-gray-200'
+        active ? 'bg-brand-indigo text-white' : 'bg-gray-100 text-gray-600 ring-1 ring-gray-200'
       }`}
     >
       {children}
@@ -434,7 +434,7 @@ function HoverDetailPopover({ hover }) {
         <h3 className="text-sm font-bold leading-snug text-gray-900">{title || 'Event'}</h3>
         {timeLine && (
           <p className="mt-1.5 flex items-center gap-2 text-xs text-gray-600">
-            <Clock className="h-3.5 w-3.5 shrink-0 text-orange-500" aria-hidden />
+            <Clock className="h-3.5 w-3.5 shrink-0 text-brand-indigo" aria-hidden />
             {timeLine}
           </p>
         )}
@@ -565,17 +565,17 @@ export default function UnifiedWorkspaceCalendar({
           transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s !important;
         }
         .wf-unified-calendar .fc-button:hover {
-          background: #fff7ed !important;
-          border-color: #fdba74 !important;
-          color: #c2410c !important;
-          box-shadow: 0 2px 6px rgba(234, 88, 12, 0.12) !important;
+          background: #EDEDF2 !important;
+          border-color: #A7A5BE !important;
+          color: #241F5D !important;
+          box-shadow: 0 2px 6px rgba(36, 31, 93, 0.12) !important;
         }
         .wf-unified-calendar .fc-button-active,
         .wf-unified-calendar .fc-button-primary:not(:disabled).fc-button-active {
-          background: #ea580c !important;
-          border-color: #ea580c !important;
+          background: #241F5D !important;
+          border-color: #241F5D !important;
           color: white !important;
-          box-shadow: 0 2px 8px rgba(234, 88, 12, 0.35) !important;
+          box-shadow: 0 2px 8px rgba(36, 31, 93, 0.28) !important;
         }
         .wf-unified-calendar .fc-button:disabled {
           opacity: 0.5 !important;
@@ -608,11 +608,11 @@ export default function UnifiedWorkspaceCalendar({
           transform: translateY(-1px);
         }
         .wf-unified-calendar .fc-day-today {
-          background: #fff7ed !important;
+          background: #EDEDF2 !important;
         }
         .wf-unified-calendar .fc-day-today .fc-daygrid-day-number {
           font-weight: 800;
-          color: #c2410c;
+          color: #241F5D;
         }
         .wf-unified-calendar .fc-col-header-cell {
           font-weight: 700 !important;
@@ -634,7 +634,7 @@ export default function UnifiedWorkspaceCalendar({
         }
         .wf-unified-calendar .fc-more-link {
           font-weight: 600 !important;
-          color: #ea580c !important;
+          color: #241F5D !important;
           border-radius: 0.375rem !important;
         }
       `}</style>

@@ -6,10 +6,11 @@ export const ACCOUNTS_SITE = {
   brandName: 'BikeWo',
   brandShortName: 'BikeWo',
   legalName: 'BikeWo',
-  name: 'Fudge Base',
+  name: 'BikeWo Base',
   shortName: 'Base',
+  creatorLine: 'Fudge System',
   description:
-    'Fudge Base is the organization administration workspace for users, roles, departments, teams, security, billing, app access, and audit logs across the BikeWo suite.',
+    'BikeWo Base is the organization administration workspace for users, roles, departments, teams, security, billing, app access, and audit logs across the BikeWo suite.',
   tagline: 'Manage your organization—users, roles, security, billing, and compliance.',
   loginTagline: 'Your organization command center.',
   loginDetail:
@@ -24,11 +25,11 @@ export const ACCOUNTS_SITE = {
   brandLogoPath: FUDGE_SUITE_ASSETS.bikewo.brandLogoPath,
   ogImagePath: FUDGE_SUITE_ASSETS.bikewo.brandLogoPath,
   locale: 'en_US',
-  themeColor: '#F5630F',
-  backgroundColor: '#FFFAF7',
+  themeColor: '#2AB77C',
+  backgroundColor: '#F1F1F5',
   twitterHandle: '@bikewo',
   keywords: [
-    'Fudge Base',
+    'BikeWo Base',
     'organization admin',
     'user management',
     'roles and permissions',
@@ -38,6 +39,7 @@ export const ACCOUNTS_SITE = {
     'billing',
     'audit logs',
     'BikeWo',
+    'Fudge System',
   ],
 }
 

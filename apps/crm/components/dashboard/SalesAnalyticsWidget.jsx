@@ -18,7 +18,7 @@ import dealService from '../../lib/api/dealService'
 import { DEAL_STAGE_OPTIONS } from '../../lib/dealFormOptions'
 import { TrendingUp, DollarSign, Target, BarChart3 } from 'lucide-react'
 
-const ACCENT = '#ea580c'
+const ACCENT = '#2AB77C'
 const MONTHS_BACK = 6
 
 /** Tiled SVG noise (feTurbulence) for mesh / film-grain overlay on KPI cards */
@@ -42,12 +42,12 @@ function GrainyKpiCard({ children }) {
       {/* Strong primary glow — bottom-left */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_130%_120%_at_0%_100%,#ea580c_0%,rgba(234,88,12,0.55)_38%,transparent_62%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_130%_120%_at_0%_100%,#2AB77C_0%,rgba(42,183,124,0.55)_38%,transparent_62%)]"
       />
       {/* Secondary glow — top-left */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_12%_10%,rgba(251,146,60,0.5)_0%,transparent_55%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_12%_10%,rgba(53,214,143,0.5)_0%,transparent_55%)]"
       />
       {/* Fine grain */}
       <div

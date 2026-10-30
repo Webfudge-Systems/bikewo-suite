@@ -465,6 +465,7 @@ export default function RolesPage() {
           subtitle="System + custom assignments"
           icon={Shield}
           colorScheme="orange"
+          showFooterDot={false}
         />
         <KPICard
           title="System Templates"
@@ -472,6 +473,7 @@ export default function RolesPage() {
           subtitle="Immutable Admin / Manager / Member"
           icon={Shield}
           colorScheme="orange"
+          showFooterDot={false}
         />
         <KPICard
           title="Custom Roles"
@@ -479,6 +481,7 @@ export default function RolesPage() {
           subtitle="Designed for your organization"
           icon={Shield}
           colorScheme="orange"
+          showFooterDot={false}
         />
       </div>
 

@@ -116,6 +116,7 @@ export {
   UnifiedWorkspaceCalendar,
   // Cross-app shared components
   AppPageHeader,
+  WorkspaceProfileView,
   ProgressBar,
   MeetingsEmbedList,
   TableSortDropdown,

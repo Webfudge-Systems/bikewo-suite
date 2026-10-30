@@ -22,7 +22,7 @@ export default function LayoutContent({ children }) {
       sidebarBranding={{
         logoPath: PM_SITE.logoPath,
         productName: PM_SITE.name,
-        companyName: PM_SITE.brandName,
+        companyName: PM_SITE.creatorLine,
         homeHref: '/',
       }}
       appName={PM_SITE.name}

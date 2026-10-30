@@ -12,7 +12,7 @@ export default function LayoutContent({ children }) {
       sidebarBranding={{
         logoPath: ACCOUNTS_SITE.logoPath,
         productName: ACCOUNTS_SITE.name,
-        companyName: ACCOUNTS_SITE.brandName,
+        companyName: ACCOUNTS_SITE.creatorLine,
         homeHref: '/',
       }}
       showPwa={false}

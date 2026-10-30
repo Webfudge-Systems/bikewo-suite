@@ -701,7 +701,7 @@ New Lead → Qualify → Create Deal → Send Proposal
 | Documents | Workspace sidebar |
 | Log Call | Quick Actions FAB |
 | Send WhatsApp | Quick Actions FAB |
-| Reports & Forecasts | Analytics |
+| Pipeline analytics | Analytics |
 | CRM Settings (users, branding) | `/settings` placeholder |
 
 ---
@@ -719,18 +719,17 @@ New Lead → Qualify → Create Deal → Send Proposal
 | Dashboard | `/` | KPIs, widgets, global search |
 | My Tasks | `/my-tasks` | Personal task hub |
 | Inbox | `/inbox` | Activity, notifications, threads |
-| Message | `/message` | Direct messages |
 | Clients | `/clients/accounts` | CRM client accounts in PM |
-| Reports | Coming soon | Sidebar placeholder |
 
 **Projects section (dynamic):**
 - Up to 4–6 recent projects with progress
 - **+** button → new project (Admin/Manager only)
 - **All projects** → `/projects`
 
-**Tools:**
-- Calendar → `/calendar`
+**Workspace tools:**
 - Documents → coming soon
+- Calendar → `/calendar`
+- Reports → `/analytics` (project/task KPIs, charts, overdue list)
 
 **Quick Actions FAB:** New Task · New Project · New Client
 
@@ -804,17 +803,9 @@ New Lead → Qualify → Create Deal → Send Proposal
 | Notifications & alerts | Unread/read/archived; mark all read |
 | Threads | Project and task comment threads |
 
-Notification types include mentions, task comments, project comments, and direct messages.
+Notification types include mentions, task comments, and project comments.
 
-### 7.8 Messages (`/message`)
-
-- 1:1 chat with org members
-- Contact list (excluding yourself)
-- @mention support in composer
-- Deep link: `/message?with={userId}`
-- Unread badge on sidebar
-
-### 7.9 Clients in PM (`/clients/accounts`)
+### 7.8 Clients in PM (`/clients/accounts`)
 
 Same client account data as CRM, governed by CRM `client_accounts` permissions.
 
@@ -822,13 +813,13 @@ Same client account data as CRM, governed by CRM `client_accounts` permissions.
 
 Cross-links open CRM records where configured; PM projects are managed here.
 
-### 7.10 Calendar (`/calendar`)
+### 7.9 Calendar (`/calendar`)
 
 - Meetings (from CRM) + tasks + project milestones
 - Filters: All · Meetings · Tasks · Projects
 - Today summary sidebar
 
-### 7.11 PM role restrictions
+### 7.10 PM role restrictions
 
 | Org role | Create projects | Edit projects | Create tasks | Edit tasks |
 | --- | --- | --- | --- | --- |
@@ -838,7 +829,7 @@ Cross-links open CRM records where configured; PM projects are managed here.
 
 Members can only change **status** on tasks assigned to them (not full field edits).
 
-### 7.12 Key PM workflows
+### 7.11 Key PM workflows
 
 #### Run a delivery project
 

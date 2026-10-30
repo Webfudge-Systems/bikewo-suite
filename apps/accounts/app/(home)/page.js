@@ -286,7 +286,7 @@ export default function AccountsHome() {
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
             {cards.map((card) => (
-              <KPICard key={card.title} {...card} colorScheme="orange" />
+              <KPICard key={card.title} {...card} colorScheme="orange" showFooterDot={false} />
             ))}
           </div>
 

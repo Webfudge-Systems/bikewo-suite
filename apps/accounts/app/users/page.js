@@ -763,10 +763,10 @@ export default function UsersPage() {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        <KPICard title="Total Users" value={stats.total} subtitle="Organization members" icon={Users} colorScheme="orange" />
-        <KPICard title="Active Users" value={stats.active} subtitle="Confirmed and active access" icon={UserCheck} colorScheme="orange" />
-        <KPICard title="Invited Users" value={stats.invited} subtitle="Pending account confirmation" icon={Clock3} colorScheme="orange" />
-        <KPICard title="Suspended Users" value={stats.suspended} subtitle="Blocked from accessing apps" icon={UserX} colorScheme="orange" />
+        <KPICard title="Total Users" value={stats.total} subtitle="Organization members" icon={Users} colorScheme="orange" showFooterDot={false} />
+        <KPICard title="Active Users" value={stats.active} subtitle="Confirmed and active access" icon={UserCheck} colorScheme="orange" showFooterDot={false} />
+        <KPICard title="Invited Users" value={stats.invited} subtitle="Pending account confirmation" icon={Clock3} colorScheme="orange" showFooterDot={false} />
+        <KPICard title="Suspended Users" value={stats.suspended} subtitle="Blocked from accessing apps" icon={UserX} colorScheme="orange" showFooterDot={false} />
       </div>
 
       <div className="relative" ref={toolbarRef}>

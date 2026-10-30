@@ -1,9 +1,12 @@
 /** Shared public asset paths for Fudge Suite workspace apps (CRM / PM / Accounts). */
 export const FUDGE_SUITE_ASSETS = {
   bikewo: {
-    logoPath: '/logos/bikewo-logo-primary.png',
-    brandIconPath: '/favicon/web-app-manifest-512x512.png',
+    /** Compact mark for app sidebars / top-bar chrome (not the full wordmark). */
+    logoPath: '/favicon/apple-touch-icon.png',
+    brandIconPath: '/favicon/apple-touch-icon.png',
     brandLogoPath: '/logos/bikewo-logo-primary.png',
+    /** Full-colour reversed lockup for indigo / midnight surfaces (login panels). */
+    brandLogoReversedPath: '/logos/bikewo-logo-reversed.png',
     manifestPath: '/favicon/site.webmanifest',
     faviconIco: '/favicon.ico',
     faviconSvg: '/favicon/favicon.svg',

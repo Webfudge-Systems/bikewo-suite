@@ -84,7 +84,9 @@ export default function CRMSidebar({ collapsed = false, onToggle }) {
 
   const isActive = (href) => {
     if (!href || href === '/') return pathname === '/'
-    return pathname.startsWith(href)
+    // Analytics Overview shares the /analytics prefix with nested routes
+    if (href === '/analytics') return pathname === '/analytics'
+    return pathname === href || pathname.startsWith(`${href}/`)
   }
 
   const isSalesActive = () => pathname.startsWith('/sales/')
@@ -300,7 +302,7 @@ export default function CRMSidebar({ collapsed = false, onToggle }) {
           module: 'analytics',
           label: 'Reports & Forecasts',
           icon: BarChart3,
-          href: comingSoonHref('Analytics'),
+          href: '/analytics/reports',
         },
       ],
     },

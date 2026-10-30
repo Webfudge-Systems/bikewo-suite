@@ -30,7 +30,7 @@ export default function DashboardViewSwitcher({ views = [], activeId, onChange, 
             className={clsx(
               'rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-200',
               active
-                ? 'bg-[#FF7A20] text-white shadow-[0_1px_2px_rgba(0,0,0,0.12)]'
+                ? 'bg-brand-indigo text-white shadow-[0_1px_2px_rgba(0,0,0,0.12)]'
                 : 'text-gray-600 hover:bg-white hover:text-gray-900'
             )}
           >

@@ -160,7 +160,7 @@ export default function WorkspaceCalendarPage() {
       <Card className="border border-gray-200 p-4 md:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-500/10 text-orange-600">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-indigo/10 text-brand-indigo">
               <CalendarRange className="h-5 w-5" aria-hidden />
             </div>
             <div>
@@ -194,7 +194,7 @@ export default function WorkspaceCalendarPage() {
                 variant={filter === f.id ? 'primary' : 'outline'}
                 className={
                   filter === f.id
-                    ? 'bg-orange-600 hover:bg-orange-700 border-orange-600'
+                    ? 'bg-brand-indigo hover:bg-brand-indigo/90 border-brand-indigo'
                     : 'border-gray-200'
                 }
                 onClick={() => setFilter(f.id)}

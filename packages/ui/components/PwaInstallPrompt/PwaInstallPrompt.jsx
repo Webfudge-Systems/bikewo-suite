@@ -55,7 +55,7 @@ export default function PwaInstallPrompt({ appName, storageKey }) {
       aria-label={`Install ${appName}`}
     >
       <div className="flex items-start gap-3 rounded-2xl border border-gray-200 bg-white p-4 shadow-lg ring-1 ring-black/5">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F5630F]/10 text-[#F5630F]">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#2AB77C]/10 text-[#2AB77C]">
           <Download className="h-5 w-5" aria-hidden />
         </div>
         <div className="min-w-0 flex-1">
@@ -67,7 +67,7 @@ export default function PwaInstallPrompt({ appName, storageKey }) {
             <button
               type="button"
               onClick={handleInstall}
-              className="rounded-lg bg-[#F5630F] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#ea580c]"
+              className="rounded-lg bg-[#2AB77C] px-3 py-1.5 text-xs font-semibold text-[#241F5D] hover:bg-[#229666]"
             >
               Install
             </button>

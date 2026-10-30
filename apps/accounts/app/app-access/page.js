@@ -219,6 +219,7 @@ export default function AppAccessPage() {
           subtitle={`${crmModuleCount} RBAC modules mapped`}
           icon={LayoutGrid}
           colorScheme="orange"
+          showFooterDot={false}
         />
         <KPICard
           title={appsMeta?.pm?.label || 'Project Management'}
@@ -226,6 +227,7 @@ export default function AppAccessPage() {
           subtitle={`${pmModuleCount} RBAC modules mapped`}
           icon={ShieldCheck}
           colorScheme="orange"
+          showFooterDot={false}
         />
       </div>
 

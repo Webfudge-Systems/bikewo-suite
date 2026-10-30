@@ -97,7 +97,7 @@ export const navigationData = [
         id: 'reports',
         label: 'Reports & Forecasts',
         icon: BarChart3,
-        href: comingSoonUrl('Analytics'),
+        href: '/analytics/reports',
       },
     ],
   },

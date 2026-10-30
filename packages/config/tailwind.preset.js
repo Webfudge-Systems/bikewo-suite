@@ -1,6 +1,7 @@
 // ============================================
-// WEBFUDGE PLATFORM - TAILWIND PRESET
+// BIKEWO — TAILWIND PRESET
 // Shared Tailwind configuration with brand colors
+// Source: BikeWo Brand Guidelines v1.0
 // ============================================
 
 const { brandColors, brandGradients, brandShadows } = require('./src/brand/colors');
@@ -10,22 +11,37 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Brand Colors
         brand: {
           primary: brandColors.primary,
+          indigo: brandColors.indigo,
           dark: brandColors.dark[900],
           light: brandColors.light[50],
           white: brandColors.white,
+          midnight: brandColors.midnight,
+          charge: brandColors.charge,
+          ink: brandColors.ink,
+          slate: brandColors.slate,
+          mist: brandColors.mist,
+          cloud: brandColors.cloud,
+          foreground: brandColors.indigo,
+          'text-light': brandColors.slate,
+          'text-muted': '#918FAE',
+          border: '#D3D2DF',
+          hover: '#EDEDF2',
         },
 
-        // Extended Palettes
+        // Action palette — green ramp (existing UI uses orange-* for primary actions)
         orange: brandColors.orange,
+        green: brandColors.green,
         yellow: brandColors.yellow,
         dark: brandColors.dark,
         light: brandColors.light,
+        indigo: {
+          DEFAULT: brandColors.indigo,
+          ...brandColors.indigoRamp,
+        },
       },
 
-      // Brand Gradients
       backgroundImage: {
         'gradient-brand': brandGradients.primary,
         'gradient-orange': brandGradients.orange,
@@ -38,17 +54,16 @@ module.exports = {
         'gradient-glass-orange': brandGradients.glassOrange,
       },
 
-      // Brand Shadows
       boxShadow: {
-        'brand': brandShadows.brand,
+        brand: brandShadows.brand,
         'brand-lg': brandShadows.brandLg,
         'brand-sm': brandShadows.brandSm,
-        'dark': brandShadows.dark,
+        dark: brandShadows.dark,
         'dark-lg': brandShadows.darkLg,
-        'soft': brandShadows.soft,
+        soft: brandShadows.soft,
       },
 
-      // Font Families — Host Grotesk for apps; Jura for landing (landing overrides in its tailwind)
+      // Fonts unchanged — Host Grotesk for apps; Jura for landing
       fontFamily: {
         sans: ['Host Grotesk', 'system-ui', 'sans-serif'],
         heading: ['Host Grotesk', 'system-ui', 'sans-serif'],

@@ -392,7 +392,7 @@ function ReportTab({ report, stats, rangeLabel }) {
             <CheckSquare className="h-4 w-4 text-orange-600" />
             Tasks by status
           </h3>
-          <ReportBreakdown title="Tasks" items={report.tasksByStatus} color="#ea580c" />
+          <ReportBreakdown title="Tasks" items={report.tasksByStatus} color="#2AB77C" />
         </Card>
         <Card className="p-5 shadow-md">
           <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-700">

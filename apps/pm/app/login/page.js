@@ -70,13 +70,13 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex">
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand-primary to-orange-600 relative flex-col justify-center px-16 py-20">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand-indigo to-brand-midnight relative flex-col justify-center px-16 py-20">
         <LoginBrandCorner
-          brandIconPath={PM_SITE.brandIconPath}
+          brandLogoPath={PM_SITE.brandLogoReversedPath}
           brandName={PM_SITE.brandName}
         />
         <div className="max-w-lg">
-          <LoginProductCredit productName={PM_SITE.name} creatorLine={PM_SITE.brandName} />
+          <LoginProductCredit productName={PM_SITE.name} creatorLine={PM_SITE.creatorLine} />
           <h1 className="text-5xl font-bold text-white mb-6">Welcome back</h1>
           <p className="text-xl text-white/90 mb-4">{PM_SITE.loginTagline}</p>
           <p className="text-white/80 leading-relaxed">{PM_SITE.loginDetail}</p>
@@ -94,9 +94,10 @@ export default function LoginPage() {
       <div className="w-full lg:w-1/2 flex flex-col justify-center p-8 lg:p-16">
         <div className="w-full max-w-md mx-auto">
           <LoginMobileBrandHeader
+            brandLogoPath={PM_SITE.brandLogoPath}
             logoPath={PM_SITE.logoPath}
             productName={PM_SITE.name}
-            creatorLine={PM_SITE.brandName}
+            creatorLine={PM_SITE.creatorLine}
           />
           <h2 className="text-3xl font-semibold text-brand-dark mb-2">Sign in</h2>
           <p className="text-gray-600 mb-8">Enter your credentials to access the PM dashboard.</p>

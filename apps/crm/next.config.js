@@ -16,6 +16,7 @@ const nextConfig = {
       { source: '/delivery/tasks', destination: '/clients/tasks', permanent: false },
       { source: '/delivery/projects', destination: '/clients/projects', permanent: false },
       { source: '/delivery/projects/board', destination: '/clients/projects/board', permanent: false },
+      { source: '/sales/leads', destination: '/sales/lead-companies', permanent: false },
     ]
   },
 }

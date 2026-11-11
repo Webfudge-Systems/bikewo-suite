@@ -355,7 +355,7 @@ export default function AddProjectPage() {
               <label className="flex items-center gap-3 cursor-pointer select-none pt-1">
                 <Checkbox
                   checked={form.isPrivate}
-                  onChange={(e) => setForm((p) => ({ ...p, isPrivate: e.target.checked }))}
+                  onChange={(checked) => setForm((p) => ({ ...p, isPrivate: checked }))}
                 />
                 <span className="text-sm font-medium text-gray-800">
                   Private project

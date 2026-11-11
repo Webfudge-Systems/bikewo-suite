@@ -180,11 +180,17 @@ export default function SecurityPage() {
                 disabled={!canManage || saving}
                 className="space-y-4 rounded-xl border border-gray-200 bg-white p-4 disabled:opacity-90"
               >
-                <Checkbox
-                  label="Require multi-factor authentication (MFA)"
-                  checked={form.requireMfa}
-                  onChange={(checked) => setField('requireMfa', checked)}
-                />
+                <div>
+                  <Checkbox
+                    label="Require multi-factor authentication (MFA)"
+                    checked={form.requireMfa}
+                    onChange={(checked) => setField('requireMfa', checked)}
+                  />
+                  <p className="mt-1 pl-7 text-xs text-gray-500">
+                    Everyone must use an authenticator app to sign in to CRM, PM and Accounts. People
+                    who haven&apos;t set one up are asked to at their next sign-in.
+                  </p>
+                </div>
                 <Checkbox
                   label="Allow email/password login"
                   checked={form.allowPasswordLogin}

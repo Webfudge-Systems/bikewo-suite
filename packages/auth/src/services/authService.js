@@ -80,40 +80,110 @@ class AuthService {
         throw new Error(errorMessage);
       }
 
-      // Store token in localStorage and cookies
-      // Backend returns 'jwt' (not 'token')
-      const token = data.jwt || data.token;
-      if (token) {
-        localStorage.setItem('auth-token', token);
-        localStorage.setItem('strapi_token', token);
-        localStorage.setItem('auth-user', JSON.stringify(data.user));
-        localStorage.setItem('user-role', data.user.role || data.user.primaryRole?.name || 'User');
-
-        // Persist organizations returned by login
-        const orgs = data.organizations || [];
-        localStorage.setItem('auth-organizations', JSON.stringify(orgs));
-
-        // Auto-select the first org as current if none set yet
-        const existingOrgId = localStorage.getItem('current-org-id');
-        if (!existingOrgId && orgs.length > 0) {
-          localStorage.setItem('current-org-id', String(orgs[0].id));
-        }
-
-        // Also store in cookies for middleware access
-        document.cookie = `auth-token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+      // Password accepted but a second factor is needed: no session yet, just the pending token.
+      if (data.mfaRequired || data.mfaSetupRequired) {
+        return {
+          mfaRequired: !!data.mfaRequired,
+          mfaSetupRequired: !!data.mfaSetupRequired,
+          mfaToken: data.mfaToken,
+        };
       }
 
-      // Return consistent format (with 'token' key for compatibility)
-      return {
-        ...data,
-        token: data.jwt || data.token,
-        user: data.user,
-        organizations: data.organizations || [],
-      };
+      return this.storeSession(data);
     } catch (error) {
       console.error('Login error:', error);
       throw error;
     }
+  }
+
+  /**
+   * Persist a session returned by /auth/login, /auth/mfa/verify or /auth/mfa/enable.
+   * @param {Object} data - { jwt, user, organizations }
+   */
+  storeSession(data) {
+    // Store token in localStorage and cookies
+    // Backend returns 'jwt' (not 'token')
+    const token = data.jwt || data.token;
+    if (token) {
+      localStorage.setItem('auth-token', token);
+      localStorage.setItem('strapi_token', token);
+      localStorage.setItem('auth-user', JSON.stringify(data.user));
+      localStorage.setItem('user-role', data.user.role || data.user.primaryRole?.name || 'User');
+
+      // Persist organizations returned by login
+      const orgs = data.organizations || [];
+      localStorage.setItem('auth-organizations', JSON.stringify(orgs));
+
+      // Auto-select the first org as current if none set yet
+      const existingOrgId = localStorage.getItem('current-org-id');
+      if (!existingOrgId && orgs.length > 0) {
+        localStorage.setItem('current-org-id', String(orgs[0].id));
+      }
+
+      // Also store in cookies for middleware access
+      document.cookie = `auth-token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+    }
+
+    // Return consistent format (with 'token' key for compatibility)
+    return {
+      ...data,
+      token: data.jwt || data.token,
+      user: data.user,
+      organizations: data.organizations || [],
+    };
+  }
+
+  /** POST to a /api/auth/mfa/* endpoint; throws Error(message) on failure. */
+  async mfaRequest(path, body, { withSession = false } = {}) {
+    const headers = { 'Content-Type': 'application/json' };
+    if (withSession && this.getToken()) headers.Authorization = `Bearer ${this.getToken()}`;
+    let response;
+    try {
+      response = await fetch(`${this.baseURL}/api/auth/mfa/${path}`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body || {}),
+      });
+    } catch (fetchError) {
+      throw new Error('Network error: Cannot connect to the server.');
+    }
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data?.error?.message || data?.message || 'Something went wrong. Please try again.');
+    }
+    return data;
+  }
+
+  /** Second login step: pending token + 6-digit (or recovery) code → stored session. */
+  async verifyMfa(mfaToken, code) {
+    const data = await this.mfaRequest('verify', { mfaToken, code });
+    return this.storeSession(data);
+  }
+
+  /**
+   * Start authenticator setup. Pass the pending token during login (org requires 2FA);
+   * omit it when a signed-in user enables 2FA from their profile.
+   * @returns {Promise<{ secret: string, otpauthUrl: string, qrDataUrl: string }>}
+   */
+  async startMfaSetup(mfaToken) {
+    return this.mfaRequest('setup', mfaToken ? { mfaToken } : {}, { withSession: !mfaToken });
+  }
+
+  /**
+   * Confirm setup with a code from the app. Returns { recoveryCodes } and, during login, the session
+   * (which is stored).
+   */
+  async enableMfa(code, mfaToken) {
+    const data = await this.mfaRequest('enable', mfaToken ? { mfaToken, code } : { code }, {
+      withSession: !mfaToken,
+    });
+    if (data.jwt) this.storeSession(data);
+    return data;
+  }
+
+  /** Turn 2FA off for the signed-in user (needs a current code). */
+  async disableMfa(code) {
+    return this.mfaRequest('disable', { code }, { withSession: true });
   }
 
   /**

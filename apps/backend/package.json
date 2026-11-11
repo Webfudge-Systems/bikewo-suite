@@ -17,7 +17,8 @@
     "reset:db": "node scripts/reset-local-db.js",
     "flush:api-cache": "node scripts/flush-api-cache.js",
     "sync:platform-admin": "node scripts/sync-platform-admin.js",
-    "sync:platform-admin:reset-password": "node scripts/sync-platform-admin.js --reset-password"
+    "sync:platform-admin:reset-password": "node scripts/sync-platform-admin.js --reset-password",
+    "reset:user-mfa": "node scripts/reset-user-mfa.js"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",
@@ -25,6 +26,7 @@
     "@strapi/plugin-users-permissions": "5.33.1",
     "@strapi/strapi": "5.33.1",
     "pg": "^8.20.0",
+    "qrcode": "^1.5.4",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-redux": "^9.2.0",

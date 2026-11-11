@@ -3192,6 +3192,12 @@ export interface PluginUsersPermissionsUser extends Struct.CollectionTypeSchema 
     locale: Schema.Attribute.String & Schema.Attribute.Private
     localizations: Schema.Attribute.Relation<'oneToMany', 'plugin::users-permissions.user'> &
       Schema.Attribute.Private
+    mfaEnabled: Schema.Attribute.Boolean &
+      Schema.Attribute.Private &
+      Schema.Attribute.DefaultTo<false>
+    mfaPendingSecret: Schema.Attribute.Text & Schema.Attribute.Private
+    mfaRecoveryCodes: Schema.Attribute.JSON & Schema.Attribute.Private
+    mfaSecret: Schema.Attribute.Text & Schema.Attribute.Private
     password: Schema.Attribute.Password &
       Schema.Attribute.Private &
       Schema.Attribute.SetMinMaxLength<{

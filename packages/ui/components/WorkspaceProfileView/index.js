@@ -24,6 +24,7 @@ import { Avatar } from '../Avatar'
 import { Badge } from '../Badge'
 import { Card } from '../Card'
 import { InfoRow, InfoSection } from '../EntityDetailLayout'
+import { MfaSettingsCard } from '../MfaLoginStep'
 import { LoadingSpinner } from '../../feedback'
 
 function formatValue(value) {
@@ -154,6 +155,8 @@ export function WorkspaceProfileView({ PageHeader }) {
           </InfoSection>
         </Card>
       </div>
+
+      <MfaSettingsCard />
     </div>
   )
 }

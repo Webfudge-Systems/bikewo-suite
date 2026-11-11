@@ -33,6 +33,7 @@ export {
   SidebarProductBranding,
 } from './LoginBrandCorner';
 export { WorkspaceBackButton, workspaceBackButtonClassName } from './WorkspaceBackButton';
+export { MfaLoginStep, MfaSettingsCard } from './MfaLoginStep';
 export {
   TableCellCreated,
   TableCellDateOnly,

@@ -98,25 +98,37 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
+  /** Put a stored session (from login or the 2FA step) into context state. */
+  const applySession = (response) => {
+    setUser(response.user);
+    setIsAuthenticated(true);
+
+    // Merge DB profile + orgs from /api/auth/me (firstName/lastName, etc.)
+    authService.getCurrentUser().then((fresh) => {
+      if (fresh) setUser(fresh);
+    }).catch(() => {});
+
+    const orgs = response.organizations || authService.getStoredOrganizations();
+    const org  = authService.getCurrentOrg();
+    setOrganizations(orgs);
+    setCurrentOrgState(org);
+
+    return { success: true, user: response.user, organizations: orgs, currentOrg: org };
+  };
+
+  /**
+   * Returns { success: true } with a session, or { success: false, mfaRequired | mfaSetupRequired,
+   * mfaToken } when the password was right but a second factor is still needed.
+   */
   const login = async (email, password) => {
     try {
       const response = await authService.login(email, password);
 
+      if (response.mfaRequired || response.mfaSetupRequired) {
+        return { success: false, ...response };
+      }
       if (response.user && response.token) {
-        setUser(response.user);
-        setIsAuthenticated(true);
-
-        // Merge DB profile + orgs from /api/auth/me (firstName/lastName, etc.)
-        authService.getCurrentUser().then((fresh) => {
-          if (fresh) setUser(fresh);
-        }).catch(() => {});
-
-        const orgs = response.organizations || authService.getStoredOrganizations();
-        const org  = authService.getCurrentOrg();
-        setOrganizations(orgs);
-        setCurrentOrgState(org);
-
-        return { success: true, user: response.user, organizations: orgs, currentOrg: org };
+        return applySession(response);
       } else {
         throw new Error("Invalid response from server");
       }
@@ -134,6 +146,18 @@ export const AuthProvider = ({ children }) => {
 
       return { success: false, error: errorMessage };
     }
+  };
+
+  /** Finish login with the code from the authenticator app (or a recovery code). Throws on a bad code. */
+  const verifyMfa = async (mfaToken, code) => applySession(await authService.verifyMfa(mfaToken, code));
+
+  /**
+   * Finish first-time setup during login. Returns { recoveryCodes, complete } where complete()
+   * signs the user in once they have saved their recovery codes.
+   */
+  const enableMfaDuringLogin = async (mfaToken, code) => {
+    const data = await authService.enableMfa(code, mfaToken);
+    return { recoveryCodes: data.recoveryCodes || [], complete: () => applySession(data) };
   };
 
   const logout = () => {
@@ -182,6 +206,8 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated,
     loading,
     login,
+    verifyMfa,
+    enableMfaDuringLogin,
     logout,
     hasPermission,
     canAccessAppModule,

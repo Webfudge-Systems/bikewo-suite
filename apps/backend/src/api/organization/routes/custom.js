@@ -78,6 +78,16 @@ module.exports = {
     },
     {
       method: 'POST',
+      path: '/organizations/:id/users/:membershipId/reset-mfa',
+      handler: 'organization.resetUserMfa',
+      config: {
+        auth: false, // Use custom JWT middleware
+        policies: [],
+        middlewares: [],
+      }
+    },
+    {
+      method: 'POST',
       path: '/organizations/:id/add-app',
       handler: 'organization.addApp',
       config: {

@@ -33,6 +33,8 @@ export {
   LoginProductCredit,
   LoginMobileBrandHeader,
   SidebarProductBranding,
+  MfaLoginStep,
+  MfaSettingsCard,
   WorkspaceHeader,
   WorkspaceBackButton,
   workspaceBackButtonClassName,

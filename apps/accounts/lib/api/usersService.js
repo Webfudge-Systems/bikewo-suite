@@ -104,6 +104,17 @@ class UsersService {
     const qs = `transferToUserId=${encodeURIComponent(String(transferToUserId))}`
     return strapiClient.delete(`/organizations/${orgId}/users/${membershipId}?${qs}`)
   }
+
+  /** Admin: turn off a member's two-factor authentication so they can set it up again. */
+  async resetMfa({ membershipId }) {
+    if (typeof window === 'undefined') throw new Error('Reset is only available in browser')
+
+    const orgId = localStorage.getItem('current-org-id')
+    if (!orgId) throw new Error('No active organization selected')
+    if (!membershipId) throw new Error('membershipId is required')
+
+    return strapiClient.post(`/organizations/${orgId}/users/${membershipId}/reset-mfa`, {})
+  }
 }
 
 const usersService = new UsersService()

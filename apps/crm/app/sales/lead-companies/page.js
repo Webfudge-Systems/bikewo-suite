@@ -437,12 +437,15 @@ export default function LeadCompaniesPage() {
 
   const leadStats = useMemo(
     () => ({
+      total: statsByStatus.total ?? totalItems,
+      // "Non contacted" = leads still in NEW status (not yet moved to Contacted or beyond).
+      nonContacted: statsByStatus.NEW ?? 0,
       new: statsByStatus.NEW ?? 0,
       contacted: statsByStatus.CONTACTED ?? 0,
       qualified: statsByStatus.QUALIFIED ?? 0,
       lost: statsByStatus.LOST ?? 0,
     }),
-    [statsByStatus]
+    [statsByStatus, totalItems]
   );
 
   const statusFilterOptions = useMemo(

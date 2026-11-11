@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Clock3, Eye, EyeOff, Mail, MoreHorizontal, Pencil, ShieldBan, ShieldCheck, Trash2, UserCheck, UserPlus, Users, UserX } from 'lucide-react'
+import { Clock3, Eye, EyeOff, KeyRound, Mail, MoreHorizontal, Pencil, ShieldBan, ShieldCheck, Trash2, UserCheck, UserPlus, Users, UserX } from 'lucide-react'
 import {
   Avatar,
   Badge,
@@ -87,13 +87,14 @@ const TOGGLEABLE_COLUMNS = [
   { key: 'role', label: 'Role' },
   { key: 'departments', label: 'Departments' },
   { key: 'status', label: 'Status' },
+  { key: 'mfa', label: '2FA' },
   { key: 'createdAt', label: 'Created' },
   { key: 'updatedAt', label: 'Last updated' },
 ]
 
 const REORDERABLE_COLUMN_KEYS = TOGGLEABLE_COLUMNS.map((c) => c.key)
 
-const DEFAULT_ON_COLUMN_KEYS = new Set(['email', 'role', 'departments', 'status', 'createdAt'])
+const DEFAULT_ON_COLUMN_KEYS = new Set(['email', 'role', 'departments', 'status', 'mfa', 'createdAt'])
 
 const DEFAULT_COLUMN_VISIBILITY = TOGGLEABLE_COLUMNS.reduce((acc, { key }) => {
   acc[key] = DEFAULT_ON_COLUMN_KEYS.has(key)
@@ -172,6 +173,9 @@ export default function UsersPage() {
   const [deleteTransferToUserId, setDeleteTransferToUserId] = useState('')
   const [deleteError, setDeleteError] = useState('')
   const [deleteSubmitting, setDeleteSubmitting] = useState(false)
+  const [mfaResetTargetUser, setMfaResetTargetUser] = useState(null)
+  const [mfaResetError, setMfaResetError] = useState('')
+  const [mfaResetSubmitting, setMfaResetSubmitting] = useState(false)
   const [allDepartments, setAllDepartments] = useState([])
   const [inviteDepartmentIds, setInviteDepartmentIds] = useState([])
   const [invitePrimaryDepartmentId, setInvitePrimaryDepartmentId] = useState(null)
@@ -615,6 +619,21 @@ export default function UsersPage() {
     }
   }, [deleteTargetUser, deleteTransferToUserId, fetchUsers])
 
+  const confirmResetMfa = useCallback(async () => {
+    if (!mfaResetTargetUser?.membershipId) return
+    try {
+      setMfaResetSubmitting(true)
+      setMfaResetError('')
+      await usersService.resetMfa({ membershipId: mfaResetTargetUser.membershipId })
+      setMfaResetTargetUser(null)
+      await fetchUsers()
+    } catch (error) {
+      setMfaResetError(error?.message || 'Failed to reset two-factor authentication')
+    } finally {
+      setMfaResetSubmitting(false)
+    }
+  }, [mfaResetTargetUser, fetchUsers])
+
   const columns = useMemo(
     () => [
       {
@@ -661,6 +680,13 @@ export default function UsersPage() {
           const status = getUserStatus(user)
           return <Badge variant={getUserStatusVariant(status)} className="capitalize">{status}</Badge>
         },
+      },
+      {
+        key: 'mfa',
+        label: '2FA',
+        render: (_, user) => (
+          <Badge variant={user?.mfaEnabled ? 'success' : 'default'}>{user?.mfaEnabled ? 'On' : 'Off'}</Badge>
+        ),
       },
       {
         key: 'createdAt',
@@ -1114,6 +1140,20 @@ export default function UsersPage() {
             )}
             {getUserStatus(rowActionMenu.user) === 'suspended' ? 'Activate user' : 'Suspend user'}
           </button>
+          {canManageUsers && rowActionMenu.user?.mfaEnabled ? (
+            <button
+              type="button"
+              className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-slate-700 transition-colors hover:bg-teal-50 hover:text-teal-700"
+              onClick={() => {
+                setMfaResetTargetUser(rowActionMenu.user)
+                setMfaResetError('')
+                setRowActionMenu(null)
+              }}
+            >
+              <KeyRound className="w-4 h-4 text-teal-600" />
+              Reset two-factor authentication
+            </button>
+          ) : null}
           {canManageUsers ? (
             <button
               type="button"
@@ -1216,6 +1256,35 @@ export default function UsersPage() {
               disabled={deleteSubmitting}
             >
               {deleteSubmitting ? 'Removing...' : 'Remove User'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={Boolean(mfaResetTargetUser)}
+        onClose={() => !mfaResetSubmitting && setMfaResetTargetUser(null)}
+        title="Reset Two-Factor Authentication"
+        size="md"
+        closeOnBackdrop={!mfaResetSubmitting}
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-gray-700">
+            Reset two-factor authentication for{' '}
+            <span className="font-semibold text-gray-900">{getUserDisplayName(mfaResetTargetUser || {})}</span>?
+          </p>
+          <p className="text-sm text-gray-500">
+            Use this when they have lost their phone. Their authenticator app and recovery codes stop working, and
+            they can sign in with just their password. If your organization requires 2FA, they will be asked to set it
+            up again at their next sign-in. This is recorded in the audit log.
+          </p>
+          {mfaResetError ? <p className="text-sm text-red-600">{mfaResetError}</p> : null}
+          <div className="flex items-center justify-end gap-2 pt-2">
+            <Button variant="muted" onClick={() => setMfaResetTargetUser(null)} disabled={mfaResetSubmitting}>
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={confirmResetMfa} disabled={mfaResetSubmitting}>
+              {mfaResetSubmitting ? 'Resetting...' : 'Reset 2FA'}
             </Button>
           </div>
         </div>

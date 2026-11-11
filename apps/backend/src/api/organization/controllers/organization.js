@@ -400,6 +400,7 @@ module.exports = createCoreController('api::organization.organization', ({ strap
           lastName: userData?.lastName || userData?.lastname || '',
           blocked: Boolean(userData?.blocked),
           confirmed: userData?.confirmed !== false,
+          mfaEnabled: Boolean(userData?.mfaEnabled),
           createdAt: userData?.createdAt || null,
           updatedAt: userData?.updatedAt || null,
           roleId: roleData?.id || null,
@@ -820,6 +821,75 @@ module.exports = createCoreController('api::organization.organization', ({ strap
     } catch (error) {
       console.error('Error removing organization membership:', error);
       return ctx.badRequest(error.message || 'Failed to remove user');
+    }
+  },
+
+  // Admin: turn off a member's two-factor authentication (lost phone). They set it up again on next sign-in
+  // if the organization requires it.
+  async resetUserMfa(ctx) {
+    const { id, membershipId } = ctx.params;
+    const user = ctx.state.user;
+
+    if (!user) {
+      return ctx.unauthorized('Missing or invalid credentials');
+    }
+    if (!canManageOrganizationSecurity(ctx)) {
+      return ctx.forbidden('Only organization admins can reset two-factor authentication');
+    }
+
+    try {
+      const hasAccess = await strapi.service('api::organization.organization').checkUserAccess(id, user.id);
+      if (!hasAccess) {
+        return ctx.forbidden('You do not have access to this organization');
+      }
+
+      const memberships = await strapi.entityService.findMany('api::organization-user.organization-user', {
+        filters: { id: membershipId, organization: id, isActive: true },
+        populate: { user: true },
+        limit: 1,
+      });
+      if (!memberships.length) {
+        return ctx.notFound('Membership not found');
+      }
+
+      /** @type {any} */
+      const membership = memberships[0];
+      const targetUserId = membership?.user?.id;
+      if (!targetUserId) {
+        return ctx.badRequest('User account not found for this membership');
+      }
+      if (Number(targetUserId) === Number(user.id)) {
+        return ctx.badRequest('Manage your own two-factor authentication from your Profile page');
+      }
+      if (!membership.user.mfaEnabled) {
+        return ctx.badRequest('Two-factor authentication is not turned on for this user');
+      }
+
+      await strapi.query('plugin::users-permissions.user').update({
+        where: { id: targetUserId },
+        data: { mfaEnabled: false, mfaSecret: null, mfaPendingSecret: null, mfaRecoveryCodes: null },
+      });
+
+      try {
+        const targetEmail = membership.user.email || membership.user.username || `member #${membershipId}`;
+        const actorName = await actorDisplayName(strapi, user.id);
+        await logAccountsActivity(strapi, {
+          organizationId: id,
+          actorUserId: user.id,
+          action: 'update',
+          subjectType: 'organization_user',
+          subjectId: membership.id,
+          summary: `${actorName} reset two-factor authentication for ${targetEmail}`,
+          meta: { email: targetEmail, module: 'accounts', event: '2fa_reset' },
+        });
+      } catch (_) {
+        /* logging is best-effort */
+      }
+
+      return ctx.send({ success: true, mfaEnabled: false });
+    } catch (error) {
+      console.error('Error resetting two-factor authentication:', error);
+      return ctx.badRequest(error.message || 'Failed to reset two-factor authentication');
     }
   },
 

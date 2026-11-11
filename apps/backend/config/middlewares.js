@@ -5,6 +5,11 @@ const bikewoOrigins = [
   'https://pm.bikewo.in',
   'https://accounts.bikewo.in',
   'https://portal.bikewo.in',
+  // staging
+  'https://crm.staging.bikewo.in',
+  'https://pm.staging.bikewo.in',
+  'https://accounts.staging.bikewo.in',
+  'https://portal.staging.bikewo.in',
   // legacy .com (optional during DNS cutover)
   'https://bikewo.com',
   'https://www.bikewo.com',
@@ -33,6 +38,7 @@ const allowedOriginPatterns = [
   /^https:\/\/[a-z0-9-]+\.vercel\.app$/,
   /^https:\/\/[a-z0-9-]+\.bikewo\.com$/,
   /^https:\/\/[a-z0-9-]+\.bikewo\.in$/,
+  /^https:\/\/[a-z0-9-]+\.staging\.bikewo\.in$/,
 ];
 
 module.exports = [

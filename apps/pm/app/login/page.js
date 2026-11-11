@@ -10,6 +10,7 @@ import {
   LoginBrandCorner,
   LoginProductCredit,
   LoginMobileBrandHeader,
+  MfaLoginStep,
 } from '@webfudge/ui';
 import { PM_SITE } from '../../lib/site';
 
@@ -20,6 +21,8 @@ export default function LoginPage() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginError, setLoginError] = useState('');
+  // Set after a correct password when a 2FA code (or first-time 2FA setup) is still needed.
+  const [mfa, setMfa] = useState(null);
 
   const { login, isAuthenticated, loading } = useAuth();
   const router = useRouter();
@@ -47,6 +50,8 @@ export default function LoginPage() {
       const result = await login(email, password);
       if (result?.success) {
         router.replace('/');
+      } else if (result?.mfaRequired || result?.mfaSetupRequired) {
+        setMfa({ mode: result.mfaSetupRequired ? 'setup' : 'verify', token: result.mfaToken });
       } else {
         setLoginError(result?.error || 'Login failed. Please try again.');
       }
@@ -99,6 +104,18 @@ export default function LoginPage() {
             productName={PM_SITE.name}
             creatorLine={PM_SITE.creatorLine}
           />
+          {mfa ? (
+            <MfaLoginStep
+              mfaToken={mfa.token}
+              mode={mfa.mode}
+              onDone={() => router.replace('/')}
+              onCancel={() => {
+                setMfa(null);
+                setPassword('');
+              }}
+            />
+          ) : (
+          <>
           <h2 className="text-3xl font-semibold text-brand-dark mb-2">Sign in</h2>
           <p className="text-gray-600 mb-8">Enter your credentials to access the PM dashboard.</p>
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -133,6 +150,8 @@ export default function LoginPage() {
           <p className="mt-6 text-center text-sm text-gray-500">
             Don&apos;t have an account? Contact your administrator.
           </p>
+          </>
+          )}
         </div>
       </div>
     </div>

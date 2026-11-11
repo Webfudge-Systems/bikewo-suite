@@ -22,6 +22,31 @@ module.exports = {
       handler: 'auth.me',
       config: authFalse,
     },
+    // Two-factor authentication (authenticator app). Handlers check the pending token / session themselves.
+    {
+      method: 'POST',
+      path: '/auth/mfa/verify',
+      handler: 'auth.mfaVerify',
+      config: authFalse,
+    },
+    {
+      method: 'POST',
+      path: '/auth/mfa/setup',
+      handler: 'auth.mfaSetup',
+      config: authFalse,
+    },
+    {
+      method: 'POST',
+      path: '/auth/mfa/enable',
+      handler: 'auth.mfaEnable',
+      config: authFalse,
+    },
+    {
+      method: 'POST',
+      path: '/auth/mfa/disable',
+      handler: 'auth.mfaDisable',
+      config: authFalse,
+    },
     {
       method: 'POST',
       path: '/auth/client/login',

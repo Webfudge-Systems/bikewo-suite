@@ -14,6 +14,7 @@ export default function CRMPageHeader({ showBack, ...props }) {
       {...props}
       showBack={showBack ?? defaultShowBack}
       notificationService={notificationService}
+      pushApp="crm"
       renderGlobalSearchModal={({ isOpen, onClose, initialQuery }) => (
         <GlobalSearchModal isOpen={isOpen} onClose={onClose} initialQuery={initialQuery} />
       )}

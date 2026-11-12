@@ -2373,6 +2373,38 @@ export interface ApiPurchaseOrderPurchaseOrder extends Struct.CollectionTypeSche
   }
 }
 
+export interface ApiPushSubscriptionPushSubscription extends Struct.CollectionTypeSchema {
+  collectionName: 'push_subscriptions'
+  info: {
+    description: 'Browser Web Push subscriptions (Chrome notifications) for CRM / PM users'
+    displayName: 'Push Subscription'
+    pluralName: 'push-subscriptions'
+    singularName: 'push-subscription'
+  }
+  options: {
+    draftAndPublish: false
+  }
+  attributes: {
+    app: Schema.Attribute.Enumeration<['crm', 'pm']> & Schema.Attribute.Required
+    auth: Schema.Attribute.String & Schema.Attribute.Required & Schema.Attribute.Private
+    createdAt: Schema.Attribute.DateTime
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> & Schema.Attribute.Private
+    endpoint: Schema.Attribute.Text & Schema.Attribute.Required & Schema.Attribute.Private
+    locale: Schema.Attribute.String & Schema.Attribute.Private
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::push-subscription.push-subscription'
+    > &
+      Schema.Attribute.Private
+    p256dh: Schema.Attribute.String & Schema.Attribute.Required & Schema.Attribute.Private
+    publishedAt: Schema.Attribute.DateTime
+    updatedAt: Schema.Attribute.DateTime
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> & Schema.Attribute.Private
+    user: Schema.Attribute.Relation<'manyToOne', 'plugin::users-permissions.user'>
+    userAgent: Schema.Attribute.String
+  }
+}
+
 export interface ApiRecurringExpenseRecurringExpense extends Struct.CollectionTypeSchema {
   collectionName: 'recurring_expenses'
   info: {
@@ -3274,6 +3306,7 @@ declare module '@strapi/strapi' {
       'api::project.project': ApiProjectProject
       'api::proposal.proposal': ApiProposalProposal
       'api::purchase-order.purchase-order': ApiPurchaseOrderPurchaseOrder
+      'api::push-subscription.push-subscription': ApiPushSubscriptionPushSubscription
       'api::recurring-expense.recurring-expense': ApiRecurringExpenseRecurringExpense
       'api::recurring-invoice.recurring-invoice': ApiRecurringInvoiceRecurringInvoice
       'api::retainer-invoice.retainer-invoice': ApiRetainerInvoiceRetainerInvoice

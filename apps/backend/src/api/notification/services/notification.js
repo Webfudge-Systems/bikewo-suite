@@ -1,6 +1,7 @@
 'use strict';
 
 const { createCoreService } = require('@strapi/strapi').factories;
+const { sendPushForNotification } = require('../../../utils/web-push');
 
 module.exports = createCoreService('api::notification.notification', ({ strapi }) => ({
   /**
@@ -30,6 +31,10 @@ module.exports = createCoreService('api::notification.notification', ({ strapi }
           },
         });
         created.push(entry);
+        // Chrome / desktop push to the user's browsers; never blocks or fails the request.
+        sendPushForNotification(strapi, { userId, title, message, data, notificationId: entry?.id }).catch(
+          (err) => console.warn('[web-push] push for notification failed:', err?.message || err)
+        );
       } catch (err) {
         console.error(`Failed to create notification for user ${userId}:`, err);
       }

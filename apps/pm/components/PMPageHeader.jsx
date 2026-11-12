@@ -14,6 +14,7 @@ export default function PMPageHeader({ showBack, ...props }) {
       {...props}
       showBack={showBack ?? defaultShowBack}
       notificationService={notificationService}
+      pushApp="pm"
       renderGlobalSearchModal={({ isOpen, onClose, initialQuery }) => (
         <GlobalSearchModal isOpen={isOpen} onClose={onClose} initialQuery={initialQuery} />
       )}

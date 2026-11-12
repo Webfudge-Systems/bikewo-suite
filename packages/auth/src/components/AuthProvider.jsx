@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import authService from "../services/authService";
+import pushService from "../services/pushService";
 
 const AuthContext = createContext();
 
@@ -161,6 +162,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    // Stop Chrome notifications for this browser before the session is cleared.
+    if (pushService.isSupported()) pushService.disable().catch(() => {});
     authService.logout();
     setUser(null);
     setIsAuthenticated(false);

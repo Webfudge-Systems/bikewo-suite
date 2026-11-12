@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "push_subscriptions",
+  "info": {
+    "singularName": "push-subscription",
+    "pluralName": "push-subscriptions",
+    "displayName": "Push Subscription",
+    "description": "Browser Web Push subscriptions (Chrome notifications) for CRM / PM users"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "endpoint": {
+      "type": "text",
+      "required": true,
+      "private": true
+    },
+    "p256dh": {
+      "type": "string",
+      "required": true,
+      "private": true
+    },
+    "auth": {
+      "type": "string",
+      "required": true,
+      "private": true
+    },
+    "app": {
+      "type": "enumeration",
+      "enum": ["crm", "pm"],
+      "required": true
+    },
+    "userAgent": {
+      "type": "string"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    }
+  }
+}

@@ -22,6 +22,7 @@ import {
   resolveUserDisplayName,
   resolveUserInitials,
   resolveUserRole,
+  pushService,
 } from '@webfudge/auth'
 import { Avatar, Card } from '../index'
 import { WorkspaceBackButton } from '../WorkspaceBackButton'
@@ -54,6 +55,7 @@ export function WorkspaceHeader({
   onBack,
   backLabel = 'Back',
   titleClassName,
+  pushApp,
 }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -66,6 +68,10 @@ export function WorkspaceHeader({
   const [unreadCount, setUnreadCount] = useState(0)
   const [loadingNotifications, setLoadingNotifications] = useState(false)
   const notificationDropdownRef = useRef(null)
+  // Chrome / desktop push notifications (CRM and PM pass pushApp).
+  const [pushStatus, setPushStatus] = useState(null)
+  const [pushBusy, setPushBusy] = useState(false)
+  const [pushError, setPushError] = useState('')
   const profileCloseTimerRef = useRef(null)
 
   const getCurrentUserId = () => {
@@ -95,6 +101,25 @@ export function WorkspaceHeader({
     const pollInterval = setInterval(loadNotifications, 30000)
     return () => clearInterval(pollInterval)
   }, [user, notificationService])
+
+  useEffect(() => {
+    if (!pushApp || !user || !pushService.isSupported()) return
+    pushService.getStatus().then(setPushStatus).catch(() => {})
+    pushService.resync(pushApp).catch(() => {})
+  }, [pushApp, user])
+
+  const togglePush = async () => {
+    setPushError('')
+    setPushBusy(true)
+    try {
+      setPushStatus(pushStatus === 'on' ? await pushService.disable() : await pushService.enable(pushApp))
+    } catch (error) {
+      setPushError(error?.message || 'Could not change notification settings.')
+      pushService.getStatus().then(setPushStatus).catch(() => {})
+    } finally {
+      setPushBusy(false)
+    }
+  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -391,6 +416,32 @@ export function WorkspaceHeader({
                         </button>
                       ) : null}
                     </div>
+                    {pushApp && pushStatus && pushStatus !== 'unsupported' ? (
+                      <div className="border-b border-gray-100 bg-brand-indigo/[0.04] px-4 py-3">
+                        {pushStatus === 'denied' ? (
+                          <p className="text-xs text-brand-text-light">
+                            Chrome notifications are blocked for this site. Allow them from the lock icon in the
+                            address bar, then reload.
+                          </p>
+                        ) : (
+                          <div className="flex items-center justify-between gap-3">
+                            <p className="text-xs text-brand-foreground">
+                              {pushStatus === 'on'
+                                ? 'Chrome notifications are on for this browser.'
+                                : 'Get Chrome notifications for new activity, even when this tab is closed.'}
+                            </p>
+                            <button
+                              onClick={togglePush}
+                              disabled={pushBusy}
+                              className="shrink-0 rounded-lg border border-brand-indigo/20 px-2.5 py-1 text-xs font-medium text-brand-indigo hover:bg-brand-indigo/10 disabled:opacity-50"
+                            >
+                              {pushBusy ? '…' : pushStatus === 'on' ? 'Turn off' : 'Turn on'}
+                            </button>
+                          </div>
+                        )}
+                        {pushError ? <p className="mt-1.5 text-xs text-red-600">{pushError}</p> : null}
+                      </div>
+                    ) : null}
                     <div className="flex-1 overflow-y-auto">
                       {loadingNotifications ? (
                         <div className="p-8 text-center text-brand-text-light">

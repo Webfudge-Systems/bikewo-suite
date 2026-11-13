@@ -36,6 +36,7 @@ import {
   TableEmptyBelow,
 } from '@webfudge/ui';
 import CRMPageHeader from '../../../components/CRMPageHeader';
+import CsvImportModal from '../../../components/CsvImportModal';
 import { TableSortDropdown as CrmTableSortDropdown } from '@webfudge/ui';
 import { useCrmTableSort } from '../../../hooks/useCrmTableSort';
 import contactService from '../../../lib/api/contactService';
@@ -152,6 +153,7 @@ export default function ContactsPage() {
   );
   const router = useRouter();
   const [contacts, setContacts] = useState([]);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [deleteContactId, setDeleteContactId] = useState(null);
@@ -686,8 +688,18 @@ export default function ContactsPage() {
         showActions={true}
         onAddClick={() => router.push('/sales/contacts/new')}
         onFilterClick={openFilterModal}
-        onImportClick={() => console.log('Import clicked')}
+        onImportClick={() => setShowImportModal(true)}
         onExportClick={() => console.log('Export clicked')}
+      />
+
+      <CsvImportModal
+        entity="contacts"
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        onImported={() => {
+          fetchContacts();
+          fetchStats();
+        }}
       />
 
       {/* KPI Cards */}

@@ -57,6 +57,7 @@ import {
   TableEmptyBelow,
 } from '@webfudge/ui';
 import CRMPageHeader from '../../../components/CRMPageHeader';
+import CsvImportModal from '../../../components/CsvImportModal';
 import { LeadsKanbanBoard, LEAD_PIPELINE_STAGES } from '../../../components/LeadsKanbanBoard';
 import { LeadsByMembersView } from '../../../components/LeadsByMembersView';
 import { TableCellLeadStatusSelect } from '@webfudge/ui';
@@ -234,6 +235,7 @@ export default function LeadCompaniesPage() {
   );
   const router = useRouter();
   const [leadCompanies, setLeadCompanies] = useState([]);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [statsByStatus, setStatsByStatus] = useState({});
   const [myLeadsCount, setMyLeadsCount] = useState(0);
@@ -1330,8 +1332,18 @@ export default function LeadCompaniesPage() {
         showActions={true}
         onAddClick={() => router.push('/sales/lead-companies/new')}
         onFilterClick={openFilterModal}
-        onImportClick={() => console.log('Import clicked')}
+        onImportClick={() => setShowImportModal(true)}
         onExportClick={() => console.log('Export clicked')}
+      />
+
+      <CsvImportModal
+        entity="leads"
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        onImported={() => {
+          fetchLeadCompanies();
+          fetchStats();
+        }}
       />
 
       {/* KPI Cards */}

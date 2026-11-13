@@ -25,6 +25,17 @@ function isTaskApiPath(path) {
   return path === '/api/tasks' || path.startsWith('/api/tasks/');
 }
 
+/**
+ * Notifications and comment/chat threads must always be live. Some are created without an org-scoped
+ * staff write (client portal comments, background jobs), so the org invalidation never fires and users
+ * saw no new notifications for up to CACHE_TTL_SECONDS.
+ */
+const LIVE_GET_PREFIXES = ['/api/notifications', '/api/crm-activities', '/api/direct-messages', '/api/chat-messages'];
+
+function isLiveApiPath(path) {
+  return LIVE_GET_PREFIXES.some((prefix) => path === prefix || path.startsWith(`${prefix}/`));
+}
+
 /** Paths that must never trigger org cache invalidation (auth, uploads, etc.). */
 function shouldSkipMutationInvalidate(path) {
   if (!path || !path.startsWith('/api')) return true;
@@ -36,6 +47,7 @@ function shouldSkipGetCache(path) {
   if (shouldSkipMutationInvalidate(path)) return true;
   // Task reads are paginated and high-churn; caching any task GET caused stale My Tasks lists.
   if (isTaskApiPath(path)) return true;
+  if (isLiveApiPath(path)) return true;
   return false;
 }
 

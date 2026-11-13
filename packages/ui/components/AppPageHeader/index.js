@@ -31,6 +31,7 @@
  *   renderGlobalSearchModal – ({ isOpen, onClose, initialQuery }) => ReactNode
  *   searchInputClassName   – Tailwind class override for the search input
  *   titleClassName         – Tailwind class override for the page title
+ *   pushApp                – 'crm' | 'pm': show the Chrome notifications toggle in the bell menu
  */
 
 import { WorkspaceHeader } from '../WorkspaceHeader';
@@ -62,6 +63,7 @@ export function AppPageHeader({
   renderGlobalSearchModal,
   searchInputClassName = DEFAULT_SEARCH_INPUT_CLASS,
   titleClassName,
+  pushApp,
 }) {
   return (
     <WorkspaceHeader
@@ -87,6 +89,7 @@ export function AppPageHeader({
       notificationService={notificationService}
       renderGlobalSearchModal={renderGlobalSearchModal}
       searchInputClassName={searchInputClassName}
+      pushApp={pushApp}
     >
       {children}
     </WorkspaceHeader>

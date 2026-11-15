@@ -88,7 +88,8 @@ export function WorkspaceHeader({
       try {
         setLoadingNotifications(true)
         const list = await notificationService.getNotifications(userId)
-        const transformed = list.map(notificationService.transformNotification)
+        // Call as a method: CRM/PM transformNotification uses `this` (passing it bare threw on any notification).
+        const transformed = list.map((n) => notificationService.transformNotification(n))
         setNotifications(transformed)
         setUnreadCount(transformed.filter((n) => !n.isRead).length)
       } catch (error) {

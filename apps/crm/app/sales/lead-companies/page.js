@@ -58,6 +58,9 @@ import {
 } from '@webfudge/ui';
 import CRMPageHeader from '../../../components/CRMPageHeader';
 import CsvImportModal from '../../../components/CsvImportModal';
+import { buildExportRows } from '../../../lib/bulkImport';
+import { fetchAllPages, exportFilename } from '../../../lib/csvExport';
+import { downloadCsv } from '../../../lib/csv';
 import { LeadsKanbanBoard, LEAD_PIPELINE_STAGES } from '../../../components/LeadsKanbanBoard';
 import { LeadsByMembersView } from '../../../components/LeadsByMembersView';
 import { TableCellLeadStatusSelect } from '@webfudge/ui';
@@ -236,6 +239,7 @@ export default function LeadCompaniesPage() {
   const router = useRouter();
   const [leadCompanies, setLeadCompanies] = useState([]);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [statsByStatus, setStatsByStatus] = useState({});
   const [myLeadsCount, setMyLeadsCount] = useState(0);
@@ -428,6 +432,37 @@ export default function LeadCompaniesPage() {
       setLoading(false);
     }
   }, [currentPage, activeTab, debouncedSearch, appliedFilters, sortApiParam, itemsPerPage, leadViewMode]);
+
+  /** Export every lead matching the current tab, search and filters (all pages) in the import-template format. */
+  const handleExport = useCallback(async () => {
+    if (exporting) return;
+    try {
+      setExporting(true);
+      const rows = await fetchAllPages((page, pageSize) =>
+        leadCompanyService.getAll(
+          leadCompanyService.buildListParams({
+            page,
+            pageSize,
+            activeTab,
+            searchQuery: debouncedSearch,
+            appliedFilters,
+            sort: sortApiParam,
+            assignedToUserId: activeTab === 'my' ? currentStrapiUserId() : null,
+          })
+        )
+      );
+      if (!rows.length) {
+        alert('There are no lead companies to export for the current view.');
+        return;
+      }
+      downloadCsv(exportFilename('lead-companies'), buildExportRows('leads', rows));
+    } catch (err) {
+      console.error('Error exporting lead companies:', err);
+      alert('Failed to export lead companies. Please try again.');
+    } finally {
+      setExporting(false);
+    }
+  }, [exporting, activeTab, debouncedSearch, appliedFilters, sortApiParam]);
 
   useEffect(() => {
     fetchStats();
@@ -1333,7 +1368,7 @@ export default function LeadCompaniesPage() {
         onAddClick={() => router.push('/sales/lead-companies/new')}
         onFilterClick={openFilterModal}
         onImportClick={() => setShowImportModal(true)}
-        onExportClick={() => console.log('Export clicked')}
+        onExportClick={handleExport}
       />
 
       <CsvImportModal
@@ -1410,7 +1445,7 @@ export default function LeadCompaniesPage() {
           hasActiveSort={hasActiveSort}
           sortTitle="Sort columns"
           showExport={true}
-          onExportClick={() => console.log('Export clicked')}
+          onExportClick={handleExport}
           exportTitle="Export"
         />
         {leadViewMode === 'table' && (

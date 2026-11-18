@@ -47,10 +47,53 @@ import CRMPageHeader from '../../../components/CRMPageHeader';
 import clientAccountService from '../../../lib/api/clientAccountService';
 import contactService from '../../../lib/api/contactService';
 import { canManageCRM, canWriteCRM } from '../../../lib/rbac';
+import { downloadRecordsCsv, dateOnly } from '../../../lib/csvExport';
 
 const COLUMN_VISIBILITY_STORAGE_KEY = 'crm.clientAccounts.tableColumnVisibility';
 const COLUMN_ORDER_STORAGE_KEY = 'crm.clientAccounts.tableColumnOrder';
 const COLUMN_WIDTHS_STORAGE_KEY = 'crm.clientAccounts.tableColumnWidths.v2';
+
+const primaryContactOf = (account) =>
+  account?.contacts?.find((c) => c.isPrimaryContact) || account?.contacts?.[0] || null;
+
+/** Columns of the Client Accounts CSV export. */
+const EXPORT_COLUMNS = [
+  { header: 'Company Name', value: (a) => a.companyName },
+  { header: 'Status', value: (a) => a.status },
+  { header: 'Industry', value: (a) => a.industry },
+  { header: 'Account Type', value: (a) => a.accountType },
+  { header: 'Billing Cycle', value: (a) => a.billingCycle },
+  { header: 'Health Score', value: (a) => a.healthScore },
+  { header: 'Deal Value', value: (a) => a.dealValue },
+  { header: 'Account Manager (email)', value: (a) => a.assignedTo?.email },
+  {
+    header: 'Primary Contact Name',
+    value: (a) => {
+      const c = primaryContactOf(a);
+      return c ? [c.firstName, c.lastName].filter(Boolean).join(' ') : '';
+    },
+  },
+  { header: 'Primary Contact Email', value: (a) => primaryContactOf(a)?.email },
+  { header: 'Primary Contact Phone', value: (a) => primaryContactOf(a)?.phone },
+  { header: 'Contacts', value: (a) => a.contacts?.length ?? 0 },
+  { header: 'Company Email', value: (a) => a.email },
+  { header: 'Company Phone', value: (a) => a.phone },
+  { header: 'Website', value: (a) => a.website },
+  { header: 'Address', value: (a) => a.address },
+  { header: 'City', value: (a) => a.city },
+  { header: 'State', value: (a) => a.state },
+  { header: 'Country', value: (a) => a.country },
+  { header: 'Zip Code', value: (a) => a.zipCode },
+  { header: 'Employees', value: (a) => a.employees },
+  { header: 'LinkedIn', value: (a) => a.linkedIn },
+  { header: 'Twitter', value: (a) => a.twitter },
+  { header: 'Contract Start', value: (a) => dateOnly(a.contractStartDate) },
+  { header: 'Contract End', value: (a) => dateOnly(a.contractEndDate) },
+  { header: 'Description', value: (a) => a.description },
+  { header: 'Notes', value: (a) => a.notes },
+  { header: 'Created', value: (a) => dateOnly(a.createdAt) },
+  { header: 'Updated', value: (a) => dateOnly(a.updatedAt) },
+];
 
 const TOGGLEABLE_COLUMNS = [
   { key: 'primaryContact', label: 'Primary contact' },
@@ -478,6 +521,15 @@ export default function ClientAccountsPage() {
 
     return matchesSearch && matchesTab && matchesAdvanced;
   });
+
+  /** Download the accounts matching the current tab, search and filters as CSV. */
+  const handleExport = () => {
+    if (!filteredAccounts.length) {
+      alert('There are no client accounts to export for the current view.');
+      return;
+    }
+    downloadRecordsCsv('client-accounts', EXPORT_COLUMNS, filteredAccounts);
+  };
 
   // Pagination
   const totalPages = Math.ceil(filteredAccounts.length / itemsPerPage);
@@ -958,7 +1010,7 @@ export default function ClientAccountsPage() {
         onAddClick={canCreateClientAccounts ? () => router.push('/clients/accounts/new') : undefined}
         onFilterClick={openFilterModal}
         onImportClick={() => console.log('Import clicked')}
-        onExportClick={() => console.log('Export clicked')}
+        onExportClick={handleExport}
       />
 
       {/* KPI Cards */}
@@ -1009,7 +1061,7 @@ export default function ClientAccountsPage() {
           onColumnVisibilityClick={() => setColumnPickerOpen((o) => !o)}
           columnVisibilityTitle="Show or hide columns"
           showExport={true}
-          onExportClick={() => console.log('Export clicked')}
+          onExportClick={handleExport}
           exportTitle="Export"
         />
         <TableColumnPicker

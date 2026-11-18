@@ -37,6 +37,9 @@ import {
 } from '@webfudge/ui';
 import CRMPageHeader from '../../../components/CRMPageHeader';
 import CsvImportModal from '../../../components/CsvImportModal';
+import { buildExportRows } from '../../../lib/bulkImport';
+import { fetchAllPages, exportFilename } from '../../../lib/csvExport';
+import { downloadCsv } from '../../../lib/csv';
 import { TableSortDropdown as CrmTableSortDropdown } from '@webfudge/ui';
 import { useCrmTableSort } from '../../../hooks/useCrmTableSort';
 import contactService from '../../../lib/api/contactService';
@@ -154,6 +157,7 @@ export default function ContactsPage() {
   const router = useRouter();
   const [contacts, setContacts] = useState([]);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [deleteContactId, setDeleteContactId] = useState(null);
@@ -292,6 +296,36 @@ export default function ContactsPage() {
       setLoading(false);
     }
   }, [currentPage, activeTab, debouncedSearch, appliedFilters, sortApiParam, itemsPerPage]);
+
+  /** Export every contact matching the current tab, search and filters (all pages) in the import-template format. */
+  const handleExport = useCallback(async () => {
+    if (exporting) return;
+    try {
+      setExporting(true);
+      const rows = await fetchAllPages((page, pageSize) =>
+        contactService.getAll(
+          contactService.buildListParams({
+            page,
+            pageSize,
+            activeTab,
+            searchQuery: debouncedSearch,
+            appliedFilters,
+            sort: sortApiParam,
+          })
+        )
+      );
+      if (!rows.length) {
+        alert('There are no contacts to export for the current view.');
+        return;
+      }
+      downloadCsv(exportFilename('contacts'), buildExportRows('contacts', rows));
+    } catch (err) {
+      console.error('Error exporting contacts:', err);
+      alert('Failed to export contacts. Please try again.');
+    } finally {
+      setExporting(false);
+    }
+  }, [exporting, activeTab, debouncedSearch, appliedFilters, sortApiParam]);
 
   useEffect(() => {
     fetchStats();
@@ -689,7 +723,7 @@ export default function ContactsPage() {
         onAddClick={() => router.push('/sales/contacts/new')}
         onFilterClick={openFilterModal}
         onImportClick={() => setShowImportModal(true)}
-        onExportClick={() => console.log('Export clicked')}
+        onExportClick={handleExport}
       />
 
       <CsvImportModal
@@ -761,7 +795,7 @@ export default function ContactsPage() {
           hasActiveSort={hasActiveSort}
           sortTitle="Sort columns"
           showExport={true}
-          onExportClick={() => console.log('Export clicked')}
+          onExportClick={handleExport}
           exportTitle="Export"
         />
         <CrmTableSortDropdown

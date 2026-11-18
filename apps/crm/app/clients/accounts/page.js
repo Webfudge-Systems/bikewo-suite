@@ -1009,7 +1009,6 @@ export default function ClientAccountsPage() {
         showActions={true}
         onAddClick={canCreateClientAccounts ? () => router.push('/clients/accounts/new') : undefined}
         onFilterClick={openFilterModal}
-        onImportClick={() => console.log('Import clicked')}
         onExportClick={handleExport}
       />
 

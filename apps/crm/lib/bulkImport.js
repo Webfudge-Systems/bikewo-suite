@@ -318,3 +318,25 @@ export async function runImport(entity, items, onProgress) {
   await Promise.all(Array.from({ length: Math.min(CONCURRENCY, queue.length) }, worker));
   return results.sort((a, b) => a.rowNumber - b.rowNumber);
 }
+
+/**
+ * Export rows in the same format as the import template (header row + one row per record),
+ * so an exported file can be edited and imported again.
+ */
+export function buildExportRows(entity, records) {
+  const { columns } = ENTITY_CONFIG[entity];
+  const cell = (col, record) => {
+    let source = record;
+    if (col.group === 'contact') {
+      const contacts = Array.isArray(record?.contacts) ? record.contacts : [];
+      source = contacts.find((c) => c?.isPrimaryContact) || contacts[0] || {};
+    }
+    if (col.type === 'user') return source?.assignedTo?.email || '';
+    if (col.type === 'leadCompany') return source?.leadCompany?.companyName || '';
+    const value = source?.[col.field];
+    if (value == null) return '';
+    if (col.type === 'date') return String(value).slice(0, 10);
+    return value;
+  };
+  return [columns.map((c) => (c.required ? `${c.header}*` : c.header)), ...records.map((r) => columns.map((c) => cell(c, r)))];
+}

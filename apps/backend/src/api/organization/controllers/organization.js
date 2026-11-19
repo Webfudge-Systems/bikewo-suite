@@ -30,6 +30,22 @@ const {
   normalizeIdList,
 } = require('../../../utils/department-membership');
 
+const { validateInviteEmailsForSecurity } = require('../../../utils/org-security-settings');
+const { passwordMinLength, validateNewPassword } = require('../../../utils/login-session');
+const { isEmailConfigured } = require('../../../utils/email');
+
+/** Inviting / managing invitations: org admins, acting in the organization they selected. */
+async function invitationAdminError(ctx, orgIdFromParams) {
+  if (!ctx.state.user) return 'Missing or invalid credentials';
+  if (String(ctx.state.orgId || '') !== String(orgIdFromParams)) {
+    return 'You do not have access to this organization';
+  }
+  if (!canManageOrganizationSecurity(ctx)) {
+    return 'Only organization admins can invite or add users';
+  }
+  return null;
+}
+
 function getRolesAdminError(ctx, orgIdFromParams) {
   if (!ctx.state.user) return 'Missing or invalid credentials';
   if (String(ctx.state.orgId || '') !== String(orgIdFromParams)) {
@@ -441,12 +457,21 @@ module.exports = createCoreController('api::organization.organization', ({ strap
     } = ctx.request.body;
 
     try {
-      const hasAccess = await strapi.service('api::organization.organization').checkUserAccess(id, user.id);
-      if (!hasAccess) {
-        return ctx.forbidden('You do not have access to this organization');
-      }
+      const adminError = await invitationAdminError(ctx, id);
+      if (adminError) return ctx.forbidden(adminError);
+
+      const organization = await strapi.entityService.findOne('api::organization.organization', id, {
+        fields: ['securitySettings'],
+      });
+      const domainError = validateInviteEmailsForSecurity(emails, organization?.securitySettings);
+      if (domainError) return ctx.badRequest(domainError);
 
       if (directAdd) {
+        if (directPassword) {
+          const minLength = passwordMinLength([organization]);
+          const problem = validateNewPassword(String(directPassword), minLength);
+          if (problem) return ctx.badRequest(problem);
+        }
         const targetEmail = Array.isArray(emails) ? emails[0] : null;
         const result = await strapi.service('api::invitation.invitation').addUserDirectly({
           organizationId: id,
@@ -471,17 +496,65 @@ module.exports = createCoreController('api::organization.organization', ({ strap
         emails,
         user.id,
         role,
-        permissions
+        permissions,
+        departmentIds
       );
 
       return ctx.send({
         success: true,
         mode: 'invite',
-        data: invitations
+        emailConfigured: isEmailConfigured(),
+        data: invitations,
       });
     } catch (error) {
       console.error('Error inviting users:', error);
       return ctx.badRequest(error.message);
+    }
+  },
+
+  /** Pending invitations (Accounts → Users). Admins only. */
+  async listInvitations(ctx) {
+    const { id } = ctx.params;
+    const adminError = await invitationAdminError(ctx, id);
+    if (adminError) return ctx.forbidden(adminError);
+    try {
+      const data = await strapi.service('api::invitation.invitation').listPending(id);
+      return ctx.send({ success: true, emailConfigured: isEmailConfigured(), data });
+    } catch (error) {
+      console.error('Error listing invitations:', error);
+      return ctx.badRequest('Could not load invitations');
+    }
+  },
+
+  async resendInvitation(ctx) {
+    const { id, invitationId } = ctx.params;
+    const adminError = await invitationAdminError(ctx, id);
+    if (adminError) return ctx.forbidden(adminError);
+    try {
+      const data = await strapi
+        .service('api::invitation.invitation')
+        .resend(id, invitationId, ctx.state.user.id);
+      return ctx.send({ success: true, data });
+    } catch (error) {
+      if (error?.status === 404) return ctx.notFound(error.message);
+      console.error('Error resending invitation:', error);
+      return ctx.badRequest(error?.status ? error.message : 'Could not resend the invitation');
+    }
+  },
+
+  async revokeInvitation(ctx) {
+    const { id, invitationId } = ctx.params;
+    const adminError = await invitationAdminError(ctx, id);
+    if (adminError) return ctx.forbidden(adminError);
+    try {
+      const data = await strapi
+        .service('api::invitation.invitation')
+        .revoke(id, invitationId, ctx.state.user.id);
+      return ctx.send({ success: true, data });
+    } catch (error) {
+      if (error?.status === 404) return ctx.notFound(error.message);
+      console.error('Error revoking invitation:', error);
+      return ctx.badRequest('Could not revoke the invitation');
     }
   },
 
@@ -622,14 +695,22 @@ module.exports = createCoreController('api::organization.organization', ({ strap
             return ctx.forbidden('Only organization admins can change user passwords');
           }
 
-          const minLen = 8;
+          const org = await strapi.entityService.findOne('api::organization.organization', id, {
+            fields: ['securitySettings'],
+          });
           const normalizedPassword = String(password).trim();
-          if (normalizedPassword.length < minLen) {
-            return ctx.badRequest(`Password must be at least ${minLen} characters`);
+          const problem = validateNewPassword(normalizedPassword, passwordMinLength([org]));
+          if (problem) {
+            return ctx.badRequest(problem);
           }
 
           await strapi.plugins['users-permissions'].services.user.edit(targetUserId, {
             password: normalizedPassword,
+          });
+          // Signs the member out everywhere; they sign in again with the new password.
+          await strapi.query('plugin::users-permissions.user').update({
+            where: { id: targetUserId },
+            data: { passwordChangedAt: new Date() },
           });
           passwordChanged = true;
         }

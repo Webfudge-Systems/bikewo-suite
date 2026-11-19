@@ -149,12 +149,14 @@ export default function AccountsHome() {
       setLoading(true)
       setActivityFetchFailed(false)
 
-      const [usersRes, rolesList, deptRes, teamsRes, orgRes] = await Promise.all([
+      const [usersRes, rolesList, deptRes, teamsRes, orgRes, invitesRes] = await Promise.all([
         usersService.list({ sort: 'updatedAt:desc' }),
         rolesService.listForOrg(),
         departmentsService.list().catch(() => null),
         teamsService.list().catch(() => null),
         organizationService.getCurrent().catch(() => null),
+        // Admins only; others get a 403 and the tile falls back to unconfirmed users.
+        usersService.listInvitations().catch(() => null),
       ])
 
       const users = normalizeStrapiList(usersRes)
@@ -174,7 +176,7 @@ export default function AccountsHome() {
         rolesCount: Array.isArray(rolesList) ? rolesList.length : 0,
         departmentsCount: departments.length,
         teamsCount: teams.length,
-        pendingInvites: invited,
+        pendingInvites: Array.isArray(invitesRes?.data) ? invitesRes.data.length : invited,
       })
 
       if (orgRes) {
@@ -306,7 +308,7 @@ export default function AccountsHome() {
                 <div className="rounded-xl border border-gray-200 p-4 bg-white">
                   <p className="text-xs text-gray-500 uppercase">Pending invites</p>
                   <p className="text-2xl font-semibold text-gray-900 mt-1">{stats.pendingInvites}</p>
-                  <p className="text-xs text-gray-500 mt-2">Users awaiting email confirmation</p>
+                  <p className="text-xs text-gray-500 mt-2">Invitations not accepted yet</p>
                 </div>
                 <div className="rounded-xl border border-gray-200 p-4 bg-white">
                   <p className="text-xs text-gray-500 uppercase">Open incidents</p>

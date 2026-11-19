@@ -2,7 +2,6 @@
 
 const jwt = require('jsonwebtoken');
 const { createOrganizationOwnerMembership } = require('../../../utils/organization-role');
-const { membershipSummary } = require('../../../utils/rbac');
 const { normalizeUserUsername, uniqueUsernameFromEmail } = require('../../../utils/user-username');
 const {
   authenticateClientCredentials,
@@ -47,7 +46,6 @@ const {
   decryptSecret,
   generateRecoveryCodes,
   consumeRecoveryCode,
-  signPendingToken,
   verifyPendingToken,
   isLocked,
   recordFailure,
@@ -55,7 +53,18 @@ const {
   membershipsRequireMfa,
 } = require('../../../utils/mfa');
 
-const ORG_MEMBERSHIP_UID = 'api::organization-user.organization-user';
+const {
+  listActiveMemberships: listActiveMembershipsFor,
+  organizationPayload,
+  sessionPayload,
+  loginResponse,
+  passwordMinLength,
+  validateNewPassword,
+  isSessionRevoked,
+} = require('../../../utils/login-session');
+const { sendEmail, layoutHtml, escapeHtml } = require('../../../utils/email');
+const { logAccountsActivity } = require('../../../utils/crm-activity-log');
+
 const CONTACT_UID = 'api::contact.contact';
 const USER_UID = 'plugin::users-permissions.user';
 
@@ -69,21 +78,8 @@ function normalizeString(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
-async function listActiveMemberships(userId, withModules = false) {
-  return strapi.entityService.findMany(ORG_MEMBERSHIP_UID, {
-    filters: { user: userId, isActive: true },
-    sort: { joinedAt: 'ASC' },
-    populate: {
-      role: true,
-      organization: {
-        populate: {
-          subscriptions: {
-            populate: withModules ? { app: true, selectedModules: true } : { app: true },
-          },
-        },
-      },
-    },
-  });
+function listActiveMemberships(userId, withModules = false) {
+  return listActiveMembershipsFor(strapi, userId, withModules);
 }
 
 async function ensureActiveOrganizationMembership(user) {
@@ -115,35 +111,6 @@ async function ensureActiveOrganizationMembership(user) {
 
   memberships = await listActiveMemberships(user.id, true);
   return memberships;
-}
-
-function organizationPayload(membership) {
-  const summary = membershipSummary(membership);
-  return {
-    ...membership.organization,
-    role: summary.role,
-    roleCode: summary.roleCode,
-    roleId: summary.roleId,
-    accessLevel: summary.accessLevel,
-    permissions: summary.permissions,
-    customPermissions: summary.customPermissions,
-    joinedAt: summary.joinedAt,
-  };
-}
-
-/** Full team-app session: 7-day JWT + profile + organizations. */
-function sessionPayload(user, memberships) {
-  return {
-    jwt: jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '7d' }),
-    user: {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      firstName: user.firstName,
-      lastName: user.lastName,
-    },
-    organizations: memberships.map(organizationPayload),
-  };
 }
 
 function sendError(ctx, status, message) {
@@ -277,15 +244,8 @@ module.exports = {
 
       const memberships = await ensureActiveOrganizationMembership(user);
 
-      // Password is correct; a second factor is still needed before a session is issued.
-      if (user.mfaEnabled) {
-        return ctx.send({ mfaRequired: true, mfaToken: signPendingToken(user.id, 'mfa-verify') });
-      }
-      if (membershipsRequireMfa(memberships)) {
-        return ctx.send({ mfaSetupRequired: true, mfaToken: signPendingToken(user.id, 'mfa-setup') });
-      }
-
-      ctx.send(sessionPayload(user, memberships));
+      // Password is correct; a second factor may still be needed before a session is issued.
+      ctx.send(loginResponse(user, memberships));
     } catch (error) {
       console.error('Login error:', error);
       ctx.badRequest(error.message);
@@ -849,6 +809,9 @@ module.exports = {
       if (!user || user.blocked) {
         return ctx.unauthorized('User not found or blocked');
       }
+      if (isSessionRevoked(user, decoded)) {
+        return ctx.unauthorized('Your password was changed. Please sign in again.');
+      }
       user = await normalizeUserUsername(strapi, user);
 
       const organizations = await ensureActiveOrganizationMembership(user);
@@ -862,6 +825,7 @@ module.exports = {
           lastName: user.lastName,
           mfaEnabled: !!user.mfaEnabled,
           mfaRequiredByOrg: membershipsRequireMfa(organizations),
+          passwordMinLength: passwordMinLength(organizations.map((m) => m.organization)),
         },
         organizations: organizations.map(organizationPayload),
       });
@@ -980,6 +944,88 @@ module.exports = {
     } catch (error) {
       console.error('MFA disable error:', error);
       ctx.badRequest(error.message);
+    }
+  },
+
+  /**
+   * Team member changes their own password (Profile page in CRM / PM / Accounts).
+   * Needs the current password, plus a 2FA code when 2FA is on. Every other device is signed out;
+   * the response carries a fresh session so this device stays signed in.
+   */
+  async staffChangePassword(ctx) {
+    if (!ctx.state.user?.id) return sendError(ctx, 401, 'Missing or invalid credentials');
+    const { currentPassword, newPassword, code } = ctx.request.body || {};
+    if (!currentPassword || !newPassword) {
+      return sendError(ctx, 400, 'Enter your current password and a new password.');
+    }
+
+    try {
+      const user = await strapi.query(USER_UID).findOne({ where: { id: ctx.state.user.id } });
+      if (!user || user.blocked) return sendError(ctx, 401, 'User not found or blocked');
+      if (isLocked(user.id)) return sendError(ctx, 429, 'Too many failed attempts. Please wait 10 minutes and try again.');
+
+      const userService = strapi.plugins['users-permissions'].services.user;
+      const currentOk = user.password ? await userService.validatePassword(String(currentPassword), user.password) : false;
+      if (!currentOk) {
+        recordFailure(user.id);
+        return sendError(ctx, 400, 'Your current password is not correct.');
+      }
+      if (user.mfaEnabled) {
+        if (!code) return sendError(ctx, 400, 'Enter the 6-digit code from your authenticator app.');
+        if (!(await checkUserCode(user, code))) {
+          recordFailure(user.id);
+          return sendError(ctx, 400, 'That code is not valid. Check your authenticator app and try again.');
+        }
+      }
+      clearFailures(user.id);
+
+      const memberships = await listActiveMemberships(user.id, true);
+      const minLength = passwordMinLength(memberships.map((m) => m.organization));
+      const problem = validateNewPassword(newPassword, minLength);
+      if (problem) return sendError(ctx, 400, problem);
+      if (await userService.validatePassword(String(newPassword), user.password)) {
+        return sendError(ctx, 400, 'Choose a password different from your current one.');
+      }
+
+      await userService.edit(user.id, { password: String(newPassword) });
+      const changedAt = new Date();
+      await strapi.query(USER_UID).update({ where: { id: user.id }, data: { passwordChangedAt: changedAt } });
+
+      const orgId = memberships[0]?.organization?.id;
+      if (orgId) {
+        try {
+          await logAccountsActivity(strapi, {
+            organizationId: orgId,
+            actorUserId: user.id,
+            action: 'update',
+            subjectType: 'organization_user',
+            subjectId: memberships[0].id,
+            summary: `${user.email} changed their password`,
+            meta: { email: user.email, module: 'accounts' },
+          });
+        } catch (_) {
+          /* logging is best-effort */
+        }
+      }
+
+      sendEmail({
+        to: user.email,
+        subject: 'Your BikeWo Suite password was changed',
+        text: `The password for ${user.email} was changed on ${changedAt.toUTCString()}. Other devices have been signed out.\n\nIf this wasn't you, contact your BikeWo admin right away.`,
+        html: layoutHtml({
+          heading: 'Your password was changed',
+          paragraphs: [
+            `The password for <strong>${escapeHtml(user.email)}</strong> was changed on ${escapeHtml(changedAt.toUTCString())}. Other devices have been signed out.`,
+            "If this wasn't you, contact your BikeWo admin right away.",
+          ],
+        }),
+      }).catch(() => {});
+
+      const fresh = await strapi.query(USER_UID).findOne({ where: { id: user.id } });
+      ctx.send({ success: true, ...sessionPayload(fresh, memberships) });
+    } catch (error) {
+      console.error('Staff change password error:', error);
+      sendError(ctx, 400, 'Could not change your password. Please try again.');
     }
   },
 };

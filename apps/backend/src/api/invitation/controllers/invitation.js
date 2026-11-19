@@ -1,73 +1,40 @@
 'use strict';
 
 /**
- * invitation controller
+ * invitation controller — public endpoints used by the Accounts "/invite/[token]" page.
  */
 
 const { createCoreController } = require('@strapi/strapi').factories;
 
+function sendError(ctx, error, fallback) {
+  const status = Number(error?.status) || 400;
+  const message = error?.status ? error.message : fallback;
+  if (!error?.status) console.error(fallback, error);
+  ctx.status = status;
+  ctx.body = { data: null, error: { status, name: 'InvitationError', message, details: {} } };
+}
+
 module.exports = createCoreController('api::invitation.invitation', ({ strapi }) => ({
-  // Accept invitation
+  /** Accept: returns the /auth/login response shape (session, or the 2FA step). */
   async accept(ctx) {
-    const { token, password } = ctx.request.body;
-
+    const { token, password, firstName, lastName } = ctx.request.body || {};
     try {
-      const result = await strapi.service('api::invitation.invitation').acceptInvitation(token, password);
-
-      return ctx.send({
-        success: true,
-        data: result
-      });
+      const result = await strapi
+        .service('api::invitation.invitation')
+        .acceptInvitation({ token, password, firstName, lastName });
+      return ctx.send(result);
     } catch (error) {
-      console.error('Error accepting invitation:', error);
-      return ctx.badRequest(error.message);
+      return sendError(ctx, error, 'Could not accept the invitation. Please try again.');
     }
   },
 
-  // Validate invitation
+  /** What the accept page shows before the person signs up (email, org name, role, min length). */
   async validate(ctx) {
-    const { token } = ctx.params;
-
     try {
-      const invitation = await strapi.entityService.findMany('api::invitation.invitation', {
-        filters: { token, status: 'pending' },
-        populate: {
-          organization: true
-        },
-        limit: 1
-      });
-
-      if (!invitation || invitation.length === 0) {
-        return ctx.send({
-          success: false,
-          valid: false,
-          message: 'Invalid or expired invitation'
-        });
-      }
-
-      const inv = invitation[0];
-      const isExpired = new Date(inv.expiresAt) < new Date();
-
-      if (isExpired) {
-        return ctx.send({
-          success: false,
-          valid: false,
-          message: 'Invitation has expired'
-        });
-      }
-
-      return ctx.send({
-        success: true,
-        valid: true,
-        data: {
-          email: inv.email,
-          organization: inv.organization,
-          role: inv.role
-        }
-      });
+      const info = await strapi.service('api::invitation.invitation').describe(ctx.params.token);
+      return ctx.send(info);
     } catch (error) {
-      console.error('Error validating invitation:', error);
-      return ctx.badRequest(error.message);
+      return sendError(ctx, error, 'Could not check the invitation. Please try again.');
     }
-  }
+  },
 }));

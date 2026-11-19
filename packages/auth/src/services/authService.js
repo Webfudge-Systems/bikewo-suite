@@ -186,6 +186,67 @@ class AuthService {
     return this.mfaRequest('disable', { code }, { withSession: true });
   }
 
+  /** JSON request to /api/*; throws Error(message) on failure. */
+  async apiRequest(path, { method = 'POST', body, withSession = false } = {}) {
+    const headers = { 'Content-Type': 'application/json' };
+    if (withSession && this.getToken()) headers.Authorization = `Bearer ${this.getToken()}`;
+    let response;
+    try {
+      response = await fetch(`${this.baseURL}/api${path}`, {
+        method,
+        headers,
+        body: body === undefined ? undefined : JSON.stringify(body),
+      });
+    } catch (fetchError) {
+      throw new Error('Network error: Cannot connect to the server.');
+    }
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data?.error?.message || data?.message || 'Something went wrong. Please try again.');
+    }
+    return data;
+  }
+
+  /**
+   * Change the signed-in team member's password. Other devices are signed out; the fresh
+   * session returned for this device is stored.
+   * @param {{ currentPassword: string, newPassword: string, code?: string }} input
+   */
+  async changePassword({ currentPassword, newPassword, code }) {
+    const data = await this.apiRequest('/auth/staff/change-password', {
+      body: { currentPassword, newPassword, ...(code ? { code } : {}) },
+      withSession: true,
+    });
+    return this.storeSession(data);
+  }
+
+  /**
+   * Public: what an invitation link is for.
+   * @returns {Promise<{ valid: boolean, message?: string, email?: string, organizationName?: string,
+   *   roleLabel?: string, invitedByName?: string|null, existingUser?: boolean, passwordMinLength?: number }>}
+   */
+  async validateInvitation(token) {
+    return this.apiRequest(`/invitations/validate/${encodeURIComponent(token)}`, { method: 'GET' });
+  }
+
+  /**
+   * Accept an invitation. Same result shape as login(): a stored session, or the 2FA step
+   * ({ mfaRequired | mfaSetupRequired, mfaToken }).
+   */
+  async acceptInvitation({ token, password, firstName, lastName }) {
+    const data = await this.apiRequest('/invitations/accept', {
+      body: { token, password, firstName, lastName },
+    });
+    if (data.mfaRequired || data.mfaSetupRequired) {
+      return {
+        mfaRequired: !!data.mfaRequired,
+        mfaSetupRequired: !!data.mfaSetupRequired,
+        mfaToken: data.mfaToken,
+      };
+    }
+    return this.storeSession(data);
+  }
+
   /**
    * Signup with email, password, firstName, and lastName
    * @param {string} email - User email
@@ -311,6 +372,7 @@ class AuthService {
           },
         });
 
+        this.lastAuthStatus = authRes.status;
         if (authRes.ok) {
           const data = await authRes.json();
           const authUser = flattenUser(data.user);

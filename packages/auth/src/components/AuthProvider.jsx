@@ -85,6 +85,8 @@ export const AuthProvider = ({ children }) => {
         .getCurrentUser()
         .then((fresh) => {
           if (fresh) setUser(fresh);
+          // Session rejected (e.g. password changed on another device): sign out here too.
+          else if (authService.lastAuthStatus === 401) logout();
         })
         .catch(() => {});
     };
@@ -161,6 +163,21 @@ export const AuthProvider = ({ children }) => {
     return { recoveryCodes: data.recoveryCodes || [], complete: () => applySession(data) };
   };
 
+  /**
+   * Accept an invitation (creates the account or confirms an existing one). Same return shape
+   * as login(); throws Error(message) when the link or password is not accepted.
+   */
+  const acceptInvitation = async (input) => {
+    const response = await authService.acceptInvitation(input);
+    if (response.mfaRequired || response.mfaSetupRequired) {
+      return { success: false, ...response };
+    }
+    return applySession(response);
+  };
+
+  /** Change own password; other devices are signed out, this one keeps a fresh session. Throws on error. */
+  const changePassword = async (input) => applySession(await authService.changePassword(input));
+
   const logout = () => {
     // Stop Chrome notifications for this browser before the session is cleared.
     if (pushService.isSupported()) pushService.disable().catch(() => {});
@@ -211,6 +228,8 @@ export const AuthProvider = ({ children }) => {
     login,
     verifyMfa,
     enableMfaDuringLogin,
+    acceptInvitation,
+    changePassword,
     logout,
     hasPermission,
     canAccessAppModule,

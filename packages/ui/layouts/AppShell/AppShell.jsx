@@ -11,6 +11,8 @@ export function AppShell({
   sidebar: Sidebar,
   loginPath = '/login',
   unauthorizedPath = '/unauthorized',
+  /** Pages that work without signing in and render without the app chrome (e.g. invitation links). */
+  publicPathPrefixes = ['/invite/'],
   loadingMessage = 'Loading...',
   redirectingMessage = 'Redirecting to login...',
   /** 'collapse' narrows the sidebar; 'hide' removes it entirely with a top bar to reopen. */
@@ -27,12 +29,13 @@ export function AppShell({
 
   const isLoginPage = pathname === loginPath
   const isUnauthorizedPage = pathname === unauthorizedPath
+  const isPublicPage = publicPathPrefixes.some((prefix) => pathname?.startsWith(prefix))
 
   useEffect(() => {
-    if (!loading && !isAuthenticated && !isLoginPage && !isUnauthorizedPage) {
+    if (!loading && !isAuthenticated && !isLoginPage && !isUnauthorizedPage && !isPublicPage) {
       router.push(loginPath)
     }
-  }, [isAuthenticated, loading, isLoginPage, isUnauthorizedPage, router, loginPath])
+  }, [isAuthenticated, loading, isLoginPage, isUnauthorizedPage, isPublicPage, router, loginPath])
 
   if (loading) {
     return (
@@ -45,7 +48,7 @@ export function AppShell({
     )
   }
 
-  if (isLoginPage || isUnauthorizedPage) {
+  if (isLoginPage || isUnauthorizedPage || isPublicPage) {
     return <>{children}</>
   }
 

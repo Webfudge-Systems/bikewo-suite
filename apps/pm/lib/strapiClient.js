@@ -15,12 +15,12 @@ class StrapiClient {
     }
   }
 
+  // Always re-read: the session token changes after a password change or re-login.
   getToken() {
-    if (this.token) return this.token;
     if (typeof window !== 'undefined') {
       this.token =
-        localStorage.getItem('strapi_token') ||
         localStorage.getItem('auth-token') ||
+        localStorage.getItem('strapi_token') ||
         localStorage.getItem('bikewo-authToken');
     }
     return this.token;

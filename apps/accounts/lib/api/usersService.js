@@ -45,6 +45,27 @@ class UsersService {
     return strapiClient.post(`/organizations/${orgId}/invite-users`, body)
   }
 
+  orgIdOrThrow() {
+    if (typeof window === 'undefined') throw new Error('Only available in browser')
+    const orgId = localStorage.getItem('current-org-id')
+    if (!orgId) throw new Error('No active organization selected')
+    return orgId
+  }
+
+  /** Pending invitations: { data: [{ id, email, role, invitedBy, createdAt, expiresAt, expired }], emailConfigured } */
+  async listInvitations() {
+    return strapiClient.get(`/organizations/${this.orgIdOrThrow()}/invitations`)
+  }
+
+  /** New link + 7 more days, emailed again: { data: { email, emailSent, inviteUrl } } */
+  async resendInvitation(invitationId) {
+    return strapiClient.post(`/organizations/${this.orgIdOrThrow()}/invitations/${invitationId}/resend`, {})
+  }
+
+  async revokeInvitation(invitationId) {
+    return strapiClient.delete(`/organizations/${this.orgIdOrThrow()}/invitations/${invitationId}`)
+  }
+
   async updateMembership({
     membershipId,
     roleId,

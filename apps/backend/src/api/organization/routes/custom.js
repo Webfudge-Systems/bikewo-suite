@@ -57,6 +57,24 @@ module.exports = {
       }
     },
     {
+      method: 'GET',
+      path: '/organizations/:id/invitations',
+      handler: 'organization.listInvitations',
+      config: { auth: false, policies: [], middlewares: [] },
+    },
+    {
+      method: 'POST',
+      path: '/organizations/:id/invitations/:invitationId/resend',
+      handler: 'organization.resendInvitation',
+      config: { auth: false, policies: [], middlewares: [] },
+    },
+    {
+      method: 'DELETE',
+      path: '/organizations/:id/invitations/:invitationId',
+      handler: 'organization.revokeInvitation',
+      config: { auth: false, policies: [], middlewares: [] },
+    },
+    {
       method: 'PATCH',
       path: '/organizations/:id/users/:membershipId',
       handler: 'organization.updateUserMembership',

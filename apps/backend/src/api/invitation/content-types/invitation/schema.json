@@ -50,6 +50,9 @@
     },
     "acceptedAt": {
       "type": "datetime"
+    },
+    "departmentIds": {
+      "type": "json"
     }
   }
 }

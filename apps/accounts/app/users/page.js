@@ -143,6 +143,17 @@ function isUnauthorizedError(error) {
   )
 }
 
+function InviteLinkBox({ url, copied, onCopy }) {
+  return (
+    <div className="flex items-center gap-2">
+      <Input readOnly value={url || ''} onFocus={(e) => e.target.select()} className="flex-1 font-mono text-xs" />
+      <Button variant="outline" size="sm" onClick={() => onCopy(url)}>
+        {copied ? 'Copied' : 'Copy link'}
+      </Button>
+    </div>
+  )
+}
+
 export default function UsersPage() {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
@@ -157,6 +168,12 @@ export default function UsersPage() {
   const [directPassword, setDirectPassword] = useState('')
   const [inviteSubmitting, setInviteSubmitting] = useState(false)
   const [inviteError, setInviteError] = useState('')
+  // After an invitation is created: { email, emailSent, inviteUrl } (link shown when email didn't go out)
+  const [inviteResult, setInviteResult] = useState(null)
+  const [pendingInvites, setPendingInvites] = useState([])
+  const [inviteActionId, setInviteActionId] = useState(null)
+  const [inviteNotice, setInviteNotice] = useState(null) // { email, emailSent, inviteUrl, message }
+  const [copiedUrl, setCopiedUrl] = useState('')
   const [editUser, setEditUser] = useState(null)
   const [editName, setEditName] = useState('')
   const [editEmail, setEditEmail] = useState('')
@@ -258,8 +275,67 @@ export default function UsersPage() {
     setInviteDepartmentIds([])
     setInvitePrimaryDepartmentId(null)
     setInviteError('')
+    setInviteResult(null)
     setShowInviteModal(true)
   }, [roles])
+
+  const fetchInvites = useCallback(async () => {
+    if (!canManageUsers) return
+    try {
+      const response = await usersService.listInvitations()
+      setPendingInvites(Array.isArray(response?.data) ? response.data : [])
+    } catch (error) {
+      console.error('Error fetching invitations:', error)
+      setPendingInvites([])
+    }
+  }, [canManageUsers])
+
+  useEffect(() => {
+    fetchInvites()
+  }, [fetchInvites])
+
+  const copyText = useCallback(async (text) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopiedUrl(text)
+      setTimeout(() => setCopiedUrl(''), 1500)
+    } catch {
+      /* clipboard blocked: the link is still visible to copy by hand */
+    }
+  }, [])
+
+  const resendInvite = useCallback(async (invite) => {
+    setInviteActionId(invite.id)
+    try {
+      const response = await usersService.resendInvitation(invite.id)
+      const data = response?.data || {}
+      setInviteNotice({
+        email: invite.email,
+        emailSent: !!data.emailSent,
+        inviteUrl: data.inviteUrl,
+        message: data.emailSent ? `Invitation emailed again to ${invite.email}.` : null,
+      })
+      await fetchInvites()
+    } catch (error) {
+      setInviteNotice({ email: invite.email, message: error?.message || 'Could not resend the invitation.' })
+    } finally {
+      setInviteActionId(null)
+    }
+  }, [fetchInvites])
+
+  const revokeInvite = useCallback(async (invite) => {
+    if (typeof window !== 'undefined' && !window.confirm(`Revoke the invitation to ${invite.email}? The link will stop working.`)) return
+    setInviteActionId(invite.id)
+    try {
+      await usersService.revokeInvitation(invite.id)
+      setInviteNotice({ email: invite.email, message: `Invitation to ${invite.email} revoked.` })
+      await fetchInvites()
+    } catch (error) {
+      setInviteNotice({ email: invite.email, message: error?.message || 'Could not revoke the invitation.' })
+    } finally {
+      setInviteActionId(null)
+    }
+  }, [fetchInvites])
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -411,7 +487,7 @@ export default function UsersPage() {
       setInviteSubmitting(true)
       setInviteError('')
       const inviteRole = parseRoleOption(inviteRoleSelection)
-      await usersService.invite({
+      const response = await usersService.invite({
         email,
         roleId: inviteRole.roleId,
         roleCode: inviteRole.roleCode || 'member',
@@ -421,8 +497,19 @@ export default function UsersPage() {
         departmentIds: inviteDepartmentIds,
         primaryDepartmentId: invitePrimaryDepartmentId,
       })
-      setShowInviteModal(false)
-      await fetchUsers()
+      if (directAdd) {
+        setShowInviteModal(false)
+        await fetchUsers()
+        return
+      }
+      const first = Array.isArray(response?.data) ? response.data[0] : null
+      if (!first) throw new Error('Failed to send invitation')
+      if (first.skipped) {
+        setInviteError(`${first.email}: ${first.reason}`)
+        return
+      }
+      setInviteResult({ email: first.email, emailSent: !!first.emailSent, inviteUrl: first.inviteUrl })
+      await fetchInvites()
     } catch (error) {
       setInviteError(error?.message || 'Failed to send invitation')
     } finally {
@@ -431,6 +518,7 @@ export default function UsersPage() {
   }, [
     directAdd,
     directPassword,
+    fetchInvites,
     fetchUsers,
     inviteDepartmentIds,
     inviteEmail,
@@ -877,6 +965,73 @@ export default function UsersPage() {
         )}
       </div>
 
+      {canManageUsers && (pendingInvites.length > 0 || inviteNotice) ? (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-gray-100">
+            <div>
+              <h3 className="text-base font-semibold text-gray-900">Pending invitations</h3>
+              <p className="text-xs text-gray-500">People who haven&apos;t accepted yet. Links expire after 7 days.</p>
+            </div>
+            <Badge variant="warning" size="sm">{pendingInvites.length}</Badge>
+          </div>
+          {inviteNotice ? (
+            <div className="px-6 py-3 border-b border-gray-100 bg-gray-50 text-sm text-gray-700 space-y-2">
+              {inviteNotice.message ? <p>{inviteNotice.message}</p> : null}
+              {inviteNotice.inviteUrl && !inviteNotice.emailSent ? (
+                <InviteLinkBox
+                  email={inviteNotice.email}
+                  url={inviteNotice.inviteUrl}
+                  copied={copiedUrl === inviteNotice.inviteUrl}
+                  onCopy={copyText}
+                />
+              ) : null}
+              <button type="button" className="text-xs text-gray-500 hover:text-gray-800" onClick={() => setInviteNotice(null)}>
+                Dismiss
+              </button>
+            </div>
+          ) : null}
+          {pendingInvites.length > 0 ? (
+            <ul className="divide-y divide-gray-100">
+              {pendingInvites.map((invite) => (
+                <li key={invite.id} className="flex flex-wrap items-center justify-between gap-3 px-6 py-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-gray-900">{invite.email}</p>
+                    <p className="text-xs text-gray-500">
+                      {invite.role}
+                      {invite.invitedBy ? ` · invited by ${invite.invitedBy}` : ''}
+                      {' · '}
+                      {invite.expired
+                        ? 'expired'
+                        : `expires ${new Date(invite.expiresAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {invite.expired ? <Badge variant="danger" size="sm">Expired</Badge> : null}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={inviteActionId === invite.id}
+                      onClick={() => resendInvite(invite)}
+                    >
+                      <Mail className="w-4 h-4 mr-1.5" />
+                      Resend
+                    </Button>
+                    <Button
+                      variant="muted"
+                      size="sm"
+                      disabled={inviteActionId === invite.id}
+                      onClick={() => revokeInvite(invite)}
+                    >
+                      Revoke
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      ) : null}
+
       <Modal
         isOpen={showInviteModal}
         onClose={() => !inviteSubmitting && setShowInviteModal(false)}
@@ -884,6 +1039,37 @@ export default function UsersPage() {
         size="md"
         closeOnBackdrop={!inviteSubmitting}
       >
+        {inviteResult ? (
+          <div className="space-y-4">
+            {inviteResult.emailSent ? (
+              <p className="text-sm text-gray-700">
+                Invitation emailed to <strong>{inviteResult.email}</strong>. They&apos;ll create their own password
+                from the link (valid for 7 days).
+              </p>
+            ) : (
+              <>
+                <p className="text-sm text-gray-700">
+                  Invitation created for <strong>{inviteResult.email}</strong>, but email isn&apos;t set up yet, so
+                  nothing was sent. Share this link with them yourself (valid for 7 days):
+                </p>
+                <InviteLinkBox
+                  email={inviteResult.email}
+                  url={inviteResult.inviteUrl}
+                  copied={copiedUrl === inviteResult.inviteUrl}
+                  onCopy={copyText}
+                />
+              </>
+            )}
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <Button variant="muted" onClick={handleInviteUser}>
+                Invite another
+              </Button>
+              <Button variant="primary" onClick={() => setShowInviteModal(false)}>
+                Done
+              </Button>
+            </div>
+          </div>
+        ) : (
         <div className="space-y-4">
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-gray-700">Email</label>
@@ -926,7 +1112,7 @@ export default function UsersPage() {
               onChange={(e) => setDirectAdd(e.target.checked)}
               className="h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
             />
-            Directly add user without invitation
+            Add directly instead (you set a temporary password)
           </label>
           {directAdd ? (
             <div className="space-y-1.5">
@@ -938,12 +1124,14 @@ export default function UsersPage() {
                 placeholder="Auto-generated if left empty"
               />
               <p className="text-xs text-gray-500">
-                If the user doesn&apos;t exist, we will create it and email credentials.
+                Fallback when an invitation email can&apos;t be used. The account is created right away; share the
+                password with them securely and ask them to change it from their Profile page.
               </p>
             </div>
           ) : (
             <p className="text-xs text-gray-500">
-              Invitation mode sends an email with a secure accept-invite link.
+              We&apos;ll email a secure link. They create their own password (and set up 2FA if your organization
+              requires it).
             </p>
           )}
           {inviteError ? <p className="text-sm text-red-600">{inviteError}</p> : null}
@@ -957,6 +1145,7 @@ export default function UsersPage() {
             </Button>
           </div>
         </div>
+        )}
       </Modal>
 
       <Modal

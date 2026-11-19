@@ -17,6 +17,8 @@ module.exports = (plugin) => {
     mfaSecret: { type: 'text', private: true },
     mfaPendingSecret: { type: 'text', private: true },
     mfaRecoveryCodes: { type: 'json', private: true },
+    // Set on every password change; sessions issued before it are rejected (signs out other devices).
+    passwordChangedAt: { type: 'datetime', private: true },
   });
 
   return plugin;

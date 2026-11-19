@@ -49,6 +49,12 @@ module.exports = {
     },
     {
       method: 'POST',
+      path: '/auth/staff/change-password',
+      handler: 'auth.staffChangePassword',
+      config: authFalse,
+    },
+    {
+      method: 'POST',
       path: '/auth/client/login',
       handler: 'auth.clientLogin',
       config: authFalse,

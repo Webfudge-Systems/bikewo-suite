@@ -1517,6 +1517,7 @@ export interface ApiInvitationInvitation extends Struct.CollectionTypeSchema {
     acceptedAt: Schema.Attribute.DateTime
     createdAt: Schema.Attribute.DateTime
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> & Schema.Attribute.Private
+    departmentIds: Schema.Attribute.JSON
     email: Schema.Attribute.Email & Schema.Attribute.Required
     expiresAt: Schema.Attribute.DateTime & Schema.Attribute.Required
     invitedBy: Schema.Attribute.Relation<'manyToOne', 'plugin::users-permissions.user'>
@@ -3235,6 +3236,7 @@ export interface PluginUsersPermissionsUser extends Struct.CollectionTypeSchema 
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6
       }>
+    passwordChangedAt: Schema.Attribute.DateTime & Schema.Attribute.Private
     provider: Schema.Attribute.String
     publishedAt: Schema.Attribute.DateTime
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private

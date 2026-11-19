@@ -2,6 +2,7 @@
 
 const jwt = require('jsonwebtoken');
 const { membershipSummary } = require('../utils/rbac');
+const { isSessionRevoked } = require('../utils/login-session');
 
 // JWT secret - use environment variable or fallback
 const JWT_SECRET = process.env.JWT_SECRET || 'myJwtSecret123456789012345678901234567890';
@@ -34,7 +35,8 @@ module.exports = (config, { strapi }) => {
         where: { id: decoded.id },
       });
 
-      if (user && !user.blocked) {
+      // Sessions issued before the last password change are signed out.
+      if (user && !user.blocked && !isSessionRevoked(user, decoded)) {
         ctx.state.user = user;
 
         // Resolve active organization from X-Organization-Id header
